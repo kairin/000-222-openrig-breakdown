@@ -218,7 +218,7 @@ a1fa6 -> c28a2
 | c28a2 | State: `/home/kkk/.cline/worktrees/c28a2/openrig-breakdown/breakdown/research-state-invariants.md` | Accepted 92f0b, a4d7b and a1fa6 |
 
 These are assigned future worktree output locations, not a claim that the files
-or worktrees already exist. The earlier 92f0b-rooted paths identify the same
+or worktrees already exist. The main-checkout paths above identify the same
 repository output contracts; specialists write only in their own task worktrees.
 
 fa0bb and 1f28b are Done. The three claim diffs are integrated; register sync
