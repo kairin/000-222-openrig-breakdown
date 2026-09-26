@@ -1,14 +1,14 @@
 > **Original upstream README, kept for reference.**
 > This is the README of the original OpenRig project (version 0.5.16, commit `5c547030`), by Mike Schwarz.
 > It is not the README of this repository. This repository is an independent derivative that aims to
-> simplify the tool for one person's workflow. See [README.md](README.md) for its goals.
+> simplify the tool for one person's workflow. See [README.md](../../README.md) for its goals.
 > The text below is unchanged. Its links, badges and instructions refer to the upstream project.
 
 ---
 
 # OpenRig
 
-[![npm version](https://img.shields.io/npm/v/@openrig/cli)](https://www.npmjs.com/package/@openrig/cli) [![npm downloads](https://img.shields.io/npm/dw/@openrig/cli)](https://www.npmjs.com/package/@openrig/cli) [![License: Apache 2.0](https://img.shields.io/github/license/mvschwarz/openrig)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/mvschwarz/openrig?style=social)](https://github.com/mvschwarz/openrig/stargazers)
+[![npm version](https://img.shields.io/npm/v/@openrig/cli)](https://www.npmjs.com/package/@openrig/cli) [![npm downloads](https://img.shields.io/npm/dw/@openrig/cli)](https://www.npmjs.com/package/@openrig/cli) [![License: Apache 2.0](https://img.shields.io/github/license/mvschwarz/openrig)](../../LICENSE) [![GitHub stars](https://img.shields.io/github/stars/mvschwarz/openrig?style=social)](https://github.com/mvschwarz/openrig/stargazers)
 
 A harness wraps a model. A rig wraps your harnesses. Define your agent team in YAML, boot it with one command. Claude Code and Codex in the same rig, managed as one system.
 
@@ -25,7 +25,7 @@ rig setup --dry-run
 
 Review setup's plan before applying `rig setup`: it checks both native harnesses and cmux. This starter requires tmux and authenticated Codex; the other harness and terminal provider are optional for its repository task.
 
-Before launching, ask your agent to [configure your chosen permissions](docs/reference/getting-started.md#have-your-agent-configure-permissions): keep prompts, remember selected commands, or deliberately choose broader access. The agent handles setup and verification; OpenRig's shipped defaults stay unchanged.
+Before launching, ask your agent to [configure your chosen permissions](../../docs/reference/getting-started.md#have-your-agent-configure-permissions): keep prompts, remember selected commands, or deliberately choose broader access. The agent handles setup and verification; OpenRig's shipped defaults stay unchanged.
 
 Check prerequisites in your launch shell:
 
@@ -53,21 +53,21 @@ rig send dev-owner@first-project 'Implement <one useful change>. Track the task 
 rig queue list --destination dev-owner@first-project --limit 1000
 ```
 
-Sending a message does not itself create a queue item; the owner records the task. Read the final artifact and the review of its exact candidate, then return to the same owner for the next change. [The guided first-use path](docs/reference/getting-started.md) covers readiness, a useful task, a reviewed result, Herdr/cmux terminals and recovery.
+Sending a message does not itself create a queue item; the owner records the task. Read the final artifact and the review of its exact candidate, then return to the same owner for the next change. [The guided first-use path](../../docs/reference/getting-started.md) covers readiness, a useful task, a reviewed result, Herdr/cmux terminals and recovery.
 
 ## See it running
 
-![The OpenRig TUI: the build rig as a graph, then as a table of seats with runtime, model, context and state, then one seat in detail (real recording, 10 seconds)](assets/readme/openrig-agents-working.gif)
+![The OpenRig TUI: the build rig as a graph, then as a table of seats with runtime, model, context and state, then one seat in detail (real recording, 10 seconds)](../../assets/readme/openrig-agents-working.gif)
 
 ## Community
 
 - **Questions:** [Discussions › Q&A](https://github.com/mvschwarz/openrig/discussions/categories/q-a)
 - **Bugs and feature requests:** [open an issue](https://github.com/mvschwarz/openrig/issues/new/choose)
-- **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [Getting help](.github/SUPPORT.md)
+- **Contributing:** [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) · [Code of Conduct](../../.github/CODE_OF_CONDUCT.md) · [Security policy](../../.github/SECURITY.md) · [Getting help](../../.github/SUPPORT.md)
 - **Videos:** [youtube.com/@openrig](https://www.youtube.com/@openrig)
 - **Releases:** [GitHub Releases](https://github.com/mvschwarz/openrig/releases) and npm `@openrig/cli`
 
-We aim to acknowledge issues and pull requests within one day; see [CONTRIBUTING.md](CONTRIBUTING.md#what-to-expect-from-us) for review targets.
+We aim to acknowledge issues and pull requests within one day; see [CONTRIBUTING.md](../../.github/CONTRIBUTING.md#what-to-expect-from-us) for review targets.
 
 ## What OpenRig changes on your machine
 
@@ -82,7 +82,7 @@ using a published package, since repository guidance can be ahead of npm.
 | **`rig setup`** | Attempts missing tools and writes an OpenRig block in `~/.tmux.conf` for mouse support and scrollback. On macOS it can install cmux and enable its automation socket control in `~/.config/cmux/settings.json`. `--full` adds workstation tools. `--dry-run` shows setup's plan without applying it. |
 | **Daemon startup** | Creates/updates instance state under `OPENRIG_HOME` (normally `~/.openrig`), including its database and managed plugin resources. Seeds the `openrig-skills` discovery skill in `~/.claude/skills` and `~/.agents/skills`, subject to existing version ownership. With `runtime.codex.hooks_enabled` enabled (the default), writes Codex hook configuration and trust records as described below—even before a rig launches. |
 | **Rig/seat launch and attachment** | Creates tmux sessions, supplies seat identity and daemon connection environment, and projects selected guidance, skills, plugins and runtime resources into the workspace. Managed startup pre-trusts the workspace. Claude context collection can also be provisioned for attached sessions and refreshed during monitoring. |
-| **Explicit permission configuration** | The built-in bootstrap does **not** add `rig` command allow rules. Ask your agent to [apply your chosen project or user scope](docs/reference/getting-started.md#have-your-agent-configure-permissions); existing rules remain relevant. Broader access is a separate choice. |
+| **Explicit permission configuration** | The built-in bootstrap does **not** add `rig` command allow rules. Ask your agent to [apply your chosen project or user scope](../../docs/reference/getting-started.md#have-your-agent-configure-permissions); existing rules remain relevant. Broader access is a separate choice. |
 
 The provider files are separate from instance state. Here `~` means the daemon
 user's home; changing `OPENRIG_HOME` alone does not isolate provider configuration.
@@ -199,7 +199,7 @@ Hono HTTP daemon
 
 The TUI shows the team's coordination state; herdr and cmux show the actual agent terminals alongside it. Use `rig tui commands` to list the TUI's command-bar navigation, or [try the interactive TUI tour](https://openrig.dev/tour/workspace).
 
-![OpenRig TUI topology graph showing seven agent seats grouped into product, development, and QA pods](assets/ui/screenshots/tui-topology.png)
+![OpenRig TUI topology graph showing seven agent seats grouped into product, development, and QA pods](../../assets/ui/screenshots/tui-topology.png)
 
 *Captured from the interactive TUI demo using fictional project data.*
 
@@ -209,7 +209,7 @@ With herdr installed and connected, open the starter's terminals together:
 rig terminal open first-project --provider herdr
 ```
 
-For cmux, use `--provider cmux`. The underlying sessions remain accessible through tmux. See the [terminal workspace guide](docs/reference/getting-started.md#share-the-dashboard-and-return-to-it) for setup and returning to an existing view.
+For cmux, use `--provider cmux`. The underlying sessions remain accessible through tmux. See the [terminal workspace guide](../../docs/reference/getting-started.md#share-the-dashboard-and-return-to-it) for setup and returning to an existing view.
 
 ## Key Concepts
 
@@ -236,7 +236,7 @@ Requires Docker for service-backed rigs.
 
 ## Upgrading an existing instance
 
-For an existing installation, follow the [upgrade procedure](skills/_canonical/core/openrig-upgrade/SKILL.md) and the [0.5.14 release notes](docs/releases/v0.5.14.md). Preserve live seats during the upgrade; `rig down` is not an upgrade step.
+For an existing installation, follow the [upgrade procedure](../../skills/_canonical/core/openrig-upgrade/SKILL.md) and the [0.5.14 release notes](../../docs/releases/v0.5.14.md). Preserve live seats during the upgrade; `rig down` is not an upgrade step.
 
 ### Crossing the 0.5.9 layout boundary
 

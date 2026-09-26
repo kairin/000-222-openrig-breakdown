@@ -22,20 +22,20 @@ The Git separation does not remove the links to upstream in the files. The table
 | File | Link | Possible problem |
 | :--- | :--- | :--- |
 | `packages/daemon/src/domain/plugin-vendor-service.ts:59` | The daemon tries to download the `openrig-core` plugin from `github.com/mvschwarz/openrig-plugins`. | The daemon does this at each start (`packages/daemon/src/startup.ts:706`). Now that repository is empty. If upstream adds files, your daemon can install upstream code. |
-| `context7.json` | It points to `context7.com/mvschwarz/openrig` with the upstream public key. | It connects your repository to the upstream Context7 library. |
+| `archive/configuration/context7.json` | Archived from the root; it points to `context7.com/mvschwarz/openrig` with the upstream public key. | It is retained for reference and is no longer discovered as this repository's Context7 configuration. |
 | `packages/cli/package.json` | The package name is `@openrig/cli`. The package is not private. `repository` and `author` point to upstream. | `npm publish` tries to publish into the upstream npm scope. |
 | `packages/daemon/assets/plugins/openrig-core/.claude-plugin/plugin.json` | `homepage` and `repository` point to upstream. | Users see upstream as the owner. |
-| `.github/`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` | They describe the upstream process for contributions and reports. | These files give incorrect instructions for your repository. |
+| `.github/` | `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` live here, where GitHub also discovers community-health files. | Their contents still describe the upstream process and should be reviewed for this derivative. |
 
 CAUTION: THE DAEMON TRIES TO DOWNLOAD CODE FROM AN UPSTREAM REPOSITORY AT EACH START. REMOVE THIS FUNCTION OR CHANGE THE ADDRESS BEFORE YOU USE THE DAEMON FOR REAL WORK.
 
 ## 2.3 Recommended actions
 
 1. Remove the automatic plugin download, or change `REPO_BASE` to a repository that you own.
-2. Remove `context7.json`.
+2. Keep the upstream Context7 profile archived; create a new root `context7.json` only if this derivative is intentionally published to Context7.
 3. Set `"private": true` in `packages/cli/package.json`. Do this before you run a publish script.
 4. Change `repository`, `author` and `homepage` fields to your repository.
-5. Remove or rewrite the upstream process files in `.github/` and in the root folder.
+5. Rewrite the upstream process files in `.github/` for this repository.
 
 ## 2.4 License and name
 

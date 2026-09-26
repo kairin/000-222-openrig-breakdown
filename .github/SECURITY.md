@@ -10,7 +10,7 @@ Include the affected version even when reporting a problem in an older installat
 
 OpenRig runs a local daemon, drives coding agents in tmux sessions on your machine, and writes
 configuration for those harnesses (for example under `~/.claude` and `~/.codex`). The README
-section [What OpenRig changes on your machine](README.md#what-openrig-changes-on-your-machine)
+section [What OpenRig changes on your machine](../README.md#what-openrig-changes-on-your-machine)
 describes these effects and the trust/permission choices. Unexpected access, disclosure or
 permission changes are useful reports; include what you expected and what you observed.
 

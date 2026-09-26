@@ -63,7 +63,7 @@ trust settings into `~/.claude.json`, the workspace `.claude/settings.local.json
 `~/.codex/config.toml` and `~/.tmux.conf`. It also tries to download a plugin
 from the original project's GitHub account each time the daemon starts. Back
 up those files first. The full list is in the
-[original README](README-upstream-original.md#what-openrig-changes-on-your-machine).
+[original README](archive/documents/README-upstream-original.md#what-openrig-changes-on-your-machine).
 
 ## Build and test from source
 
@@ -82,8 +82,8 @@ failed before this project started (see
 ## Origin and credit
 
 This project is derived from [OpenRig](https://github.com/mvschwarz/openrig)
-by Mike Schwarz, version 0.5.16. The original README is kept unchanged in
-[README-upstream-original.md](README-upstream-original.md).
+by Mike Schwarz, version 0.5.16. An archived copy of the upstream README is in
+[README-upstream-original.md](archive/documents/README-upstream-original.md).
 
 "OpenRig" is the name of the original project. It is used here only to
 describe where this code came from. It is not the name of this project.

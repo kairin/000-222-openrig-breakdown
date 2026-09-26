@@ -36,11 +36,11 @@ specific failure: `npm run mirror-skills` updates skill mirrors, and
 review the generated diff; neither command fixes every documentation failure. The UI unit-test
 suite is advisory and separate: `npm run test:ui`.
 
-For hands-on development, read the [check requirements](docs/reference/developing.md),
-[worktree setup](docs/reference/worktree-builds.md), and
-[machine changes](README.md#what-openrig-changes-on-your-machine). Use an isolated environment
+For hands-on development, read the [check requirements](../docs/reference/developing.md),
+[worktree setup](../docs/reference/worktree-builds.md), and
+[machine changes](../README.md#what-openrig-changes-on-your-machine). Use an isolated environment
 for changes that start daemons or agents; `OPENRIG_HOME` alone does not isolate provider settings.
-Permission configuration is an [explicit choice](docs/reference/getting-started.md#have-your-agent-configure-permissions).
+Permission configuration is an [explicit choice](../docs/reference/getting-started.md#have-your-agent-configure-permissions).
 A checked-out tree is not the installed daemon; restarting an installed daemon does not adopt
 your working copy.
 
@@ -64,7 +64,7 @@ Fill in the template. The three things a reviewer needs are: what a user gets, h
 it, and anything you were unsure about. State the revision and relevant local changes you tested,
 what you actually ran, and any checks you could not run. Redact private information from evidence.
 
-Contributions follow the repository's [Apache-2.0 license](LICENSE). Preserve attribution and any
+Contributions follow the repository's [Apache-2.0 license](../LICENSE). Preserve attribution and any
 applicable license notices when adapting third-party material.
 
 ## What to expect from us

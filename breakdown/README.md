@@ -10,6 +10,8 @@ This folder contains the analysis for a simpler version of OpenRig. Start with `
 | [04-review-method.md](04-review-method.md) | How to examine the Gemini review |
 | [05-simplification-rules.md](05-simplification-rules.md) | Rules for changes to the code |
 | [06-open-questions.md](06-open-questions.md) | Decisions that the owner must make |
+| [08-current-state-evidence.md](08-current-state-evidence.md) | Current source, history, runtime flows and Rust boundary evidence |
+| [09-adversarial-review-and-research-charter.md](09-adversarial-review-and-research-charter.md) | Research plan and criteria for evaluating simplifications |
 | [gemini-review/](gemini-review/) | The Gemini review, divided into one folder for each claim |
 
 The documents use ASD-STE100 Simplified Technical English.
