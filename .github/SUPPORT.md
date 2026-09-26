@@ -10,7 +10,7 @@
 - **Ideas and setups:** [Ideas](https://github.com/mvschwarz/openrig/discussions/categories/ideas)
   and [Show and tell](https://github.com/mvschwarz/openrig/discussions/categories/show-and-tell).
 - **Videos:** https://www.youtube.com/@openrig
-- **Security:** see [SECURITY.md](../SECURITY.md); please report privately.
+- **Security:** see [SECURITY.md](SECURITY.md); please report privately.
 
 We aim to acknowledge issues and pull requests within one day. A substantive PR review decision
-within seven days is a target, not a guaranteed deadline. Details in [CONTRIBUTING.md](../CONTRIBUTING.md).
+within seven days is a target, not a guaranteed deadline. Details in [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -70,7 +70,7 @@ These observations come from files that were read during the separation work. Th
 | Claim | Observation |
 | :--- | :--- |
 | F6 | `package.json` requires Node.js `^20 \|\| ^22 \|\| ^24`, not "20 or higher". |
-| F7 | `context7.json` tells that the `first-project` starter requires a Codex CLI with a login. |
+| F7 | `archive/configuration/context7.json` says the `first-project` starter requires a Codex CLI with a login. |
 | F9 | This claim has the most danger if it is correct: work that is not committed can be lost. |
 | F11 | The file `docs/reference/worktree-builds.md` shows that some worktree function can exist. |
 
