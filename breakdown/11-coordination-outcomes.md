@@ -212,13 +212,22 @@ until the documented gates and separate authorization support them.
 
 ## Dependency outcome and no-go boundary
 
-The read-only board snapshot on 2026-09-27 confirmed these actual card
-links, matching the coordinator's instruction. The graph records that snapshot;
-d47aa owns any subsequent dependency changes. This agent does not edit the board.
-During final validation, the live board no longer contained any of c28a2's
-three edges (to 92f0b, a4d7b and a1fa6). Thus this graph records the verified earlier snapshot and coordinator
-contract, not a guarantee of current scheduler enforcement. d47aa must reconcile
-the live links before dispatch; no dependency was silently recreated here.
+The graph below is the **required acceptance graph**, not a promise that mutable
+live Kanban links retain every prerequisite. Completed a1fa6/1f28b dependencies
+are archived in coordinator review records. d47aa owns scheduling and link
+corrections; this documentation agent does not edit the board.
+
+Operational correction supplied by d47aa on 2026-09-27: marking a1fa6 Done
+auto-started c28a2 despite remaining prerequisites, reversed its workflow edge,
+and removed completed edges. The coordinator stopped the real Luna session
+before edits, verified its worktree was clean, requeued c28a2 and restored its
+dependency on a4d7b. This is a coordinator-reported recovery record, not evidence
+that state research was performed or accepted.
+
+Pending live links at final handoff are: 662c4 waits on 92f0b; a4d7b waits on
+662c4 (and 92f0b until acceptance); c28a2 waits on a4d7b. These links enforce the
+remaining sequence; accepted historical prerequisites still apply through the
+review records. All three new research cards are Backlog at final handoff.
 Here `prerequisite -> dependent` means the dependent waits for acceptance of the
 prerequisite (the board stores the dependent in `fromTaskId`).
 
@@ -245,8 +254,9 @@ exist. Specialists edit corresponding files only in their own task worktrees.
 fa0bb and 1f28b are Done. The three claim diffs and f4958's register integration
 are accepted on main `8bd371a8`, with T2–T4 source-review complete only. This document fulfills
 the requested d5d13/f7f4e documentation outcomes, with coordinator approval still
-pending. All three new research cards remain in Backlog; none is started by this
-delegation. No board mutation is performed here.
+pending. All three new research cards are Backlog at the coordinator's final
+handoff after the operational recovery above. This documentation delegation
+starts no research and performs no board mutation.
 
 Research and implementation gate requirements remain separate from card links:
 
@@ -279,7 +289,8 @@ are disposed above, not converted into speculative migration cards.
   bounded research acceptance and ownership for coordinator-created 662c4,
   a4d7b and c28a2. No duplicate triage or claim task is needed.
 - **f7f4e → 92f0b:** the same deliverable supplies all ten migration-category
-  dispositions, actual dependency graph and implementation no-go. No duplicate
+  dispositions, required acceptance graph, pending-link record and implementation
+  no-go. No duplicate
   decomposition or speculative Rust/prototype card is needed.
 - **92f0b** authored this documentation outcome and created no cards. **d47aa**
   owns acceptance/closure of both originals, scheduling and card links;
