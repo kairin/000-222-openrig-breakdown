@@ -1,6 +1,6 @@
 # A1: OpenRig has no agent loop of its own; it supervises Claude Code and Codex CLI sessions.
 
-**Verdict:** ? (unverified)
+**Verdict:** part — external inference is supported; the quoted account understates OpenRig's launch responsibilities and runtime set.
 
 ## What the report says
 
@@ -36,7 +36,14 @@ Look for any model/API client in `packages/`. If the only way work gets done is 
 
 ## Evidence from this repo
 
-_Not checked yet. Add file:line references here._
+Reviewed against source baseline `9db3ed6c406be5c3d9a84720383fcf6b543169e6`.
+
+- **Source observation:** Claude launch constructs a `claude` command and submits it to tmux; Codex launch constructs a `codex` command and sends it through the tmux shell-command adapter: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/adapters/claude-code-adapter.ts:281–296`; `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/adapters/codex-runtime-adapter.ts:383–412`. Thus “doesn't run agents itself” is misleading if it means OpenRig never launches them.
+- **Source observation:** Registration includes `claude-code`, `codex`, `pi`, `stub`, and `terminal`, not only Claude/Codex: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/startup.ts:844–845`. Pi's repository-owned runner spawns the external `pi` process and writes RPC commands to its stdin: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/adapters/pi-runner.ts:568–580`.
+- **Stated intent:** The runner describes itself as a terminal-to-RPC bridge, not a model engine: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/adapters/pi-runner.ts:1–19`.
+- **Inference:** These paths support external ownership of model inference, not an absence of all OpenRig loops. OpenRig's watchdog itself loops over jobs and invokes policy evaluation: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/domain/watchdog-scheduler.ts:130–159`. Supervision is distinct from an LLM/tool inference loop.
 
 ## Notes
+
+**Runtime-unverified / limitations:** No harness was launched. A bounded search of TypeScript and package manifests under `packages` for `Anthropic`, `@anthropic`, `@ai-sdk`, `chat.completions`, `responses.create`, `messages.create`, and `generativelanguage` found installer/test references but no model-client implementation. This is supporting negative evidence, not proof against dynamically loaded or differently named integrations. A universal “no internal inference anywhere” assertion remains unresolved without a complete dependency/plugin and execution-path audit. “Hijacks” and “telco-style” are descriptions, not demonstrated execution semantics; topology terminology is examined in A4, not classified here.
 
