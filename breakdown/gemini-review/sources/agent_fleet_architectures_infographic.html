@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autonomous Agent Fleet Architectures: Cline vs OpenRig & Enterprise Alternatives</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              900: '#1e1b4b',
+            },
+            surface: {
+              800: '#1e293b',
+              850: '#172033',
+              900: '#0f172a',
+              950: '#090d16',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #090d16;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+    
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .glass-card {
+      background: rgba(30, 41, 59, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-card-hover {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-3px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    .gradient-text-cline {
+      background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-openrig {
+      background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-hero {
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+  <header class="sticky top-0 z-50 glass-card border-b border-slate-800/80 bg-surface-950/90">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo / Brand Title -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('page-paradigm')">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div>
+            <span class="text-sm font-black tracking-wider text-white uppercase block">FLEET ARCHITECTURES</span>
+            <span class="text-xs text-slate-400 font-medium tracking-tight">Cline vs OpenRig & Enterprise Factories</span>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs (Desktop) -->
+        <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 text-xs font-semibold" id="desktop-nav">
+          <button onclick="navigateTo('page-paradigm')" id="nav-btn-page-paradigm" class="nav-tab px-3 py-2 rounded-lg transition-all flex items-center space-x-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+            <span>01. The Paradigm Clash</span>
+          </button>
+          <button onclick="navigateTo('page-cline')" id="nav-btn-page-cline" class="nav-tab px-3 py-2 rounded-lg transition-all flex items-center space-x-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+            <span>02. Cline CLI Deep Dive</span>
+          </button>
+          <button onclick="navigateTo('page-openrig')" id="nav-btn-page-openrig" class="nav-tab px-3 py-2 rounded-lg transition-all flex items-center space-x-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+            <span>03. OpenRig Autopsy</span>
+          </button>
+          <button onclick="navigateTo('page-factories')" id="nav-btn-page-factories" class="nav-tab px-3 py-2 rounded-lg transition-all flex items-center space-x-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+            <span>04. Software Factories</span>
+          </button>
+          <button onclick="navigateTo('page-matrix')" id="nav-btn-page-matrix" class="nav-tab px-3 py-2 rounded-lg transition-all flex items-center space-x-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+            <span>05. Interactive Decision Matrix</span>
+          </button>
+        </nav>
+
+        <!-- Quick Action / Toast Trigger -->
+        <div class="flex items-center space-x-3">
+          <button onclick="openModal('quick-cheat-sheet')" class="hidden sm:inline-flex items-center text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-medium transition">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            Summary Sheet
+          </button>
+          <!-- Mobile Menu Toggle -->
+          <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-400 hover:text-white bg-slate-800">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-surface-900/95 px-4 pt-2 pb-4 space-y-1 text-sm font-medium">
+      <button onclick="navigateTo('page-paradigm'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">01. The Paradigm Clash</button>
+      <button onclick="navigateTo('page-cline'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">02. Cline CLI Deep Dive</button>
+      <button onclick="navigateTo('page-openrig'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">03. OpenRig Autopsy</button>
+      <button onclick="navigateTo('page-factories'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">04. Software Factories</button>
+      <button onclick="navigateTo('page-matrix'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">05. Interactive Decision Matrix</button>
+    </div>
+  </header>
+
+  <!-- Notification Banner Toast Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none bg-slate-800 border border-slate-700 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
+    <div id="toast-icon" class="text-indigo-400">ℹ️</div>
+    <span id="toast-message">Message text here</span>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 1: THE PARADIGM CLASH (Overview & Side-by-Side Infographic)          -->
+    <!-- ========================================================================= -->
+    <section id="page-paradigm" class="page-view block transition-opacity duration-300">
+      <!-- Hero Infographic Header -->
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-semibold mb-4">
+          <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+          <span>Architectural Breakdown & Strategy Report</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight gradient-text-hero leading-tight mb-4">
+          The Two Opposing Paradigms of Agent Orchestration
+        </h1>
+        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          Why did OpenRig feel so difficult, and what makes Cline CLI intuitive? Here is the visual dichotomy between an <span class="text-indigo-300 font-semibold">Integrated Agent Loop</span> and a <span class="text-orange-400 font-semibold">Terminal Meta-Harness</span>.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        
+        <!-- Cline CLI Card -->
+        <div class="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden border-t-4 border-t-indigo-500 glass-card-hover flex flex-col justify-between">
+          <div class="absolute -top-16 -right-16 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs uppercase font-extrabold tracking-widest text-indigo-400 px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/20">Integrated Core</span>
+              <span class="text-xs text-slate-400 font-mono-code">Node 22+ / gRPC</span>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">Cline CLI</h2>
+            <p class="text-sm text-slate-300 mb-6 leading-relaxed">
+              An execution engine with its own native cognitive loop, automated Git worktree file isolation, and a visual browser-based Kanban fleet board.
+            </p>
+
+            <!-- Visual Infographic Blueprint -->
+            <div class="bg-surface-950/80 rounded-xl p-4 border border-slate-800 mb-6 font-mono-code text-xs space-y-3">
+              <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800/80">
+                <span class="text-indigo-400 font-bold">ARCHITECTURE FLOW</span>
+                <span>Self-Contained</span>
+              </div>
+              <div class="space-y-2">
+                <div class="p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-800/40 flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-indigo-400">●</span>
+                    <span class="text-slate-200">cline --kanban</span>
+                  </div>
+                  <span class="text-indigo-300 text-[10px] bg-indigo-900/60 px-2 py-0.5 rounded">Visual UI</span>
+                </div>
+                <div class="pl-4 text-slate-500 text-xs">│ ↓ Spawns isolated tasks with dependencies</div>
+                <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-emerald-400">●</span>
+                    <span class="text-slate-200">Git Worktree per Card</span>
+                  </div>
+                  <span class="text-emerald-300 text-[10px] bg-emerald-950/80 px-2 py-0.5 rounded">Zero Collision</span>
+                </div>
+                <div class="pl-4 text-slate-500 text-xs">│ ↓ Direct inference via API / Ollama</div>
+                <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-purple-400">●</span>
+                    <span class="text-slate-200">Cline Core (gRPC Loop)</span>
+                  </div>
+                  <span class="text-purple-300 text-[10px] bg-purple-950/80 px-2 py-0.5 rounded">Native State</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric Badges -->
+            <div class="grid grid-cols-2 gap-3 text-xs mb-6">
+              <div class="bg-surface-900/70 p-3 rounded-xl border border-slate-800">
+                <div class="text-slate-400 mb-1">Human Cognitive Load</div>
+                <div class="text-emerald-400 font-bold text-sm flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  Low (Intuitive Kanban)
+                </div>
+              </div>
+              <div class="bg-surface-900/70 p-3 rounded-xl border border-slate-800">
+                <div class="text-slate-400 mb-1">Workspace Isolation</div>
+                <div class="text-indigo-400 font-bold text-sm">Git Worktree Branches</div>
+              </div>
+              <div class="bg-surface-900/70 p-3 rounded-xl border border-slate-800">
+                <div class="text-slate-400 mb-1">Target Persona</div>
+                <div class="text-slate-200 font-medium">Individual Dev & Lead</div>
+              </div>
+              <div class="bg-surface-900/70 p-3 rounded-xl border border-slate-800">
+                <div class="text-slate-400 mb-1">External Dependencies</div>
+                <div class="text-slate-200 font-medium">None (Self-Contained)</div>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="navigateTo('page-cline')" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition flex items-center justify-center space-x-1.5 shadow-lg shadow-indigo-600/20">
+            <span>Explore Cline CLI Capabilities</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- OpenRig Card -->
+        <div class="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden border-t-4 border-t-orange-500 glass-card-hover flex flex-col justify-between">
+          <div class="absolute -top-16 -right-16 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs uppercase font-extrabold tracking-widest text-orange-400 px-2.5 py-1 rounded-md bg-orange-500/10 border border-orange-500/20">Meta-Harness Control Plane</span>
+              <span class="text-xs text-slate-400 font-mono-code">tmux / Hono / SQLite</span>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">OpenRig</h2>
+            <p class="text-sm text-slate-300 mb-6 leading-relaxed">
+              Not a coding agent itself, but a supervisor daemon that wraps host <code class="text-orange-300 bg-orange-950/40 px-1 py-0.5 rounded text-xs">tmux</code> sessions running Claude Code or Codex CLI with telco-style routing.
+            </p>
+
+            <!-- Visual Infographic Blueprint -->
+            <div class="bg-surface-950/80 rounded-xl p-4 border border-slate-800 mb-6 font-mono-code text-xs space-y-3">
+              <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800/80">
+                <span class="text-orange-400 font-bold">ARCHITECTURE FLOW</span>
+                <span>Supervisory Wrapper</span>
+              </div>
+              <div class="space-y-2">
+                <div class="p-2.5 rounded-lg bg-orange-950/30 border border-orange-800/40 flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-orange-400">●</span>
+                    <span class="text-slate-200">OpenRig Daemon (Hono/SQLite)</span>
+                  </div>
+                  <span class="text-orange-300 text-[10px] bg-orange-900/60 px-2 py-0.5 rounded">Topology Engine</span>
+                </div>
+                <div class="pl-4 text-slate-500 text-xs">│ ↓ Injects keystrokes / commands into terminal</div>
+                <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-yellow-400">●</span>
+                    <span class="text-slate-200">Host tmux Multiplexer</span>
+                  </div>
+                  <span class="text-yellow-300 text-[10px] bg-yellow-950/80 px-2 py-0.5 rounded">Session Sprawl</span>
+                </div>
+                <div class="pl-4 text-slate-500 text-xs">│ ↓ Executes third-party CLI agents</div>
+                <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-rose-400">●</span>
+                    <span class="text-slate-200">Claude Code / Codex CLI</span>
+                  </div>
+                  <span class="text-rose-300 text-[10px] bg-rose-950/80 px-2 py-0.5 rounded">External Auth</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric Badges -->
+            <div class="grid grid-cols-2 gap-3 text-xs mb-6">
+              <div class="bg-surface-900/70 p-3 rounded-xl border border-slate-800">
+                <div class="text-slate-400 mb-1">Human Cognitive Load</div>
+                <div class="text-rose-400 font-bold text-sm flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                  Very High (Telco Lexicon)
+                </div>
+              </div>
+              <div class="bg-surface-900/70 p-3 rounded-xl border border-slate-800">
+                <div class="text-slate-400 mb-1">Workspace Isolation</div>
+                <div class="text-amber-400 font-bold text-sm">Multiplexed Panes (Shared)</div>
+              </div>
+              <div class="bg-surface-900/70 p-3 rounded-xl border border-slate-800">
+                <div class="text-slate-400 mb-1">Target Persona</div>
+                <div class="text-slate-200 font-medium">CLI Researchers / Power Users</div>
+              </div>
+              <div class="bg-surface-900/70 p-3 rounded-xl border border-slate-800">
+                <div class="text-slate-400 mb-1">External Dependencies</div>
+                <div class="text-rose-300 font-medium">tmux + Claude/Codex logins</div>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="navigateTo('page-openrig')" class="w-full py-2.5 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs transition flex items-center justify-center space-x-1.5 shadow-lg shadow-orange-600/20">
+            <span>Diagnose Why OpenRig is Confusing</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 sm:p-8 mb-12">
+        <h3 class="text-lg font-bold text-white mb-6 flex items-center">
+          <svg class="w-5 h-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          At-A-Glance Reality Check
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="border-l-2 border-indigo-500 pl-4 py-1">
+            <div class="text-2xl font-black text-white">100%</div>
+            <div class="text-xs font-semibold text-indigo-400 uppercase tracking-wider mt-1">Self-Contained (Cline)</div>
+            <p class="text-slate-400 text-xs mt-1">One binary handles inference, workspace git isolation, tool approval, and web UI.</p>
+          </div>
+          <div class="border-l-2 border-orange-500 pl-4 py-1">
+            <div class="text-2xl font-black text-white">3 Layers</div>
+            <div class="text-xs font-semibold text-orange-400 uppercase tracking-wider mt-1">Indirection (OpenRig)</div>
+            <p class="text-slate-400 text-xs mt-1">Host CLI ➔ SQLite Daemon ➔ OS tmux pane ➔ Claude Code CLI process.</p>
+          </div>
+          <div class="border-l-2 border-emerald-500 pl-4 py-1">
+            <div class="text-2xl font-black text-white">Zero Collision</div>
+            <div class="text-xs font-semibold text-emerald-400 uppercase tracking-wider mt-1">Git Worktrees</div>
+            <p class="text-slate-400 text-xs mt-1">Cline spins isolated disk directories automatically per task card to protect master.</p>
+          </div>
+          <div class="border-l-2 border-purple-500 pl-4 py-1">
+            <div class="text-2xl font-black text-white">Docker / k8s</div>
+            <div class="text-xs font-semibold text-purple-400 uppercase tracking-wider mt-1">Enterprise Standard</div>
+            <p class="text-slate-400 text-xs mt-1">Software factories (OpenHands) isolate fleet agents in real microVM containers, not tmux.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Navigator to Next Section -->
+      <div class="flex justify-end">
+        <button onclick="navigateTo('page-cline')" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center space-x-2 transition">
+          <span>Next: Explore Cline CLI Deep Dive</span>
+          <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 2: CLINE CLI DEEP DIVE (Visual Fleet Architecture)                  -->
+    <!-- ========================================================================= -->
+    <section id="page-cline" class="page-view hidden transition-opacity duration-300">
+      <div class="max-w-4xl mx-auto mb-10">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-semibold mb-3">
+          <span>Native Agent Runtime & Fleet Kanban</span>
+        </div>
+        <h2 class="text-3xl font-extrabold text-white mb-3">How Cline CLI Operates: Simplicity by Design</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          Cline CLI builds directly upon <strong>Cline Core</strong>—the same battle-tested engine powering the popular VS Code extension. By delegating task fleet concurrency to Git worktrees and a visual local Kanban board, it removes operational guesswork.
+        </p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 sm:p-8 mb-8 border border-slate-800">
+        <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider mb-6 flex items-center">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 mr-2"></span>
+          Cline Architecture Blueprint
+        </h3>
+
+        <!-- Interactive Diagram Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono-code mb-8">
+          <div class="bg-surface-900 border border-slate-800 p-4 rounded-xl">
+            <div class="text-indigo-400 font-bold mb-2">1. INITIATION</div>
+            <div class="bg-surface-950 p-2.5 rounded border border-slate-800 text-slate-300 mb-2">
+              $ cline --kanban
+            </div>
+            <p class="font-sans text-slate-400 text-[11px] leading-relaxed">
+              Launches local web server presenting visual board. Developer posts requirements as cards or triggers autonomous coordinator agents.
+            </p>
+          </div>
+
+          <div class="bg-surface-900 border border-slate-800 p-4 rounded-xl">
+            <div class="text-cyan-400 font-bold mb-2">2. ISOLATION ENGINE</div>
+            <div class="bg-surface-950 p-2.5 rounded border border-slate-800 text-emerald-400 mb-2">
+              git worktree add task-01
+            </div>
+            <p class="font-sans text-slate-400 text-[11px] leading-relaxed">
+              Creates isolated file system folder for each agent task. Parallel tasks never mutate each other's working trees or corrupt branches.
+            </p>
+          </div>
+
+          <div class="bg-surface-900 border border-slate-800 p-4 rounded-xl">
+            <div class="text-purple-400 font-bold mb-2">3. SUPERVISION & AUDIT</div>
+            <div class="bg-surface-950 p-2.5 rounded border border-slate-800 text-purple-300 mb-2">
+              --hook-command "validate.sh"
+            </div>
+            <p class="font-sans text-slate-400 text-[11px] leading-relaxed">
+              Every tool execution passes through deterministic policy hooks. Changes are inspected as unified visual diffs before merging.
+            </p>
+          </div>
+        </div>
+
+        <!-- Interactive Kanban Simulator Component -->
+        <div class="bg-surface-950 rounded-xl p-5 border border-slate-800/80">
+          <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-800 text-xs gap-2">
+            <div class="flex items-center space-x-2">
+              <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+              <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+              <span class="font-bold text-slate-200 ml-2">Cline Local Kanban Simulator (Click Cards to Inspect)</span>
+            </div>
+            <div class="text-slate-400 font-mono-code text-[11px]">
+              Active Worktrees: <span id="active-worktrees-count" class="text-indigo-400 font-bold">2</span>
+            </div>
+          </div>
+
+          <!-- Board Columns -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 font-sans">
+            <!-- Backlog / Queued -->
+            <div class="bg-surface-900/60 p-3 rounded-xl border border-slate-800/60">
+              <div class="flex justify-between items-center text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">
+                <span>Queued (1)</span>
+                <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">Wait</span>
+              </div>
+              <div onclick="selectClineCard('card-3')" class="p-3 bg-surface-850 rounded-lg border border-slate-700/70 hover:border-indigo-500/50 cursor-pointer transition mb-2">
+                <div class="flex items-center justify-between text-[11px] mb-1">
+                  <span class="text-indigo-400 font-mono-code font-bold">#TASK-104</span>
+                  <span class="text-amber-400 text-[10px]">Blocked on #102</span>
+                </div>
+                <div class="text-xs font-semibold text-slate-200">E2E Playwright Suite</div>
+                <div class="text-[11px] text-slate-400 mt-1">Branch: feat/playwright-e2e</div>
+              </div>
+            </div>
+
+            <!-- In Progress -->
+            <div class="bg-surface-900/60 p-3 rounded-xl border border-slate-800/60">
+              <div class="flex justify-between items-center text-xs font-bold text-indigo-400 mb-3 uppercase tracking-wider">
+                <span>Running in Worktree (2)</span>
+                <span class="text-[10px] bg-indigo-900/50 text-indigo-300 px-1.5 py-0.5 rounded animate-pulse">Active</span>
+              </div>
+              
+              <div onclick="selectClineCard('card-1')" id="sim-card-1" class="p-3 bg-surface-850 rounded-lg border border-indigo-500/80 cursor-pointer transition mb-2 shadow-md shadow-indigo-500/10">
+                <div class="flex items-center justify-between text-[11px] mb-1">
+                  <span class="text-indigo-400 font-mono-code font-bold">#TASK-102</span>
+                  <span class="text-cyan-400 text-[10px] flex items-center">
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 mr-1 animate-ping"></span> Writing Code
+                  </span>
+                </div>
+                <div class="text-xs font-semibold text-white">Auth Middleware Migration</div>
+                <div class="text-[11px] text-slate-400 mt-1">Worktree: <span class="font-mono-code text-slate-300">.cline/wt-auth-jwt</span></div>
+              </div>
+
+              <div onclick="selectClineCard('card-2')" id="sim-card-2" class="p-3 bg-surface-850 rounded-lg border border-slate-700/70 hover:border-indigo-500/50 cursor-pointer transition">
+                <div class="flex items-center justify-between text-[11px] mb-1">
+                  <span class="text-indigo-400 font-mono-code font-bold">#TASK-103</span>
+                  <span class="text-purple-400 text-[10px]">Running Tests</span>
+                </div>
+                <div class="text-xs font-semibold text-white">Stripe Webhook Handler</div>
+                <div class="text-[11px] text-slate-400 mt-1">Worktree: <span class="font-mono-code text-slate-300">.cline/wt-stripe</span></div>
+              </div>
+            </div>
+
+            <!-- Review / Done -->
+            <div class="bg-surface-900/60 p-3 rounded-xl border border-slate-800/60">
+              <div class="flex justify-between items-center text-xs font-bold text-emerald-400 mb-3 uppercase tracking-wider">
+                <span>Diff Ready for Merge (1)</span>
+                <span class="text-[10px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded">Ready</span>
+              </div>
+              <div onclick="selectClineCard('card-done')" class="p-3 bg-surface-850 rounded-lg border border-emerald-500/40 hover:border-emerald-500 cursor-pointer transition">
+                <div class="flex items-center justify-between text-[11px] mb-1">
+                  <span class="text-emerald-400 font-mono-code font-bold">#TASK-101</span>
+                  <span class="text-emerald-300 text-[10px]">100% Tests Passed</span>
+                </div>
+                <div class="text-xs font-semibold text-white">User Schema Validation</div>
+                <div class="text-[11px] text-slate-400 mt-1">Diff: +142 / -18 lines</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Details Modal/Inspector inside simulator -->
+          <div id="cline-card-details" class="mt-4 p-4 rounded-lg bg-surface-900 border border-slate-800 font-sans text-xs">
+            <div class="flex items-center justify-between text-slate-300 mb-2">
+              <span class="font-bold text-white text-sm" id="detail-card-title">Task #102: Auth Middleware Migration</span>
+              <span class="px-2 py-0.5 rounded bg-indigo-900/60 text-indigo-300 text-[10px]" id="detail-card-status">RUNNING</span>
+            </div>
+            <p class="text-slate-400 mb-3" id="detail-card-desc">
+              Cline agent is rewriting express sessions to JWT cookie tokens in an isolated git worktree branch `feat/jwt-tokens`. Master branch files are completely untouched during this operation.
+            </p>
+            <div class="bg-surface-950 p-2.5 rounded border border-slate-800/80 font-mono-code text-[11px] text-slate-300 flex items-center justify-between">
+              <span>Isolation Path: <span class="text-cyan-400" id="detail-card-path">/projects/app/.git/worktrees/wt-auth-jwt</span></span>
+              <span class="text-emerald-400 font-bold" id="detail-card-badge">Zero Branch Conflict</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Grid for Cline CLI -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="glass-card p-5 rounded-xl border border-slate-800">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold mb-3">1</div>
+          <h4 class="text-sm font-bold text-white mb-1">Zero Config Terminal CLI</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Run <code class="text-indigo-300 bg-slate-900 px-1 py-0.5 rounded">cline "prompt"</code> directly in bash or zsh. Supports Zen background execution and pure headless JSON streaming for CI/CD pipelines.
+          </p>
+        </div>
+
+        <div class="glass-card p-5 rounded-xl border border-slate-800">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold mb-3">2</div>
+          <h4 class="text-sm font-bold text-white mb-1">Coordinator Agent Hierarchy</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            A lead coordinator agent breaks epics down into visual Kanban cards, assigns sub-agents, and gathers outputs through an asynchronous mailbox queue.
+          </p>
+        </div>
+
+        <div class="glass-card p-5 rounded-xl border border-slate-800">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold mb-3">3</div>
+          <h4 class="text-sm font-bold text-white mb-1">Granular Approval Hooks</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Use <code class="text-emerald-300 bg-slate-900 px-1 py-0.5 rounded">--hook-command</code> to pipe every shell tool or file edit through organizational security scanners or human approval gates before execution.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="navigateTo('page-paradigm')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
+          ← Back to Paradigm Clash
+        </button>
+        <button onclick="navigateTo('page-openrig')" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold flex items-center space-x-2">
+          <span>Next: Deconstruct OpenRig's Complexity</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 3: OPENRIG AUTOPSY (Why is it so difficult?)                        -->
+    <!-- ========================================================================= -->
+    <section id="page-openrig" class="page-view hidden transition-opacity duration-300">
+      <div class="max-w-4xl mx-auto mb-10">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-semibold mb-3">
+          <svg class="w-3.5 h-3.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Root Cause Architectural Diagnostics</span>
+        </div>
+        <h2 class="text-3xl font-extrabold text-white mb-3">The OpenRig Autopsy: Why It Feels So Difficult</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          If you struggled to understand OpenRig from its documentation, <strong>you are not alone</strong>. The friction isn't your fault—it is the direct consequence of 4 deliberate architectural design decisions that prioritize machine-agent governance and low-level terminal multiplexing over human ergonomics.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        
+        <!-- Friction Layer 1 -->
+        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-rose-500 relative">
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-xs">#1</span>
+            <h3 class="text-base font-bold text-white">The "Dual-User" Abstraction Paradox</h3>
+          </div>
+          <p class="text-slate-300 text-xs leading-relaxed mb-4">
+            OpenRig’s CLI is explicitly designed to be driven by <em>both human developers AND autonomous AI agents</em>. Because commands are built for automated agent consumption, documentation frequently tells humans: <em>"Instruct your agent to run the rig CLI commands for you."</em>
+          </p>
+          <div class="bg-surface-950 p-3 rounded-xl border border-slate-800 text-[11px] font-mono-code text-rose-300/90">
+            <span class="text-slate-500">// Friction point:</span><br>
+            A human wanting to configure a fleet must learn machine-targeted transaction syntax instead of intuitive UI buttons or natural declarative YAML.
+          </div>
+        </div>
+
+        <!-- Friction Layer 2 -->
+        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-orange-500 relative">
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-xs">#2</span>
+            <h3 class="text-base font-bold text-white">Bureaucratic & Telecommunications Jargon</h3>
+          </div>
+          <p class="text-slate-300 text-xs leading-relaxed mb-4">
+            Instead of standard software engineering concepts (repos, branches, PRs, task cards), OpenRig forces you to master enterprise-telecom abstractions:
+          </p>
+          <div class="grid grid-cols-3 gap-2 text-[10px] font-mono-code mb-2">
+            <div class="p-2 bg-surface-950 rounded border border-slate-800 text-center">
+              <span class="text-orange-400 font-bold block">RIG</span>
+              <span class="text-slate-400">Team project scope</span>
+            </div>
+            <div class="p-2 bg-surface-950 rounded border border-slate-800 text-center">
+              <span class="text-yellow-400 font-bold block">POD</span>
+              <span class="text-slate-400">Bounded context group</span>
+            </div>
+            <div class="p-2 bg-surface-950 rounded border border-slate-800 text-center">
+              <span class="text-cyan-400 font-bold block">SEAT</span>
+              <span class="text-slate-400">Addressable durable role</span>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400">
+            If an agent process crashes, its "Seat" still exists in the SQLite graph, forcing the human to distinguish between a "Logical Seat" and an "OS Process".
+          </p>
+        </div>
+
+        <!-- Friction Layer 3 -->
+        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-yellow-500 relative">
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center font-bold text-xs">#3</span>
+            <h3 class="text-base font-bold text-white">Fragile OS Terminal Multiplexing (`tmux`)</h3>
+          </div>
+          <p class="text-slate-300 text-xs leading-relaxed mb-4">
+            Instead of running containers (Docker) or pure Node scripts, OpenRig relies on hijacking host terminal sessions using <code class="text-yellow-300 bg-slate-900 px-1 py-0.5 rounded font-mono-code">tmux</code> or <code class="text-yellow-300 bg-slate-900 px-1 py-0.5 rounded font-mono-code">cmux</code>.
+          </p>
+          <ul class="text-[11px] text-slate-300 space-y-1.5 list-disc pl-4">
+            <li>Inter-agent communication works by injecting raw strings into peer terminal windows.</li>
+            <li>Requires pre-authenticated Claude Code / Codex CLIs already logged into your machine.</li>
+            <li>Starter rigs boot 4 Claude instances at once, triggering API tier rate-limits instantly.</li>
+          </ul>
+        </div>
+
+        <!-- Friction Layer 4 -->
+        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-purple-500 relative">
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs">#4</span>
+            <h3 class="text-base font-bold text-white">Deliberate Bureaucratic Overhead</h3>
+          </div>
+          <p class="text-slate-300 text-xs leading-relaxed mb-4">
+            OpenRig was built to stop rogue AI swarms from hallucinating. To solve this, it mandates strict task claim transactions, verification contracts, watchdog checks, and markdown <code class="text-purple-300 bg-slate-900 px-1 py-0.5 rounded font-mono-code">CULTURE.md</code> laws.
+          </p>
+          <div class="bg-surface-950 p-2.5 rounded-xl border border-slate-800 text-[11px] text-slate-300">
+            <strong>The Cost:</strong> While this prevents systemic drift in long-running research experiments, it imposes suffocating administrative drag on a developer who just wants to build software.
+          </div>
+        </div>
+
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 sm:p-8 mb-8 border border-slate-800">
+        <div class="text-center max-w-2xl mx-auto mb-8">
+          <h3 class="text-xl font-bold text-white mb-2">Interactive Reality Check: "Should You Use OpenRig?"</h3>
+          <p class="text-slate-400 text-xs">
+            Answer these 3 quick questions to determine if your engineering fleet genuinely benefits from OpenRig's meta-harness architecture.
+          </p>
+        </div>
+
+        <div class="max-w-xl mx-auto space-y-4 font-sans text-xs" id="quiz-container">
+          <!-- Question 1 -->
+          <div class="bg-surface-900 p-4 rounded-xl border border-slate-800">
+            <div class="font-bold text-white mb-2">1. What are your agents executing inside?</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="setQuizAnswer(1, 'tmux', this)" class="quiz-btn-1 py-2 px-3 rounded-lg bg-surface-950 border border-slate-700 hover:border-indigo-400 text-slate-300 text-left transition">
+                Interactive tmux terminal sessions with Claude Code CLI
+              </button>
+              <button onclick="setQuizAnswer(1, 'docker', this)" class="quiz-btn-1 py-2 px-3 rounded-lg bg-surface-950 border border-slate-700 hover:border-indigo-400 text-slate-300 text-left transition">
+                Direct API / Sandboxed Docker containers / Local files
+              </button>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="bg-surface-900 p-4 rounded-xl border border-slate-800">
+            <div class="font-bold text-white mb-2">2. How do you want to manage concurrent agent tasks?</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="setQuizAnswer(2, 'seat', this)" class="quiz-btn-2 py-2 px-3 rounded-lg bg-surface-950 border border-slate-700 hover:border-indigo-400 text-slate-300 text-left transition">
+                Durable addressable seats with transactional dispatch queues
+              </button>
+              <button onclick="setQuizAnswer(2, 'kanban', this)" class="quiz-btn-2 py-2 px-3 rounded-lg bg-surface-950 border border-slate-700 hover:border-indigo-400 text-slate-300 text-left transition">
+                Visual Kanban boards, Git worktrees, and PR reviews
+              </button>
+            </div>
+          </div>
+
+          <!-- Result output -->
+          <div id="quiz-result" class="p-4 rounded-xl bg-indigo-950/40 border border-indigo-700/60 hidden transition">
+            <div class="flex items-center space-x-2 text-indigo-300 font-bold mb-1">
+              <span id="quiz-result-title">Recommendation</span>
+            </div>
+            <p class="text-slate-300 text-xs leading-relaxed" id="quiz-result-body">
+              Recommendation content will populate here.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="navigateTo('page-cline')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
+          ← Back to Cline CLI
+        </button>
+        <button onclick="navigateTo('page-factories')" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center space-x-2">
+          <span>Next: Discover Scalable Software Factories</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 4: SOFTWARE FACTORIES & EASIER ALTERNATIVES                           -->
+    <!-- ========================================================================= -->
+    <section id="page-factories" class="page-view hidden transition-opacity duration-300">
+      <div class="max-w-4xl mx-auto mb-10">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          <span>Production-Ready Frameworks</span>
+        </div>
+        <h2 class="text-3xl font-extrabold text-white mb-3">Better, Easier Software Factory Alternatives</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          If you want to orchestrate large fleets of coding agents without wrestling with OpenRig's terminal multiplexing and complex distributed jargon, three established paradigms lead the industry.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+        
+        <!-- Factory 1: OpenHands -->
+        <div class="glass-card rounded-2xl p-6 border-t-4 border-t-purple-500 flex flex-col justify-between glass-card-hover">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] font-extrabold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20 uppercase tracking-wider">Enterprise Factory</span>
+              <span class="text-xs text-slate-400 font-mono-code">Docker / k8s</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">OpenHands</h3>
+            <p class="text-slate-300 text-xs leading-relaxed mb-4">
+              The de facto standard for open-source autonomous software factories. Built around an <strong>Event-Sourced Agent SDK</strong> and sandboxed container execution.
+            </p>
+
+            <div class="bg-surface-950 p-3 rounded-xl border border-slate-800 space-y-2 text-xs font-mono-code mb-4">
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-purple-400 mr-2">✔</span> Sandboxed in microVMs / Docker
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-purple-400 mr-2">✔</span> Event-Sourced audit logs & replays
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-purple-400 mr-2">✔</span> Native GitHub / Linear PR pipeline
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-purple-400 mr-2">✔</span> CAID Multi-Agent git dependency trees
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-800">
+            <span class="text-[11px] text-slate-400 block mb-1">Best suited for:</span>
+            <span class="text-xs font-semibold text-purple-300">Scalable company-wide autonomous fleets requiring isolated container security.</span>
+          </div>
+        </div>
+
+        <!-- Factory 2: MetaGPT -->
+        <div class="glass-card rounded-2xl p-6 border-t-4 border-t-cyan-500 flex flex-col justify-between glass-card-hover">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] font-extrabold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase tracking-wider">Assembly Line SOPs</span>
+              <span class="text-xs text-slate-400 font-mono-code">Document-Driven</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">MetaGPT</h3>
+            <p class="text-slate-300 text-xs leading-relaxed mb-4">
+              Models software development as a deterministic factory assembly line governed by corporate <strong>Standard Operating Procedures (SOPs)</strong>.
+            </p>
+
+            <div class="bg-surface-950 p-3 rounded-xl border border-slate-800 space-y-2 text-xs font-mono-code mb-4">
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-cyan-400 mr-2">✔</span> Product Manager ➔ PRD generation
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-cyan-400 mr-2">✔</span> Architect ➔ System UML & Design
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-cyan-400 mr-2">✔</span> Project Manager ➔ Tasks breakdown
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-cyan-400 mr-2">✔</span> Engineers & QA ➔ Code + Unit Tests
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-800">
+            <span class="text-[11px] text-slate-400 block mb-1">Best suited for:</span>
+            <span class="text-xs font-semibold text-cyan-300">Greenfield repository generation from simple natural-language specs with zero cognitive load.</span>
+          </div>
+        </div>
+
+        <!-- Factory 3: CrewAI -->
+        <div class="glass-card rounded-2xl p-6 border-t-4 border-t-emerald-500 flex flex-col justify-between glass-card-hover">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 uppercase tracking-wider">Role Delegation</span>
+              <span class="text-xs text-slate-400 font-mono-code">Declarative YAML</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">CrewAI</h3>
+            <p class="text-slate-300 text-xs leading-relaxed mb-4">
+              The simplest framework for multi-agent role-playing teams. High-level manager agents dynamically delegate subtasks via clean YAML declarations.
+            </p>
+
+            <div class="bg-surface-950 p-3 rounded-xl border border-slate-800 space-y-2 text-xs font-mono-code mb-4">
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-emerald-400 mr-2">✔</span> Pure Python runtime, zero daemons
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-emerald-400 mr-2">✔</span> Human-in-the-loop approvals built-in
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-emerald-400 mr-2">✔</span> Hierarchical or sequential workflows
+              </div>
+              <div class="flex items-center text-slate-300 text-[11px]">
+                <span class="text-emerald-400 mr-2">✔</span> Huge library of pre-built tools
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-800">
+            <span class="text-[11px] text-slate-400 block mb-1">Best suited for:</span>
+            <span class="text-xs font-semibold text-emerald-300">Custom business automation, data research, and flexible developer orchestration scripts.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 sm:p-8 mb-8 border border-slate-800">
+        <h3 class="text-base font-bold text-white mb-2">How Scalable Software Factories Avoid the "OpenRig Trap"</h3>
+        <p class="text-slate-400 text-xs mb-6">
+          Compare how OpenHands, MetaGPT, and Cline CLI resolve the four biggest operational headaches:
+        </p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left text-slate-300">
+            <thead class="text-[11px] uppercase tracking-wider text-slate-400 bg-surface-900 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-4">Challenge</th>
+                <th class="py-3 px-4 text-orange-400">OpenRig Approach</th>
+                <th class="py-3 px-4 text-indigo-400">Cline CLI Approach</th>
+                <th class="py-3 px-4 text-purple-400">OpenHands Factory Approach</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80 font-mono-code text-[11px]">
+              <tr>
+                <td class="py-3.5 px-4 font-sans font-semibold text-white">Execution Isolation</td>
+                <td class="py-3.5 px-4 text-slate-400">tmux windows on host OS (shared disk)</td>
+                <td class="py-3.5 px-4 text-emerald-400">Git worktree branches per card</td>
+                <td class="py-3.5 px-4 text-purple-300">Sandboxed microVM / Docker container</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-4 font-sans font-semibold text-white">Observability & UI</td>
+                <td class="py-3.5 px-4 text-slate-400">tmux TUI & machine JSON logs</td>
+                <td class="py-3.5 px-4 text-indigo-300">Browser Kanban & Inline diff viewer</td>
+                <td class="py-3.5 px-4 text-purple-300">Agent Canvas web UI + Linear / GitHub</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-4 font-sans font-semibold text-white">State Recovery</td>
+                <td class="py-3.5 px-4 text-slate-400">Non-blocking snapshots (risk of loss)</td>
+                <td class="py-3.5 px-4 text-slate-300">Git commits & task checkpoints</td>
+                <td class="py-3.5 px-4 text-purple-300">Immutable event-sourced append logs</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-4 font-sans font-semibold text-white">External Auth</td>
+                <td class="py-3.5 px-4 text-rose-400">Requires host Claude / Codex CLI logins</td>
+                <td class="py-3.5 px-4 text-emerald-400">Direct API keys, Ollama, OpenRouter</td>
+                <td class="py-3.5 px-4 text-emerald-400">Enterprise LLM proxy / Key rotation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="navigateTo('page-openrig')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
+          ← Back to OpenRig Autopsy
+        </button>
+        <button onclick="navigateTo('page-matrix')" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center space-x-2">
+          <span>Next: Full Interactive Decision Matrix</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 5: INTERACTIVE DECISION MATRIX & RADAR EVALUATION                     -->
+    <!-- ========================================================================= -->
+    <section id="page-matrix" class="page-view hidden transition-opacity duration-300">
+      <div class="max-w-4xl mx-auto mb-10 text-center">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-semibold mb-3">
+          <span>Fleet Evaluation Matrix</span>
+        </div>
+        <h2 class="text-3xl font-extrabold text-white mb-3">Executive Decision Matrix & Architecture Fit</h2>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">
+          Compare cognitive load, setup friction, security isolation, and enterprise scalability across all major frameworks.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+        
+        <!-- Radar Chart Container -->
+        <div class="glass-card rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-bold text-white flex items-center">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 mr-2"></span>
+                Multi-Vector Framework Radar
+              </h3>
+              <span class="text-[11px] text-slate-400">Scale: 1 (Lowest) - 10 (Highest)</span>
+            </div>
+            <div class="relative h-72 w-full flex items-center justify-center">
+              <canvas id="architectureRadarChart"></canvas>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-400 pt-3 border-t border-slate-800 text-center">
+            Note: For <em>Cognitive Friction</em>, lower score indicates easier human usability.
+          </div>
+        </div>
+
+        <!-- Dynamic Recommendation Calculator -->
+        <div class="glass-card rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-white mb-2 flex items-center">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2"></span>
+              Find Your Ideal Fleet Stack
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">
+              Select your primary constraints to see the architecturally recommended orchestrator.
+            </p>
+
+            <div class="space-y-3 font-sans text-xs">
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">What is your team size and operational scope?</label>
+                <select id="calc-team" onchange="calculateRecommendation()" class="w-full bg-surface-900 border border-slate-700 rounded-lg p-2.5 text-slate-200">
+                  <option value="solo">Solo Developer / Individual Contributor</option>
+                  <option value="small">Small Engineering Squad (2-10 devs)</option>
+                  <option value="enterprise">Enterprise Software Org / Factory Fleet</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">What is your security requirement?</label>
+                <select id="calc-security" onchange="calculateRecommendation()" class="w-full bg-surface-900 border border-slate-700 rounded-lg p-2.5 text-slate-200">
+                  <option value="local">Local filesystem with Git Branch Isolation is fine</option>
+                  <option value="strict">Strict containerized microVM isolation (Zero host access)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-300 font-semibold mb-1">What is your desired primary interface?</label>
+                <select id="calc-ui" onchange="calculateRecommendation()" class="w-full bg-surface-900 border border-slate-700 rounded-lg p-2.5 text-slate-200">
+                  <option value="kanban">Visual Kanban Board + Terminal CLI</option>
+                  <option value="web-control">Full Web Control Center + GitHub Integration</option>
+                  <option value="python">Clean Python Code / YAML definitions</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Output Card -->
+          <div id="recommendation-badge" class="mt-4 p-4 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-xs">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-indigo-400 font-extrabold uppercase tracking-wider text-[11px]">Best Match</span>
+              <span class="text-slate-400 font-mono-code text-[10px]" id="rec-secondary">Alternative: OpenHands</span>
+            </div>
+            <div class="text-base font-bold text-white" id="rec-winner">Cline CLI + Kanban</div>
+            <p class="text-slate-300 text-xs mt-1" id="rec-explanation">
+              Offers the fastest onboarding, zero daemon friction, and automatic Git worktree isolation for parallel tasks without host contamination.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 sm:p-8 mb-8 border border-slate-800">
+        <h3 class="text-base font-bold text-white mb-4">Complete Framework Synthesis</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left text-slate-300">
+            <thead class="text-[11px] uppercase tracking-wider text-slate-400 bg-surface-900 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-4">Framework</th>
+                <th class="py-3 px-4">Core Model</th>
+                <th class="py-3 px-4">Cognitive Friction</th>
+                <th class="py-3 px-4">Workspace Isolation</th>
+                <th class="py-3 px-4">Fleet Orchestration</th>
+                <th class="py-3 px-4">Best When...</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80 font-sans text-xs">
+              <tr class="hover:bg-slate-800/40 transition">
+                <td class="py-3.5 px-4 font-bold text-indigo-400">Cline CLI</td>
+                <td class="py-3.5 px-4">Node gRPC Daemon</td>
+                <td class="py-3.5 px-4 text-emerald-400 font-semibold">Low (Familiar Kanban)</td>
+                <td class="py-3.5 px-4">Git Worktree Per Card</td>
+                <td class="py-3.5 px-4">Coordinator Agent + Cards</td>
+                <td class="py-3.5 px-4 text-slate-300">You want parallel local feature building without setup headaches.</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40 transition">
+                <td class="py-3.5 px-4 font-bold text-orange-400">OpenRig</td>
+                <td class="py-3.5 px-4">tmux Meta-Harness</td>
+                <td class="py-3.5 px-4 text-rose-400 font-semibold">Very High (Telecom/Seats)</td>
+                <td class="py-3.5 px-4">Multiplexed Terminal Panes</td>
+                <td class="py-3.5 px-4">Addressable Seats & Queues</td>
+                <td class="py-3.5 px-4 text-slate-300">You are researching multi-CLI agents running in terminal sessions.</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40 transition">
+                <td class="py-3.5 px-4 font-bold text-purple-400">OpenHands</td>
+                <td class="py-3.5 px-4">Event-Sourced SDK</td>
+                <td class="py-3.5 px-4 text-cyan-400 font-semibold">Moderate (Standard Web)</td>
+                <td class="py-3.5 px-4">Docker / MicroVM Sandboxes</td>
+                <td class="py-3.5 px-4">Agent Canvas & GitHub PRs</td>
+                <td class="py-3.5 px-4 text-slate-300">Building an enterprise software factory with rigorous security.</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40 transition">
+                <td class="py-3.5 px-4 font-bold text-cyan-400">MetaGPT</td>
+                <td class="py-3.5 px-4">Corporate SOPs</td>
+                <td class="py-3.5 px-4 text-emerald-400 font-semibold">Low (Predictable SOPs)</td>
+                <td class="py-3.5 px-4">Output Directory Trees</td>
+                <td class="py-3.5 px-4">Sequential Role Handoff</td>
+                <td class="py-3.5 px-4 text-slate-300">Scaffolding greenfield applications with PRD and architecture docs.</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40 transition">
+                <td class="py-3.5 px-4 font-bold text-emerald-400">CrewAI</td>
+                <td class="py-3.5 px-4">Role-Playing Crews</td>
+                <td class="py-3.5 px-4 text-emerald-400 font-semibold">Low (Declarative YAML)</td>
+                <td class="py-3.5 px-4">Python Environment Tools</td>
+                <td class="py-3.5 px-4">Hierarchical Manager LLM</td>
+                <td class="py-3.5 px-4 text-slate-300">Orchestrating modular multi-agent scripts and business workflows.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="navigateTo('page-factories')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
+          ← Back to Software Factories
+        </button>
+        <button onclick="navigateTo('page-paradigm')" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-400 text-xs font-semibold flex items-center space-x-2 border border-slate-700">
+          <span>Return to Overview</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="quick-cheat-sheet" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full rounded-2xl p-6 border border-slate-700 shadow-2xl relative">
+      <button onclick="closeModal('quick-cheat-sheet')" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">✦</div>
+        <h3 class="text-lg font-bold text-white">TL;DR: The Agent Fleet Cheat Sheet</h3>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed font-sans mb-6">
+        <div class="p-3 bg-surface-900 rounded-xl border border-slate-800">
+          <strong class="text-indigo-400 block mb-1">Why Cline CLI is easy:</strong>
+          It functions like a modern human tool. You install it, run <code class="font-mono-code text-indigo-300">cline --kanban</code>, and watch tasks execute across safe Git worktrees without touching your master branch.
+        </div>
+        <div class="p-3 bg-surface-900 rounded-xl border border-slate-800">
+          <strong class="text-orange-400 block mb-1">Why OpenRig feels impossible:</strong>
+          It doesn't run agents itself; it hijacks host <code class="font-mono-code text-orange-300">tmux</code> sessions running Claude Code or Codex. It replaces standard developer terms with telecom abstractions (Rigs, Pods, Seats) and expects AI agents to execute its CLI commands.
+        </div>
+        <div class="p-3 bg-surface-900 rounded-xl border border-slate-800">
+          <strong class="text-purple-400 block mb-1">The best software factory for enterprise fleets:</strong>
+          <strong>OpenHands</strong>. It runs agents in actual Docker containers or microVMs, uses an event-sourced architecture for deterministic audit trails, and plugs directly into GitHub and Linear.
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button onclick="closeModal('quick-cheat-sheet')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">
+          Got It, Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-slate-800/80 bg-surface-950 py-6 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <span>Autonomous Agent Architecture Report & Evaluation</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button onclick="showToast('Data verified against official documentation', 'info')" class="hover:text-slate-300 transition">
+          Verified Documentation
+        </button>
+        <span class="text-slate-700">|</span>
+        <button onclick="navigateTo('page-matrix')" class="hover:text-indigo-400 transition">
+          Fleet Matrix
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navigation / Page Router Logic
+    function navigateTo(pageId) {
+      // Hide all pages
+      document.querySelectorAll('.page-view').forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('block');
+      });
+
+      // Show selected page
+      const targetPage = document.getElementById(pageId);
+      if (targetPage) {
+        targetPage.classList.remove('hidden');
+        targetPage.classList.add('block');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Update Desktop Nav Highlight
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('bg-indigo-600/20', 'text-indigo-400', 'border', 'border-indigo-500/30');
+        btn.classList.add('text-slate-400', 'hover:text-slate-200');
+      });
+
+      const activeNavBtn = document.getElementById('nav-btn-' + pageId);
+      if (activeNavBtn) {
+        activeNavBtn.classList.remove('text-slate-400', 'hover:text-slate-200');
+        activeNavBtn.classList.add('bg-indigo-600/20', 'text-indigo-400', 'border', 'border-indigo-500/30');
+      }
+
+      // Trigger radar chart update if navigated to matrix
+      if (pageId === 'page-matrix' && window.architectureRadar) {
+        window.architectureRadar.update();
+      }
+    }
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Modal Control
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    // Toast Notification System
+    let toastTimeout;
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastMsg.textContent = message;
+      toastIcon.textContent = type === 'info' ? '⚡' : '✔';
+
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3500);
+    }
+
+    // Cline Card Simulator Inspector
+    const clineCardsData = {
+      'card-1': {
+        title: 'Task #102: Auth Middleware Migration',
+        status: 'RUNNING',
+        badge: 'Zero Branch Conflict',
+        path: '/projects/app/.git/worktrees/wt-auth-jwt',
+        desc: 'Cline agent is rewriting express sessions to JWT cookie tokens in an isolated git worktree branch `feat/jwt-tokens`. Master branch files are completely untouched during this operation.'
+      },
+      'card-2': {
+        title: 'Task #103: Stripe Webhook Handler',
+        status: 'TESTING',
+        badge: 'Isolated Worktree',
+        path: '/projects/app/.git/worktrees/wt-stripe',
+        desc: 'Agent is generating signature verification tests. Running jest test runner inside this specific isolated worktree without interfering with Task #102.'
+      },
+      'card-3': {
+        title: 'Task #104: E2E Playwright Suite',
+        status: 'QUEUED',
+        badge: 'Dependency Chained',
+        path: 'Pending auto-spawn upon #102 completion',
+        desc: 'This task card will automatically awaken and checkout a new Git worktree the moment Task #102 passes linting and unit test approval.'
+      },
+      'card-done': {
+        title: 'Task #101: User Schema Validation',
+        status: 'READY FOR MERGE',
+        badge: 'Diff Ready',
+        path: '/projects/app/.git/worktrees/wt-user-schema',
+        desc: 'All 18 unit tests passed. Clean unified diff is ready for human line-by-line review or automated merge into the main branch.'
+      }
+    };
+
+    function selectClineCard(cardKey) {
+      const data = clineCardsData[cardKey];
+      if (!data) return;
+
+      document.getElementById('detail-card-title').textContent = data.title;
+      document.getElementById('detail-card-status').textContent = data.status;
+      document.getElementById('detail-card-badge').textContent = data.badge;
+      document.getElementById('detail-card-path').textContent = data.path;
+      document.getElementById('detail-card-desc').textContent = data.desc;
+
+      showToast(`Inspecting worktree details for ${data.title.split(':')[0]}`, 'info');
+    }
+
+    // Quiz Decision Logic for Page 3
+    const quizState = { q1: null, q2: null };
+    function setQuizAnswer(qNum, value, btnElement) {
+      quizState['q' + qNum] = value;
+
+      // Update button styling
+      document.querySelectorAll('.quiz-btn-' + qNum).forEach(b => {
+        b.classList.remove('bg-indigo-600/30', 'border-indigo-500', 'text-white');
+        b.classList.add('bg-surface-950', 'text-slate-300');
+      });
+      btnElement.classList.add('bg-indigo-600/30', 'border-indigo-500', 'text-white');
+      btnElement.classList.remove('bg-surface-950', 'text-slate-300');
+
+      if (quizState.q1 && quizState.q2) {
+        evaluateQuiz();
+      }
+    }
+
+    function evaluateQuiz() {
+      const resultBox = document.getElementById('quiz-result');
+      const title = document.getElementById('quiz-result-title');
+      const body = document.getElementById('quiz-result-body');
+
+      resultBox.classList.remove('hidden');
+
+      if (quizState.q1 === 'tmux' && quizState.q2 === 'seat') {
+        title.textContent = 'Result: OpenRig fits your niche';
+        body.textContent = 'You have a deliberate need to coordinate pre-existing Claude Code / Codex terminal processes through tmux sessions with persistent telecom-style seats. Be prepared for high setup friction.';
+      } else if (quizState.q2 === 'kanban') {
+        title.textContent = 'Result: Avoid OpenRig ➔ Use Cline CLI';
+        body.textContent = 'You want visual task isolation, Git worktrees, and low cognitive friction. OpenRig will overwhelm you with unnecessary tmux indirection and seat management.';
+      } else {
+        title.textContent = 'Result: Avoid OpenRig ➔ Use OpenHands Factory';
+        body.textContent = 'For scalable fleets executing outside tmux, OpenHands provides true Docker sandboxes, event logs, and GitHub PR workflows without terminal hijacking.';
+      }
+    }
+
+    // Recommendation Calculator on Matrix Page
+    function calculateRecommendation() {
+      const team = document.getElementById('calc-team').value;
+      const security = document.getElementById('calc-security').value;
+      const ui = document.getElementById('calc-ui').value;
+
+      const winnerEl = document.getElementById('rec-winner');
+      const secEl = document.getElementById('rec-secondary');
+      const expEl = document.getElementById('rec-explanation');
+
+      if (security === 'strict' || team === 'enterprise') {
+        winnerEl.textContent = 'OpenHands Enterprise Factory';
+        secEl.textContent = 'Secondary: MetaGPT';
+        expEl.textContent = 'Strict sandboxing requires ephemeral Docker microVMs. OpenHands isolates execution entirely from the host, with event-sourced audit logs.';
+      } else if (ui === 'python') {
+        winnerEl.textContent = 'CrewAI Framework';
+        secEl.textContent = 'Secondary: MetaGPT';
+        expEl.textContent = 'Ideal for teams seeking simple, declarative Python/YAML agent role definitions without running local background daemons.';
+      } else {
+        winnerEl.textContent = 'Cline CLI + Local Kanban';
+        secEl.textContent = 'Secondary: OpenHands';
+        expEl.textContent = 'Offers the best balance of simplicity, Git worktree isolation, line-by-line diff review, and parallel task execution without host contamination.';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const ctx = document.getElementById('architectureRadarChart');
+      if (ctx) {
+        window.architectureRadar = new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: [
+              'Cognitive Simplicity',
+              'Workspace Isolation',
+              'Observability / UI',
+              'Setup Velocity',
+              'Enterprise Scale'
+            ],
+            datasets: [
+              {
+                label: 'Cline CLI',
+                data: [9, 8.5, 9, 9, 7],
+                fill: true,
+                backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                borderColor: '#6366f1',
+                pointBackgroundColor: '#6366f1',
+                pointBorderColor: '#fff',
+                borderWidth: 2
+              },
+              {
+                label: 'OpenRig',
+                data: [2, 4.5, 3.5, 3, 5],
+                fill: true,
+                backgroundColor: 'rgba(249, 115, 22, 0.2)',
+                borderColor: '#f97316',
+                pointBackgroundColor: '#f97316',
+                pointBorderColor: '#fff',
+                borderWidth: 2
+              },
+              {
+                label: 'OpenHands',
+                data: [7.5, 10, 8.5, 6.5, 9.5],
+                fill: true,
+                backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                borderColor: '#a855f7',
+                pointBackgroundColor: '#a855f7',
+                pointBorderColor: '#fff',
+                borderWidth: 2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              r: {
+                angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                pointLabels: {
+                  color: '#94a3b8',
+                  font: { size: 10, family: 'Inter', weight: '600' }
+                },
+                ticks: {
+                  display: false,
+                  min: 0,
+                  max: 10
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#cbd5e1',
+                  font: { size: 11, family: 'Inter' },
+                  boxWidth: 12,
+                  padding: 14
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
