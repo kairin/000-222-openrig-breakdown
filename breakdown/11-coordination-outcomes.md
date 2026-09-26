@@ -2,7 +2,8 @@
 
 ## Decision, authority and evidence boundary
 
-Recorded on 2026-09-27 at baseline `93069eb1`. This document records the
+Recorded on 2026-09-27 against historical baseline `93069eb1`, then updated
+against main `8bd371a8`. This document records the
 bounded documentation delegation from coordinator **d47aa** to **92f0b**.
 It does not make a new decomposition decision. d47aa owns triage, card
 creation, dependency links, specialist assignment and cross-component decisions.
@@ -21,10 +22,17 @@ at `/home/kkk/.cline/kanban/workspaces/openrig-breakdown/board.json`, inspected
 on 2026-09-27. In that snapshot, 1f28b's review records acceptance and integration;
 43d5c has a scope correction; f4958 has an explicit integrator-only handoff.
 Board contents are mutable operational evidence, not a versioned source contract.
+The later inspection confirms the three research cards and dependency edges
+recorded below. f4958's accepted integration commit `eeff0881` is integrated on
+main as `8bd371a8`; its register and task-list contents match that commit.
+The board's Review column can lag this accepted document result.
 
 ### Verified document references
 
-The following absolute paths and line ranges refer to baseline `93069eb1`.
+References D1–D7 below are explicitly pinned to historical commit `93069eb1`.
+Their stable absolute paths identify the main destination, not a promise that
+today's file has the same line numbers or status. Read those ranges from that
+Git object when checking the historical citations.
 Historical source findings inside these documents retain their own stated
 commits; citing them does not mean their runtime behavior was demonstrated here.
 
@@ -38,12 +46,22 @@ commits; citing them does not mean their runtime behavior was demonstrated here.
 | D6 | `/home/kkk/Apps/openrig-breakdown/breakdown/08-current-state-evidence.md:64-130,183-281,283-339,412-443` — package/deployment inventory, selected flows, coupling/state table and further research leads. |
 | D7 | `/home/kkk/Apps/openrig-breakdown/breakdown/04-review-method.md:44-65` — verdict/evidence procedure and linked claim groups. |
 
+Current integration evidence, pinned separately to `8bd371a8`:
+
+- `/home/kkk/Apps/openrig-breakdown/breakdown/gemini-review/README.md:39-59,80-113`
+  records 24 reconciled verdicts: six `yes`, eighteen `part`, none unreviewed.
+- `/home/kkk/Apps/openrig-breakdown/breakdown/07-review-task-list.md:29-52`
+  records T2–T4 source-review complete only, T5 incomplete pending owner input,
+  T6–T9 blocked and no Gate A–D passed. These current results supersede the
+  historical status assertions in D1/D3, not their evidence limits.
+
 ## Coverage and duplication decision: d5d13
 
 The three existing claim batches now cover all 24 claim pages, with disjoint
 write ownership. All 24 pages at this baseline have a yes/part/no verdict and
-research content; that observation does not establish runtime correctness or
-complete T2–T4 integration. The shared register remains a separate obligation.
+research content. f4958 has now integrated the register: T2–T4 are source-review
+complete only, with six `yes` and eighteen `part`. Neither those verdicts nor
+integration establish runtime correctness or complete the wider research gates.
 
 | Existing card | Exclusive claim-page batch | Count |
 |---|---|---:|
@@ -60,9 +78,10 @@ mechanism conclusions and friction-first review order (D3, D7).
 
 **No duplicate claim cards are justified.** Only f4958 may integrate
 `/home/kkk/Apps/openrig-breakdown/breakdown/gemini-review/README.md`
-after the accepted batches and explicit coordinator handoff. Its verdicts and
-shared status text must be reconciled with the actual evidence, not inferred
-from a card's column. This delegation does not edit that register or statuses.
+under the coordinator handoff. That integration is now accepted in `8bd371a8`;
+future shared updates remain exclusively f4958's responsibility. The result is
+verified from the register and task list, not inferred from a card's column.
+This delegation does not edit that register or statuses.
 
 **No duplicate Node inventory or owner-question reconciliation card is justified.**
 1f28b covers these documentation outcomes (D1, D2). Its inventory explicitly is
@@ -90,14 +109,16 @@ The coordinator has created and linked exactly three residual research backlog
 cards: **662c4** (capability), **a4d7b** (workflows), and **c28a2** (state).
 They are not replacement or implementation cards. Each is assigned to a Cline
 specialist using provider `openai-codex`, model `gpt-6-luna`. Each
-researcher writes only the one exact output below. No claim rewriting, shared
+researcher writes only the corresponding output in their own assigned task
+worktree. The absolute paths below are stable destinations in main; main is
+read-only to specialists. No claim rewriting, shared
 index/register edits, code, prototype, runtime experiment or machine setup is
 authorized. Read existing research and claim evidence first; cite and extend it
 instead of copying or re-reviewing it. Report contradictions to d47aa.
 
-### Capability coverage
+### Capability coverage — 662c4
 
-Owned output:
+Owned output destination in main; edit the corresponding file in 662c4's own task worktree:
 `/home/kkk/Apps/openrig-breakdown/breakdown/research-capability-inventory.md`.
 
 Acceptance:
@@ -113,9 +134,9 @@ Acceptance:
 - Reuse D1's Node inventory and D6's package/deployment map. Every major area
   must have a disposition; distinguish examined coverage from remaining research.
 
-### Five normal/failure workflow traces
+### Five normal/failure workflow traces — a4d7b
 
-Owned output:
+Owned output destination in main; edit the corresponding file in a4d7b's own task worktree:
 `/home/kkk/Apps/openrig-breakdown/breakdown/research-workflow-traces.md`.
 
 Acceptance:
@@ -130,9 +151,9 @@ Acceptance:
   contracts, not a successful installation, measured usability or tested recovery.
   The provisional scenario is a research anchor, not an approved product scope.
 
-### Core state and invariant ledger
+### Core state and invariant ledger — c28a2
 
-Owned output:
+Owned output destination in main; edit the corresponding file in c28a2's own task worktree:
 `/home/kkk/Apps/openrig-breakdown/breakdown/research-state-invariants.md`.
 
 Acceptance:
@@ -191,12 +212,13 @@ until the documented gates and separate authorization support them.
 
 ## Dependency outcome and no-go boundary
 
-The initial read-only board snapshot on 2026-09-27 confirmed these actual card
-links, matching the coordinator's instruction. A later validation read during
-this edit no longer contained the three c28a2 edges. The graph below records the
-coordinator-directed dependencies and initially observed links, not a guarantee
-that the mutable board still enforces all of them. d47aa must reconcile that
-concurrent change before dispatch; this agent does not repair the board.
+The read-only board snapshot on 2026-09-27 confirmed these actual card
+links, matching the coordinator's instruction. The graph records that snapshot;
+d47aa owns any subsequent dependency changes. This agent does not edit the board.
+During final validation, the live board no longer contained the c28a2 → 92f0b
+edge. Thus this graph records the verified earlier snapshot and coordinator
+contract, not a guarantee of current scheduler enforcement. d47aa must reconcile
+the live links before dispatch; no dependency was silently recreated here.
 Here `prerequisite -> dependent` means the dependent waits for acceptance of the
 prerequisite (the board stores the dependent in `fromTaskId`).
 
@@ -213,16 +235,15 @@ a1fa6 -> c28a2
 
 | Card | Specialist / exclusive output in its own task worktree | Waits on |
 |---|---|---|
-| 662c4 | Capability: `/home/kkk/.cline/worktrees/662c4/openrig-breakdown/breakdown/research-capability-inventory.md` | Accepted 92f0b |
-| a4d7b | Workflows: `/home/kkk/.cline/worktrees/a4d7b/openrig-breakdown/breakdown/research-workflow-traces.md` | Accepted 92f0b and 662c4 |
-| c28a2 | State: `/home/kkk/.cline/worktrees/c28a2/openrig-breakdown/breakdown/research-state-invariants.md` | Accepted 92f0b, a4d7b and a1fa6 |
+| 662c4 | Capability: corresponding file for `/home/kkk/Apps/openrig-breakdown/breakdown/research-capability-inventory.md` | Accepted 92f0b |
+| a4d7b | Workflows: corresponding file for `/home/kkk/Apps/openrig-breakdown/breakdown/research-workflow-traces.md` | Accepted 92f0b and 662c4 |
+| c28a2 | State: corresponding file for `/home/kkk/Apps/openrig-breakdown/breakdown/research-state-invariants.md` | Accepted 92f0b, a4d7b and a1fa6 |
 
-These are assigned future worktree output locations, not a claim that the files
-or worktrees already exist. The main-checkout paths above identify the same
-repository output contracts; specialists write only in their own task worktrees.
+These are main destination paths, not a claim that the output files already
+exist. Specialists edit corresponding files only in their own task worktrees.
 
-fa0bb and 1f28b are Done. The three claim diffs are integrated; register sync
-is underway through f4958, not declared complete here. This document fulfills
+fa0bb and 1f28b are Done. The three claim diffs and f4958's register integration
+are accepted on main `8bd371a8`, with T2–T4 source-review complete only. This document fulfills
 the requested d5d13/f7f4e documentation outcomes, with coordinator approval still
 pending. All three new research cards remain in Backlog; none is started by this
 delegation. No board mutation is performed here.
@@ -232,10 +253,11 @@ Research and implementation gate requirements remain separate from card links:
 ```text
 accepted fa0bb/1f28b baseline at 93069eb1
   + existing disjoint claim batches
-  -> three approved residual source-research outputs
-  -> d47aa acceptance/reconciliation; f4958 exclusive shared integration
+  + accepted f4958 register integration at 8bd371a8
+  -> 92f0b outcome -> 662c4 -> a4d7b -> c28a2 (also requires a1fa6)
+  -> d47aa acceptance/reconciliation; f4958 retains exclusive shared integration
 
-claim evidence/integration + external owner answers -> T2–T5 completion checks
+T2–T4 source review complete + external owner answers -> T5 completion check
 capability/workflow/state evidence + visible contradictions -> Gate A check
 T2–T5 -> T6
 T6 + Gate A -> T7 / Gate B
@@ -244,14 +266,26 @@ T7–T8 + explicit high-impact decisions -> T9 / Gate D
 Gate D + separately approved implementation plan -> possible later implementation
 ```
 
-T6–T9 and Gates A–D are not passed by this decision. The status rows in D3 are
-preserved research-baseline text awaiting authorized evidence integration; new
-claim pages do not silently update them. Owner N1–N10 answers remain external.
+T6–T9 and Gates A–D are not passed by this decision. D3's old status rows are
+historical; current main explicitly records T2–T4 source-review completion only.
+T5 remains owner-blocked (recorded as in progress with owner input incomplete).
+Owner N1–N10 answers remain external.
 **No Rust implementation or prototype cards are authorized.** The ten suggestions
 are disposed above, not converted into speculative migration cards.
 
-92f0b created no cards. d47aa created and linked 662c4, a4d7b and c28a2; their
-actual IDs and dependency graph are recorded above. No additional claim, Node
-inventory, owner-question reconciliation or migration cards are
-justified by this bounded decision. Further uncovered work must return to the
-coordinator for an explicit decision, not be inferred by a documentation agent.
+## Final replacement-outcome record
+
+- **d5d13 → 92f0b:** this document supplies the coverage/duplication decision,
+  bounded research acceptance and ownership for coordinator-created 662c4,
+  a4d7b and c28a2. No duplicate triage or claim task is needed.
+- **f7f4e → 92f0b:** the same deliverable supplies all ten migration-category
+  dispositions, actual dependency graph and implementation no-go. No duplicate
+  decomposition or speculative Rust/prototype card is needed.
+- **92f0b** authored this documentation outcome and created no cards. **d47aa**
+  owns acceptance/closure of both originals, scheduling and card links;
+  **f4958** retains exclusive register/shared integration ownership.
+
+No additional claim, Node-inventory, owner-question reconciliation or migration
+cards are justified by this bounded decision. The three residual research cards
+are the explicit capability/workflow/state work, not a claim that all research
+is complete. Further uncovered work requires a coordinator decision.
