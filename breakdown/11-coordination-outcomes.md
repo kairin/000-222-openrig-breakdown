@@ -215,8 +215,8 @@ until the documented gates and separate authorization support them.
 The read-only board snapshot on 2026-09-27 confirmed these actual card
 links, matching the coordinator's instruction. The graph records that snapshot;
 d47aa owns any subsequent dependency changes. This agent does not edit the board.
-During final validation, the live board no longer contained the c28a2 → 92f0b
-edge. Thus this graph records the verified earlier snapshot and coordinator
+During final validation, the live board no longer contained any of c28a2's
+three edges (to 92f0b, a4d7b and a1fa6). Thus this graph records the verified earlier snapshot and coordinator
 contract, not a guarantee of current scheduler enforcement. d47aa must reconcile
 the live links before dispatch; no dependency was silently recreated here.
 Here `prerequisite -> dependent` means the dependent waits for acceptance of the
