@@ -223,6 +223,9 @@ and removed completed edges. The coordinator stopped the real Luna session
 before edits, verified its worktree was clean, requeued c28a2 and restored its
 dependency on a4d7b. This is a coordinator-reported recovery record, not evidence
 that state research was performed or accepted.
+To avoid another automatic start, d47aa will close the originals/replacement
+through board `saveState`, preserving the pending graph. This is the coordinator's
+closure plan, not a board operation performed by this documentation delegation.
 
 Pending live links at final handoff are: 662c4 waits on 92f0b; a4d7b waits on
 662c4 (and 92f0b until acceptance); c28a2 waits on a4d7b. These links enforce the
