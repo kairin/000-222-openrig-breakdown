@@ -6,6 +6,14 @@ This note records a repository-level reading of the checkout at `147993aa`
 (`main`, 2026-09-26). It supports a later choice about what to keep and how a
 learner should approach the code. It does not make that choice.
 
+2026-09-27 addendum: [10-rust-and-node-removal-plan.md](10-rust-and-node-removal-plan.md)
+rechecks the 2,364 TypeScript / 57 scripts-directory file / 85 migration counts
+at `9db3ed6c406be5c3d9a84720383fcf6b543169e6`, using tracked-file predicates,
+and adds the requested Rust/Node-removal boundary and inventory. The rest of
+this report retains its original source-reading baseline; it is not a new
+runtime verification. The goal document now uses the defined count instead
+of its older approximate 2018 figure.
+
 Use the evidence according to its source:
 
 - `README.md` and `breakdown/` state this derivative's current goals and rules.
@@ -82,9 +90,10 @@ separately, `rg --files packages/*/src -g '*.ts' -g '*.tsx'`. They include
 source and test files, exclude ignored files per ripgrep defaults, and are
 navigation measures only. Per-directory totals are CLI 352, daemon 1,346,
 TUI 145, UI 521, and test-system 0, which sum to 2,364. The `src/` totals are
-CLI 158, daemon 593, TUI 62, and UI 304. `01-goal-and-scope.md` says
-“approximately 2018” TypeScript files but does not record its counting
-predicate, so those totals are not directly comparable. None of these counts
+CLI 158, daemon 593, TUI 62, and UI 304. `01-goal-and-scope.md` originally said
+“approximately 2018” TypeScript files without a counting predicate; that
+stale figure has now been replaced with the rechecked tracked-file count in
+10. The old approximation cannot establish growth. None of these counts
 measures understandability or value.
 
 ### Deployment and runtime map
@@ -350,10 +359,13 @@ current package/dependency boundary implies at least these port jobs:
   install/remove managed hooks, and reconcile startup files. Those are
   filesystem and native CLI contracts, not ordinary domain structs
   (`runtime-adapter.ts:121-150`; `claude-code-adapter.ts:730-818`).
-- The UI is a separate React client and the top-level scripts generate and
-  mirror skills/context content. A Rust daemon alone would not remove those
-  independent runtime surfaces (`packages/ui/package.json:16-42`;
-  `package.json:21-28`).
+- The UI is a separate React browser client; its TypeScript/Vite build and
+  Vitest tests require Node tooling (`packages/ui/package.json:7-14,16-54`).
+  The daemon serves its built assets (`packages/daemon/src/server.ts:806-835`).
+  Browser JavaScript is not a Node runtime dependency. Top-level Node scripts
+  generate and mirror skills/context (`package.json:21-28`). A Rust daemon
+  alone does not remove those build/tooling dependencies, the Node TUI, or
+  managed Node hooks; see the fuller inventory in 10.
 
 These are observable compatibility costs, not an argument against Rust. A
 small CLI-only prototype over a deliberately narrow JSON/SQLite contract would
