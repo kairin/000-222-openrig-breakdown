@@ -18,7 +18,14 @@ This folder contains the analysis for a simpler version of OpenRig. Start with `
 
 The documents use ASD-STE100 Simplified Technical English.
 
+As of 2026-09-27, all 24 claim pages agree with the
+[claim register](gemini-review/README.md): 6 `yes`, 18 `part`.
+[T2–T4](07-review-task-list.md#tasks) are source-review complete only.
+T5 remains incomplete pending owner input, and T6–T9 remain blocked.
+
 The Rust/Node-removal document is a planning baseline, not completed migration
-work or Gate D approval. T2–T9 and the existing research gates are not completed
-by this deliverable. Read the evidence limits before treating source mechanisms
-as runtime-verified behavior.
+work or Gate D approval. No Gate A–D is declared passed. Read the
+[source-review limits and linked conclusions](gemini-review/README.md#source-review-status-2026-09-27)
+before treating source mechanisms as runtime-verified behavior. The claim
+reviews do not establish successful installation, recovery, work preservation,
+measured usability or completion of the wider research program.
