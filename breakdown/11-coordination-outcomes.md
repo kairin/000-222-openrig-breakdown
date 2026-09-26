@@ -1,0 +1,215 @@
+# 11. Coordination outcomes for d5d13 and f7f4e
+
+## Decision, authority and evidence boundary
+
+Recorded on 2026-09-27 at baseline `93069eb1`. This document records the
+bounded documentation delegation from coordinator **d47aa** to **92f0b**.
+It does not make a new decomposition decision. d47aa owns triage, card
+creation, dependency links, specialist assignment and cross-component decisions.
+The human owner supplies product choices. **f4958** is the exclusive serialized
+claim-register and shared-document integrator, not a second coordinator.
+
+The coordinator accepted fa0bb's replacement outcome, **1f28b**, and integrated
+it through `3ea45964` and `93069eb1`. This acceptance covers documentation, not
+migration authorization. The updated inventory, questions and conditional stages
+exist in this baseline. The earlier report that the update was missing no longer
+applies. This document is the replacement documentation outcome for d5d13/f7f4e;
+it does not independently approve or close their Kanban cards.
+
+Decision provenance: d47aa's explicit delegation and the read-only board snapshot
+at `/home/kkk/.cline/kanban/workspaces/openrig-breakdown/board.json`, inspected
+on 2026-09-27. In that snapshot, 1f28b's review records acceptance and integration;
+43d5c has a scope correction; f4958 has an explicit integrator-only handoff.
+Board contents are mutable operational evidence, not a versioned source contract.
+
+### Verified document references
+
+The following absolute paths and line ranges refer to baseline `93069eb1`.
+Historical source findings inside these documents retain their own stated
+commits; citing them does not mean their runtime behavior was demonstrated here.
+
+| Ref | Evidence and relevance |
+|---|---|
+| D1 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/10-rust-and-node-removal-plan.md:3-20,66-91,119-148` — accepted documentation scope, direct dependency/execution inventory, conditional stages and separation of document acceptance from Gate D. |
+| D2 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/06-open-questions.md:3-15,17-41` — README answers reconciled; N1–N10 all remain open; answers require owner, date, rationale, scope and acceptance test. |
+| D3 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/07-review-task-list.md:23-49,51-76` — T2–T5 requirements, blocked T6–T9 and preserved status baseline, not a second queue. |
+| D4 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/09-adversarial-review-and-research-charter.md:40-95` — five normal/failure journeys, evidence labels, coverage and state-ledger completion conditions. |
+| D5 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/09-adversarial-review-and-research-charter.md:154-178` — Gates A–D, Node-removal constraints and source-research limits. |
+| D6 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/08-current-state-evidence.md:64-130,183-281,283-339,412-443` — package/deployment inventory, selected flows, coupling/state table and further research leads. |
+| D7 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/04-review-method.md:44-65` — verdict/evidence procedure and linked claim groups. |
+
+## Coverage and duplication decision: d5d13
+
+The three existing claim batches now cover all 24 claim pages, with disjoint
+write ownership. All 24 pages at this baseline have a yes/part/no verdict and
+research content; that observation does not establish runtime correctness or
+complete T2–T4 integration. The shared register remains a separate obligation.
+
+| Existing card | Exclusive claim-page batch | Count |
+|---|---|---:|
+| 43d5c | F1, F2, F3, F6, F7, F8, F10, F11 | 8 |
+| a1fa6 | A5/F4/S2, A8/F9/S5, F5/S3 | 8 |
+| 36ea1 | A1–A4, A6–A7, S1, S4 | 8 |
+
+The pages are the individual README files under
+`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/gemini-review/claims/`.
+The union is A1–A8, F1–F11 and S1–S5, with no repeated owner. In particular,
+F4/F5/F9 belong only to a1fa6, and its linked batch contains eight, not seven,
+pages. Combined T2 evidence requires both 43d5c and a1fa6. Preserve the linked
+mechanism conclusions and friction-first review order (D3, D7).
+
+**No duplicate claim cards are justified.** Only f4958 may integrate
+`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/gemini-review/README.md`
+after the accepted batches and explicit coordinator handoff. Its verdicts and
+shared status text must be reconciled with the actual evidence, not inferred
+from a card's column. This delegation does not edit that register or statuses.
+
+**No duplicate Node inventory or owner-question reconciliation card is justified.**
+1f28b covers these documentation outcomes (D1, D2). Its inventory explicitly is
+not an exhaustive transitive SBOM or runtime trace. N1–N10 answers remain external
+human-owner inputs; reconciliation did not answer them or complete T5. Further
+retained-path audits may be needed later, but are not new authorized cards here.
+
+Three residual source-research outcomes are approved by d47aa. These are gaps in
+depth and coverage, not an absence of prior research:
+
+1. Capability coverage beyond the existing package/deployment and Node inventories.
+2. Complete normal/failure traces for the five charter journeys beyond selected flows.
+3. A core state/invariant ledger beyond the selected coupling and state table.
+
+D6 already contains five useful flows, but they are not identical to the five
+charter journeys: setup/launch is combined, messaging and handoff are separated,
+and recovery has a separate flow. Do not count headings as proof of complete
+end-to-end coverage. Claim reviews add source evidence; they do not replace a
+capability coverage map or a state create/change/remove/reconcile ledger (D4).
+
+## Approved source-research boundaries
+
+These are future output contracts supplied by d47aa, not cards created by 92f0b.
+The coordinator will create/link the cards and report their real IDs. Each
+researcher writes only the one exact output below. No claim rewriting, shared
+index/register edits, code, prototype, runtime experiment or machine setup is
+authorized. Read existing research and claim evidence first; cite and extend it
+instead of copying or re-reviewing it. Report contradictions to d47aa.
+
+### Capability coverage
+
+Owned output:
+`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/research-capability-inventory.md`.
+
+Acceptance:
+
+- Inventory major user capabilities from current entrypoints and component
+  responsibilities, not package names alone. Include core operation and optional
+  UI, TUI, MCP, multi-host, workflow, context/spec/plugin, workspace and adapter
+  surfaces identified by existing evidence.
+- For each capability, record owner component, entrypoint/source evidence,
+  dependencies, state/managed artifacts, relevant journey and coverage status:
+  investigated, scheduled or deferred with a reason. Do not claim retained scope
+  has been chosen. Record unknown owner value as unknown.
+- Reuse D1's Node inventory and D6's package/deployment map. Every major area
+  must have a disposition; distinguish examined coverage from remaining research.
+
+### Five normal/failure workflow traces
+
+Owned output:
+`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/research-workflow-traces.md`.
+
+Acceptance:
+
+- Cover all five D4 journeys: install/start; put agents in a project; assign/follow
+  work; understand the result; stop/return. For each, trace input → command/client
+  → runtime owner → durable state/process effect → visible result.
+- Provide one normal and at least one source-inspected failure path per journey,
+  including error reporting, cleanup/restart implications and unknown links.
+  Distinguish daemon readiness, agent readiness, delivery and acceptance.
+- Reuse D6's selected flows and the relevant claim findings. Record source
+  contracts, not a successful installation, measured usability or tested recovery.
+  The provisional scenario is a research anchor, not an approved product scope.
+
+### Core state and invariant ledger
+
+Owned output:
+`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/research-state-invariants.md`.
+
+Acceptance:
+
+- For core stores, files, caches and live processes used by these journeys,
+  identify authority, creators/writers/deleters, identity lifetime, allowed
+  transitions, transaction boundaries, event ordering and reconciliation.
+- Cover session/liveness/resume distinctions; queue state/history and notification
+  guarantees; events/client observation; project/worktree files and metadata;
+  snapshots/transcripts; and owned versus user-owned configuration/hooks. Mark
+  absent or unresolved mechanisms explicitly rather than assuming a guarantee.
+- For each invariant, cite its enforcement or stated contract, the relevant
+  partial-failure/restart case and missing proof. Distinguish tracked edits,
+  untracked files and index state from resumable conversation/process state.
+- Reuse D6 and a1fa6's linked evidence. An absence of deletion in one teardown
+  function is not proof of preservation across all delegated cleanup paths (D4).
+
+### Common evidence and integration checks
+
+Each consequential finding needs an evidence ID, inspected commit, exact source
+path/line range, scope and confidence. Use observed-in-source, stated-intent,
+inferred and unresolved labels (D4). Tests read are not tests passed. Each
+unresolved point must name the next evidence needed. Check local citations,
+coverage and diff hygiene; do not run product lifecycles under this delegation.
+
+The accepted 1f28b baseline and existing claim evidence are inputs to all three
+outputs. Disjoint file ownership permits parallel source reading and drafting.
+Before acceptance, reconcile workflow coverage with the capability map and the
+state ledger with workflow effects and linked-claim findings. d47aa resolves
+cross-component disagreements; researchers do not edit each other's outputs.
+The coordinator owns concrete dependency links and shared integration sequencing.
+Completing these documents supplies evidence for gates; it does not pass a gate.
+
+## Disposition of all ten f7f4e suggestions
+
+“Research-covered” means an existing or approved bounded research outcome owns
+the subject; it does not mean research is complete. “Owner-gated” requires an
+explicit human decision. “Implementation-gated” forbids implementation cards
+until the documented gates and separate authorization support them.
+
+| # | Suggested category | Coordinator disposition and evidence |
+|---|---|---|
+| 1 | Reconcile owner decisions/open questions | **Research-covered; owner-gated.** 1f28b reconciled existing answers and recorded N1–N10. No duplicate reconciliation card. The human owner must supply unresolved answers (D2); T5 is not complete. |
+| 2 | User-visible workflows and compatibility contracts | **Research-covered by the three approved residual outputs**, using existing flows and claims. Compatibility promises themselves remain **owner-gated**, especially N3/N4/N7. Source contracts are not migration promises (D2, D4, D6). |
+| 3 | Rust architecture/prototype spike | **Owner- and implementation-gated.** T8/Gate C compares architecture only after T7; a prototype requires Gate D and a separately approved implementation plan. No spike card is authorized (D1 stages 1–4; D3, D5). |
+| 4 | Daemon/runtime migration | **Implementation-gated.** Current dependency/state evidence is covered, but process model, platforms and compatibility require N3/N4/N8/N9 and Gates C/D. Runtime transfer is a later conditional stage, not an approved package port (D1 stages 2–5; D2). |
+| 5 | CLI/TUI migration | **Owner- and implementation-gated.** Current entrypoints/TUI are inventoried. N2 decides retained consumers; approved workflow research supplies contracts. No CLI/TUI rewrite card before agreed seams and later runtime-transfer approval (D1 inventory/stage 5; D2). |
+| 6 | UI decision and chosen replacement | **Owner-gated** by N2 and the fully Rust/non-Rust boundary; any replacement is **implementation-gated**. Browser JavaScript, Node hosting and Node build tooling are separate inventory facts, not permission to retain React or choose a replacement (D1:22-64,82; D2). |
+| 7 | Embedded Node assets/hooks | **Research-covered** by 1f28b's execution inventory and approved state/ownership research; **owner-/implementation-gated** for disposition or conversion. N3/N5/N6/N8/N9 govern retained contracts and exceptions. Preserve user-owned configuration (D1:83-85,88-91; D2, D4). |
+| 8 | Build/test/repository tooling and CI | **Research-covered** by the inventory; **owner-/implementation-gated** for replacement. N1/N6/N8/N9/N10 determine transition, fixtures and external/provider boundaries. Full elimination includes required tooling, but no tool/library choice or CI rewrite is authorized (D1:50-64,86-90,134; D2). |
+| 9 | Packaging/install/upgrade/rollback | **Research-covered** by current execution-path evidence and approved workflow/state research; **owner-/implementation-gated** for changes. N3–N9 affect data, platforms, external setup, coexistence and distribution. Later cutover requires runtime and rollback proof (D1:87-91,132-135; D2). |
+| 10 | End-to-end parity and Node-removal audit | **Research-covered** for future acceptance requirements, not achieved parity or an exhaustive removal audit. **Implementation-gated** for executable validation/retirement after stages 4–6. Require isolated clean-environment, artifact/process and recovery evidence; grep alone is insufficient (D1:150-171; D3:66-69). |
+
+## Dependency outcome and no-go boundary
+
+Recorded logical prerequisites, not newly created Kanban edges:
+
+```text
+accepted fa0bb/1f28b baseline at 93069eb1
+  + existing disjoint claim batches
+  -> three approved residual source-research outputs
+  -> d47aa acceptance/reconciliation; f4958 exclusive shared integration
+
+claim evidence/integration + external owner answers -> T2–T5 completion checks
+capability/workflow/state evidence + visible contradictions -> Gate A check
+T2–T5 -> T6
+T6 + Gate A -> T7 / Gate B
+T7 + preservation/recovery contracts + owner choices -> T8 / Gate C
+T7–T8 + explicit high-impact decisions -> T9 / Gate D
+Gate D + separately approved implementation plan -> possible later implementation
+```
+
+T6–T9 and Gates A–D are not passed by this decision. The status rows in D3 are
+preserved research-baseline text awaiting authorized evidence integration; new
+claim pages do not silently update them. Owner N1–N10 answers remain external.
+**No Rust implementation or prototype cards are authorized.** The ten suggestions
+are disposed above, not converted into speculative migration cards.
+
+92f0b created no cards and supplies no invented IDs. d47aa will create/link the
+approved source-research cards and provide actual IDs and the board dependency
+graph. No further claim, inventory, reconciliation or migration cards are
+justified by this bounded decision. Further uncovered work must return to the
+coordinator for an explicit decision, not be inferred by a documentation agent.
