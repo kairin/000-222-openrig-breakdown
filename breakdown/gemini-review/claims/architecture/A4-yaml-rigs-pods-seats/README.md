@@ -28,10 +28,10 @@ Read `docs/reference/rig-spec.md` and the spec parser in the daemon. Are pods an
 
 Reviewed against source baseline `9db3ed6c406be5c3d9a84720383fcf6b543169e6`.
 
-- **Source observation:** The codec parses YAML; the import route selects pod-aware instantiation when `pods` is an array: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/domain/rigspec-codec.ts:90–103`; `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/routes/rigspec.ts:68–102`.
-- **Source observation:** Pod-aware validation requires a nonempty pods array and member arrays. Instantiation creates pods and qualified `pod.member` identifiers: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/domain/rigspec-schema.ts:181–202,400–408`; `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/domain/rigspec-instantiator.ts:1324–1345`. The YAML key is `members`, not a literal `seats` key.
-- **Stated intent:** Rig/pod startup guidance is applied to members; pods are bounded contexts and edges address `pod.member`: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/docs/reference/rig-spec.md:176–183,245–251`.
-- **Source observation:** Legacy flat-node validation remains, and the import route normalizes/instantiates it rather than always demanding pods: `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/domain/rigspec-schema.ts:1177–1185,1197–1215`; `/home/kkk/.cline/worktrees/36ea1/openrig-breakdown/packages/daemon/src/routes/rigspec.ts:105–114`.
+- **Source observation:** The codec parses YAML; the import route selects pod-aware instantiation when `pods` is an array: `/home/kkk/Apps/openrig-breakdown/packages/daemon/src/domain/rigspec-codec.ts:90–103`; `/home/kkk/Apps/openrig-breakdown/packages/daemon/src/routes/rigspec.ts:68–102`.
+- **Source observation:** Pod-aware validation requires a nonempty pods array and member arrays. Instantiation creates pods and qualified `pod.member` identifiers: `/home/kkk/Apps/openrig-breakdown/packages/daemon/src/domain/rigspec-schema.ts:181–202,400–408`; `/home/kkk/Apps/openrig-breakdown/packages/daemon/src/domain/rigspec-instantiator.ts:1324–1345`. The YAML key is `members`, not a literal `seats` key.
+- **Stated intent:** Rig/pod startup guidance is applied to members; pods are bounded contexts and edges address `pod.member`: `/home/kkk/Apps/openrig-breakdown/docs/reference/rig-spec.md:176–183,245–251`.
+- **Source observation:** Legacy flat-node validation remains, and the import route normalizes/instantiates it rather than always demanding pods: `/home/kkk/Apps/openrig-breakdown/packages/daemon/src/domain/rigspec-schema.ts:1177–1185,1197–1215`; `/home/kkk/Apps/openrig-breakdown/packages/daemon/src/routes/rigspec.ts:105–114`.
 
 ## Notes
 
