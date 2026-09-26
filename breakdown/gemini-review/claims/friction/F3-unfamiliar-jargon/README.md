@@ -1,6 +1,6 @@
 # F3: Jargon such as rig, pod, seat and continuity policy replaces familiar terms like repo, branch and task.
 
-**Verdict:** ? (unverified)
+**Verdict:** part — rig/pod/seat and continuity terminology are real; replacement of repositories, branches and tasks and a measured learning cost are not established.
 
 ## What the report says
 
@@ -34,7 +34,17 @@ List every domain noun used in the CLI and docs (rig, pod, seat, lore, mission, 
 
 ## Evidence from this repo
 
-_Not checked yet. Add file:line references here._
+Reviewed at source commit `9db3ed6c406be5c3d9a84720383fcf6b543169e6` (2026-09-27).
+
+- **Stated intent:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/docs/reference/rig-spec.md:173–183,246–258,299–307` defines rig names, pods, optional continuity policy, member IDs and derived addresses. These describe topology and recovery, not Git branches.
+- **Observed in source:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/packages/daemon/specs/rigs/launch/first-project/rig.yaml:2–25` concretely declares a rig, pod and two members with per-member runtime/cwd. `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/packages/daemon/src/domain/workspace/workspace-resolver.ts:26–50` still resolves named repositories and an active repository; ordinary repository concepts coexist with topology.
+- **Stated intent:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/docs/reference/getting-started.md:101–125` uses both a seat address and a durable task/queue in a repository. Lines 225–235 distinguish work definition from workflow execution rather than replacing all work concepts with a seat.
+- **Stated derivative goal, not a measured result:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/README.md:25–26` asks for familiar vocabulary; it is not evidence that a proposed renaming exists or that Gemini's learning-cost scores are valid.
 
 ## Notes
+
+- **Scope:** claim-bearing vocabulary and its semantic roles, not an exhaustive glossary. A rig, repository, branch and task encode different things; no one-to-one substitution was established. Continuity policy is documented as optional, not a universally required authored field.
+- **Contradiction:** “discards” repositories/tasks overstates the evidence: current workspace code and task instructions retain them. The claimed telecommunications origin and “very high” burden remain unsupported by these sources.
+- **Inference / evidence still needed:** a complete vocabulary inventory and observed comprehension tasks would be needed to quantify unfamiliarity. No terminology replacement or simplification is proposed here.
+- **Runtime-unverified:** only source/docs were inspected; no user study or runtime workflow was performed.
 

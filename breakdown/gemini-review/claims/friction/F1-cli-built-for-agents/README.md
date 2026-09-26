@@ -1,6 +1,6 @@
 # F1: The CLI is built for agents and humans at once, so its output and commands favour machines.
 
-**Verdict:** ? (unverified)
+**Verdict:** part — explicit agent-oriented output exists alongside human-readable commands and an interactive TUI. Machine preference and compulsory human difficulty are not established.
 
 ## What the report says
 
@@ -39,7 +39,17 @@ Count the `rig` subcommands and flags (`docs/as-built/cli-reference.md`). Mark w
 
 ## Evidence from this repo
 
-_Not checked yet. Add file:line references here._
+Reviewed at source commit `9db3ed6c406be5c3d9a84720383fcf6b543169e6` (2026-09-27).
+
+- **Observed in source:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/packages/cli/src/commands/up.ts:68–88` accepts a local YAML spec, offers plan mode, and explicitly labels `--json` “JSON output for agents.” Lines 103–129 branch between JSON and readable errors, although the remote success branch also prints JSON without the flag. This is a mixed interface, not a uniformly human-text default.
+- **Observed in source:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/packages/cli/src/front-door.ts:276–283` opens mission control for bare `rig` when both streams are TTYs; scripts fall through to the ordinary CLI.
+- **Observed in source:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/packages/cli/src/commands/status.ts:74–125` renders readable daemon, kernel, workspace, rig and next-step information, rather than requiring direct SQLite inspection.
+- **Stated intent:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/docs/reference/getting-started.md:22–51` documents keyboard-driven startup, help, local source reading and native-terminal recovery. Lines 66–80 give declarative-spec preview/launch commands.
 
 ## Notes
+
+- **Scope:** representative startup/status paths, not a numerical census of every flag. Command count alone cannot establish which commands humans “would ever type”; the older as-built reference is not a current exhaustive inventory.
+- **Contradiction:** Gemini's claim that users must use transaction syntax instead of YAML/UI conflicts with the current YAML input and TUI paths. Supporting agents does not imply excluding humans.
+- **Inference / evidence still needed:** relative machine preference and troubleshooting burden require a defined command inventory and observed human tasks; no usability measurements or comparative study were obtained.
+- **Runtime-unverified:** no CLI/TUI session, setup, tests or agent runtime was executed. Static implementation evidence is not proof of usability or successful operation on this host.
 
