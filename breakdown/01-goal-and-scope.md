@@ -12,8 +12,12 @@ A simpler tool must do these things:
 - Use words that software engineers know.
 - Keep the functions that have a real value for the owner.
 
-The requested direction is a Rust-owned core and removal of the project's Node
-dependency. This is a goal, not a completed port or an approved architecture.
+The owner's destination is fully Rust for all retained project functionality
+and full removal of the project's Node dependency, including required build,
+test, generation, installation, update and release tooling. Runtime-only Node
+removal is an intermediate milestone, not the destination. Any retained
+non-Rust functionality or Node exception requires an explicit owner decision.
+This is a firm goal, not a completed port or an approved architecture.
 The [Rust and Node-removal plan](10-rust-and-node-removal-plan.md) defines the
 runtime, build/test/tooling, UI, embedded-script and external-tool boundaries.
 The owner must confirm the removal boundary and compatibility promises. Keep
@@ -53,6 +57,7 @@ The `breakdown/` folder contains the analysis of OpenRig. It contains these docu
 | `04-review-method.md` | How to examine the Gemini review |
 | `05-simplification-rules.md` | Rules for changes to the code |
 | `06-open-questions.md` | Decisions that the owner must make |
+| `07-review-task-list.md` | Existing review tasks, statuses and dependencies |
 | `08-current-state-evidence.md` | Source evidence and its limits |
 | `09-adversarial-review-and-research-charter.md` | Research gates and alternatives |
 | `10-rust-and-node-removal-plan.md` | Node inventory, boundaries and conditional migration stages |
