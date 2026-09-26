@@ -41,10 +41,10 @@ Count the `rig` subcommands and flags (`docs/as-built/cli-reference.md`). Mark w
 
 Reviewed at source commit `9db3ed6c406be5c3d9a84720383fcf6b543169e6` (2026-09-27).
 
-- **Observed in source:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/packages/cli/src/commands/up.ts:68–88` accepts a local YAML spec, offers plan mode, and explicitly labels `--json` “JSON output for agents.” Lines 103–129 branch between JSON and readable errors, although the remote success branch also prints JSON without the flag. This is a mixed interface, not a uniformly human-text default.
-- **Observed in source:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/packages/cli/src/front-door.ts:276–283` opens mission control for bare `rig` when both streams are TTYs; scripts fall through to the ordinary CLI.
-- **Observed in source:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/packages/cli/src/commands/status.ts:74–125` renders readable daemon, kernel, workspace, rig and next-step information, rather than requiring direct SQLite inspection.
-- **Stated intent:** `/home/kkk/.cline/worktrees/43d5c/openrig-breakdown/docs/reference/getting-started.md:22–51` documents keyboard-driven startup, help, local source reading and native-terminal recovery. Lines 66–80 give declarative-spec preview/launch commands.
+- **Observed in source:** `/home/kkk/Apps/openrig-breakdown/packages/cli/src/commands/up.ts:68–88` accepts a local YAML spec, offers plan mode, and explicitly labels `--json` “JSON output for agents.” Lines 103–129 branch between JSON and readable errors, although the remote success branch also prints JSON without the flag. This is a mixed interface, not a uniformly human-text default.
+- **Observed in source:** `/home/kkk/Apps/openrig-breakdown/packages/cli/src/front-door.ts:276–283` opens mission control for bare `rig` when both streams are TTYs; scripts fall through to the ordinary CLI.
+- **Observed in source:** `/home/kkk/Apps/openrig-breakdown/packages/cli/src/commands/status.ts:74–125` renders readable daemon, kernel, workspace, rig and next-step information, rather than requiring direct SQLite inspection.
+- **Stated intent:** `/home/kkk/Apps/openrig-breakdown/docs/reference/getting-started.md:22–51` documents keyboard-driven startup, help, local source reading and native-terminal recovery. Lines 66–80 give declarative-spec preview/launch commands.
 
 ## Notes
 
