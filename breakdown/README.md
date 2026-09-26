@@ -12,6 +12,7 @@ This folder contains the analysis for a simpler version of OpenRig. Start with `
 | [06-open-questions.md](06-open-questions.md) | Decisions that the owner must make |
 | [08-current-state-evidence.md](08-current-state-evidence.md) | Current source, history, runtime flows and Rust boundary evidence |
 | [09-adversarial-review-and-research-charter.md](09-adversarial-review-and-research-charter.md) | Research plan and criteria for evaluating simplifications |
+| [research-runtime-verification.md](research-runtime-verification.md) | Blocked WT-10/CAP-8 and Node-removal verification protocols, authorization requirements and evidence contract; no runtime proof |
 | [gemini-review/](gemini-review/) | The Gemini review, divided into one folder for each claim |
 
 The documents use ASD-STE100 Simplified Technical English.
