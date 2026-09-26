@@ -30,13 +30,13 @@ commits; citing them does not mean their runtime behavior was demonstrated here.
 
 | Ref | Evidence and relevance |
 |---|---|
-| D1 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/10-rust-and-node-removal-plan.md:3-20,66-91,119-148` — accepted documentation scope, direct dependency/execution inventory, conditional stages and separation of document acceptance from Gate D. |
-| D2 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/06-open-questions.md:3-15,17-41` — README answers reconciled; N1–N10 all remain open; answers require owner, date, rationale, scope and acceptance test. |
-| D3 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/07-review-task-list.md:23-49,51-76` — T2–T5 requirements, blocked T6–T9 and preserved status baseline, not a second queue. |
-| D4 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/09-adversarial-review-and-research-charter.md:40-95` — five normal/failure journeys, evidence labels, coverage and state-ledger completion conditions. |
-| D5 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/09-adversarial-review-and-research-charter.md:154-178` — Gates A–D, Node-removal constraints and source-research limits. |
-| D6 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/08-current-state-evidence.md:64-130,183-281,283-339,412-443` — package/deployment inventory, selected flows, coupling/state table and further research leads. |
-| D7 | `/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/04-review-method.md:44-65` — verdict/evidence procedure and linked claim groups. |
+| D1 | `/home/kkk/Apps/openrig-breakdown/breakdown/10-rust-and-node-removal-plan.md:3-20,66-91,119-148` — accepted documentation scope, direct dependency/execution inventory, conditional stages and separation of document acceptance from Gate D. |
+| D2 | `/home/kkk/Apps/openrig-breakdown/breakdown/06-open-questions.md:3-15,17-41` — README answers reconciled; N1–N10 all remain open; answers require owner, date, rationale, scope and acceptance test. |
+| D3 | `/home/kkk/Apps/openrig-breakdown/breakdown/07-review-task-list.md:23-49,51-76` — T2–T5 requirements, blocked T6–T9 and preserved status baseline, not a second queue. |
+| D4 | `/home/kkk/Apps/openrig-breakdown/breakdown/09-adversarial-review-and-research-charter.md:40-95` — five normal/failure journeys, evidence labels, coverage and state-ledger completion conditions. |
+| D5 | `/home/kkk/Apps/openrig-breakdown/breakdown/09-adversarial-review-and-research-charter.md:154-178` — Gates A–D, Node-removal constraints and source-research limits. |
+| D6 | `/home/kkk/Apps/openrig-breakdown/breakdown/08-current-state-evidence.md:64-130,183-281,283-339,412-443` — package/deployment inventory, selected flows, coupling/state table and further research leads. |
+| D7 | `/home/kkk/Apps/openrig-breakdown/breakdown/04-review-method.md:44-65` — verdict/evidence procedure and linked claim groups. |
 
 ## Coverage and duplication decision: d5d13
 
@@ -52,14 +52,14 @@ complete T2–T4 integration. The shared register remains a separate obligation.
 | 36ea1 | A1–A4, A6–A7, S1, S4 | 8 |
 
 The pages are the individual README files under
-`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/gemini-review/claims/`.
+`/home/kkk/Apps/openrig-breakdown/breakdown/gemini-review/claims/`.
 The union is A1–A8, F1–F11 and S1–S5, with no repeated owner. In particular,
 F4/F5/F9 belong only to a1fa6, and its linked batch contains eight, not seven,
 pages. Combined T2 evidence requires both 43d5c and a1fa6. Preserve the linked
 mechanism conclusions and friction-first review order (D3, D7).
 
 **No duplicate claim cards are justified.** Only f4958 may integrate
-`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/gemini-review/README.md`
+`/home/kkk/Apps/openrig-breakdown/breakdown/gemini-review/README.md`
 after the accepted batches and explicit coordinator handoff. Its verdicts and
 shared status text must be reconciled with the actual evidence, not inferred
 from a card's column. This delegation does not edit that register or statuses.
@@ -85,8 +85,11 @@ capability coverage map or a state create/change/remove/reconcile ledger (D4).
 
 ## Approved source-research boundaries
 
-These are future output contracts supplied by d47aa, not cards created by 92f0b.
-The coordinator will create/link the cards and report their real IDs. Each
+These are output contracts supplied by d47aa, not cards created by 92f0b.
+The coordinator has created and linked exactly three residual research backlog
+cards: **662c4** (capability), **a4d7b** (workflows), and **c28a2** (state).
+They are not replacement or implementation cards. Each is assigned to a Cline
+specialist using provider `openai-codex`, model `gpt-6-luna`. Each
 researcher writes only the one exact output below. No claim rewriting, shared
 index/register edits, code, prototype, runtime experiment or machine setup is
 authorized. Read existing research and claim evidence first; cite and extend it
@@ -95,7 +98,7 @@ instead of copying or re-reviewing it. Report contradictions to d47aa.
 ### Capability coverage
 
 Owned output:
-`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/research-capability-inventory.md`.
+`/home/kkk/Apps/openrig-breakdown/breakdown/research-capability-inventory.md`.
 
 Acceptance:
 
@@ -113,7 +116,7 @@ Acceptance:
 ### Five normal/failure workflow traces
 
 Owned output:
-`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/research-workflow-traces.md`.
+`/home/kkk/Apps/openrig-breakdown/breakdown/research-workflow-traces.md`.
 
 Acceptance:
 
@@ -130,7 +133,7 @@ Acceptance:
 ### Core state and invariant ledger
 
 Owned output:
-`/home/kkk/.cline/worktrees/92f0b/openrig-breakdown/breakdown/research-state-invariants.md`.
+`/home/kkk/Apps/openrig-breakdown/breakdown/research-state-invariants.md`.
 
 Acceptance:
 
@@ -156,9 +159,12 @@ unresolved point must name the next evidence needed. Check local citations,
 coverage and diff hygiene; do not run product lifecycles under this delegation.
 
 The accepted 1f28b baseline and existing claim evidence are inputs to all three
-outputs. Disjoint file ownership permits parallel source reading and drafting.
-Before acceptance, reconcile workflow coverage with the capability map and the
-state ledger with workflow effects and linked-claim findings. d47aa resolves
+outputs. The coordinator deliberately serialized prerequisites: all three wait
+on accepted 92f0b; a4d7b also waits on 662c4; c28a2 also waits on a4d7b and a1fa6.
+Disjoint file ownership does not authorize parallel acceptance or automatic
+start. Source reading may later run in parallel only with an explicit coordinator
+handoff. Before acceptance, reconcile workflow coverage with the capability map
+and the state ledger with workflow effects and linked-claim findings. d47aa resolves
 cross-component disagreements; researchers do not edit each other's outputs.
 The coordinator owns concrete dependency links and shared integration sequencing.
 Completing these documents supplies evidence for gates; it does not pass a gate.
@@ -185,7 +191,43 @@ until the documented gates and separate authorization support them.
 
 ## Dependency outcome and no-go boundary
 
-Recorded logical prerequisites, not newly created Kanban edges:
+The initial read-only board snapshot on 2026-09-27 confirmed these actual card
+links, matching the coordinator's instruction. A later validation read during
+this edit no longer contained the three c28a2 edges. The graph below records the
+coordinator-directed dependencies and initially observed links, not a guarantee
+that the mutable board still enforces all of them. d47aa must reconcile that
+concurrent change before dispatch; this agent does not repair the board.
+Here `prerequisite -> dependent` means the dependent waits for acceptance of the
+prerequisite (the board stores the dependent in `fromTaskId`).
+
+```text
+92f0b -> 662c4
+92f0b -> a4d7b
+92f0b -> c28a2
+662c4 -> a4d7b
+a4d7b -> c28a2
+a1fa6 -> c28a2
+92f0b -> d5d13
+92f0b -> f7f4e
+```
+
+| Card | Specialist / exclusive output in its own task worktree | Waits on |
+|---|---|---|
+| 662c4 | Capability: `/home/kkk/.cline/worktrees/662c4/openrig-breakdown/breakdown/research-capability-inventory.md` | Accepted 92f0b |
+| a4d7b | Workflows: `/home/kkk/.cline/worktrees/a4d7b/openrig-breakdown/breakdown/research-workflow-traces.md` | Accepted 92f0b and 662c4 |
+| c28a2 | State: `/home/kkk/.cline/worktrees/c28a2/openrig-breakdown/breakdown/research-state-invariants.md` | Accepted 92f0b, a4d7b and a1fa6 |
+
+These are assigned future worktree output locations, not a claim that the files
+or worktrees already exist. The earlier 92f0b-rooted paths identify the same
+repository output contracts; specialists write only in their own task worktrees.
+
+fa0bb and 1f28b are Done. The three claim diffs are integrated; register sync
+is underway through f4958, not declared complete here. This document fulfills
+the requested d5d13/f7f4e documentation outcomes, with coordinator approval still
+pending. All three new research cards remain in Backlog; none is started by this
+delegation. No board mutation is performed here.
+
+Research and implementation gate requirements remain separate from card links:
 
 ```text
 accepted fa0bb/1f28b baseline at 93069eb1
@@ -208,8 +250,8 @@ claim pages do not silently update them. Owner N1–N10 answers remain external.
 **No Rust implementation or prototype cards are authorized.** The ten suggestions
 are disposed above, not converted into speculative migration cards.
 
-92f0b created no cards and supplies no invented IDs. d47aa will create/link the
-approved source-research cards and provide actual IDs and the board dependency
-graph. No further claim, inventory, reconciliation or migration cards are
+92f0b created no cards. d47aa created and linked 662c4, a4d7b and c28a2; their
+actual IDs and dependency graph are recorded above. No additional claim, Node
+inventory, owner-question reconciliation or migration cards are
 justified by this bounded decision. Further uncovered work must return to the
 coordinator for an explicit decision, not be inferred by a documentation agent.
