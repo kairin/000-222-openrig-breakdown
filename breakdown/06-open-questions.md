@@ -20,10 +20,9 @@ The destination is fully Rust retained project functionality and full project
 Node removal. Runtime-only removal is intermediate, not an alternative end goal.
 Any non-Rust or Node exception requires an explicit owner decision. The questions below
 define its acceptance boundary, not whether an unapproved rewrite is complete.
-All remain open. The local research baseline records evidence and conditional
-stages in `breakdown/10-rust-and-node-removal-plan.md` at commit `aa51d358`.
-That document is not yet integrated into remote main; this update does not
-publish or approve the separate research backlog.
+All remain open. Evidence and conditional stages are in
+[10-rust-and-node-removal-plan.md](10-rust-and-node-removal-plan.md). That
+document does not approve the separate research backlog.
 
 | No. | Owner question | Decision needed before |
 |---|---|---|
