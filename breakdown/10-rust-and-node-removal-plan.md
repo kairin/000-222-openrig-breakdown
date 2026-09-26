@@ -14,14 +14,21 @@ this audit. No Rust implementation was added. The skill router could not load
 context because the daemon was stopped; it was not started for this work.
 The claim register still has 24 unverified entries
 (`breakdown/gemini-review/README.md:39-80`). This document does not complete
-T2–T9, change claim verdicts, or satisfy Gates A–D. The worktree has no tracked
-07 task-list document; this deliverable does not create one or copy main-checkout
-task state. Dependent planning remains held for review.
+T2–T9, change claim verdicts, or satisfy Gates A–D. The follow-up preserves the
+main checkout’s pre-existing task-list baseline in [07](07-review-task-list.md),
+with unchanged statuses and an added stage-dependency map. The main checkout
+was not modified. Dependent planning remains held for review.
 
 ## Goal and boundary
 
-The requested destination is a simpler Rust-owned core and removal of the
-project's Node dependency. The existing product goals remain personal use,
+The owner's destination is fully Rust for all retained project functionality
+and full removal of the project's Node dependency, including required build,
+test, generation, installation, update and release paths. Runtime-only removal
+is intermediate. Non-Rust functionality or Node exceptions require explicit
+owner decisions; a permanent Node exception changes the destination and cannot
+be called full removal. This records owner intent from the fa0bb review, not a
+conclusion derived from source or an implementation approval.
+The existing product goals remain personal use,
 Claude Code and Codex CLI support, human-readable operation, preservation of
 uncommitted work, and independence from upstream services
 (`README.md:3-6,23-34`). A Rust launcher over a Node daemon is an intermediate
@@ -29,7 +36,23 @@ option, not completion of Node removal. A smaller required scope can be better
 than a line-for-line port. Compare alternatives before selecting the boundary
 (`breakdown/09-adversarial-review-and-research-charter.md:108-132,154-164`).
 
-Use these separate acceptance boundaries; the owner must ratify them:
+Use these separate acceptance boundaries. The owner must settle retained scope,
+external-tool obligations and transition order, not silently waive elimination.
+
+Browser JavaScript is not Node, but retaining non-Rust browser functionality
+still needs an explicit exception to the fully Rust destination. Likewise,
+shell without Node is not a Node dependency: it may be approved packaging glue,
+but changing a shebang to shell does not remove Node calls beneath it. Decide
+tmux, Claude/Codex CLIs, Docker, Git, shell entrypoints and native libraries
+explicitly in [06](06-open-questions.md). No pure-Rust dependency or wholly
+Node-free host promise is inferred from the language goal.
+
+CI-provider JavaScript actions and project-controlled tooling are different
+boundaries. The repository selects checkout/setup-node actions and runs its own
+Node report (`.github/workflows/portability-report.yml:21-32`). Replace the
+project script/setup requirement for full removal. Determine provider action
+runtimes separately, then record any owner-approved provider exception; this
+source audit does not verify those actions' internal execution environments.
 
 | Boundary | Proposed meaning | What does not count as removal |
 |---|---|---|
@@ -63,6 +86,9 @@ through the lockfile, dynamic imports, generated assets and package contents.
 | Build/test/generation | Root npm workspace builds, Node tests/guards/mirroring/context generation and tsc lint (`package.json:13-28`). Daemon uses tsc, Node copy/generation/evals, tsx and Vitest (`packages/daemon/package.json:71-77,89-95`); CLI has 3 dev dependencies (`packages/cli/package.json:67-70`), TUI 3 (`packages/tui/package.json:16-20`). | Retain as an explicit transitional exception only; replace necessary generators and tests before full project removal. |
 | Packaging/CI/testbed | Packaging builds all four workspaces, generates context and stages bundled daemon (`scripts/build-package.sh:20-43,82-100,141-165`). Portability workflow sets up Node 22 (`.github/workflows/portability-report.yml:24-29`). Testbed installs Node/npm then local npm package (`docker/testbed/Dockerfile:26-46`). | Audit artifact contents and CI separately; dropping manifests first would break packaging and checks. |
 | External agent setup and process tools | Setup offers npm installation of Claude Code and Codex (`packages/cli/src/commands/setup.ts:504-514,549-559`). tmux adapter uses Node filesystem/temp-file operations (`packages/daemon/src/adapters/tmux.ts:1-28`). | Separate project installation from external agent provisioning. Verify supported non-npm agent installation if required; Rust does not itself remove tmux or external authentication. |
+| npm lockfile and transitive/native installation | Lockfile v3 records workspaces and engine range (`package-lock.json:1-20`); resolved better-sqlite3 11.10.0 has an install script and dependencies on bindings/prebuild-install (`package-lock.json:3005-3014`); CLI lock entry records bundled daemon, install script, bins and dependency ranges (`package-lock.json:7415-7451`). | Manifest ranges are not resolved versions. Expand the retained transitive/install graph before removal; lockfile presence does not prove installation or execution. Retire the lockfile only after no retained path needs it. |
+| Fresh installation and smoke | Bash smoke script packages and installs via npm, probes dependency resolution with Node and starts/stops the CLI via Node (`scripts/smoke-fresh-install.sh:1-13,35-58,60-78`). Postinstall loads better-sqlite3 using Node (`packages/cli/scripts/check-abi.mjs:104-122`). | A shell extension is not proof of Node independence. Replace install/native ABI and smoke paths; prove equivalent isolated installation checks with no project Node execution. This audit did not run the smoke script. |
+| Update/reinstall and recovery instructions | Doctor recommends rebuilding or npm reinstall (`packages/cli/src/commands/doctor.ts:80-94`). Upgrade instructions invoke Node inspection, SQLite backup and managed-plugin refresh helpers (`packages/daemon/specs/agents/shared/skills/core/openrig-upgrade/SKILL.md:75-125`). | Audit the whole update/reinstall/recovery route, including instructions and helper assets. These are observed separate paths, not evidence of one verified automatic updater. Replace retained helpers before retiring old distributions and recovery options. |
 
 ### Reproducible count reconciliation
 
@@ -117,13 +143,15 @@ concrete implementation plan or implementation is authorized.
 - Observations identify a source commit and exact file/line evidence or a
   reproducible count predicate. No source reading is presented as runtime proof.
 - Verify every changed document, local links, citation ranges and diff hygiene.
-  No claim pages/register, code, task state, or research-gate completion changes.
+  No claim pages/register, code, task-status, or research-gate completion changes.
+  Preserve the imported 07 baseline and main-local index contents.
 - Reviewer acceptance of these documents is separate from Gate D approval.
 
 ### Future migration, not yet tested or achieved
 
-- Owner ratifies runtime-only versus full project removal, required UI/MCP,
-  platforms, old-state support and external-tool exceptions before release.
+- Owner ratifies intermediate milestones toward fully Rust retained functionality
+  and full project Node removal, required UI/MCP, platforms, old-state support
+  and explicit non-Rust/external-tool/CI-provider exceptions before release.
 - On each supported target, install the release in an isolated environment
   without Node/npm/npx available to project-owned processes. Exercise start,
   inspect, send/queue, stop, restart/recovery, retained presentations, hooks,
@@ -154,3 +182,22 @@ checks inherited docs placement, not the truth of migration claims; source
 inspection and the explicit evidence limits remain necessary. No full product
 suite, installer, daemon or recovery workflow was run. These checks validate
 the bounded documentation change, not Node removal or migration readiness.
+
+### Follow-up baseline integration
+
+On 2026-09-27, the main-local 07 baseline was copied verbatim before appending
+the stage-dependency map; all T1–T9 rows and statuses were preserved. The index
+retains every main-local line as well as the 10 entry. Documents 05 and 09 now
+make full project Node elimination explicit while preserving Gates A–D; 01, 06
+and this document link the integrated scope. Earlier charter line citations
+above remain pinned to source commit `9db3ed6c406be5c3d9a84720383fcf6b543169e6`;
+use the current [charter gates](09-adversarial-review-and-research-charter.md#gates-and-open-decisions)
+for the added constraint. This follow-up does not change any research status.
+
+Review amendments also make fully Rust retained functionality explicit, ask
+about every named external/tooling exception in 06, and add lockfile,
+install/update/smoke evidence. Verification covered all seven amended documents
+(01, 05, 06, 07, 09, 10 and index): local link targets, pinned citation ranges,
+unique section headings, the byte-identical imported 07 prefix, and unchanged
+Gate A–D definition paragraphs. Diff checks and the docs guard passed again;
+all five docs-guard tests passed. Product runtime and smoke paths were not run.
