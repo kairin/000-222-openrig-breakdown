@@ -14,6 +14,7 @@ This folder contains the analysis for a simpler version of OpenRig. Start with `
 | [08-current-state-evidence.md](08-current-state-evidence.md) | Current source, history, runtime flows and Rust boundary evidence |
 | [09-adversarial-review-and-research-charter.md](09-adversarial-review-and-research-charter.md) | Research plan and criteria for evaluating simplifications |
 | [10-rust-and-node-removal-plan.md](10-rust-and-node-removal-plan.md) | Source-cited Node inventory, Rust/removal boundaries, owner decisions, conditional stages and acceptance criteria (fa0bb) |
+| [11-coordination-outcomes.md](11-coordination-outcomes.md) | Research ownership, acceptance dependencies and gated migration dispositions for d5d13/f7f4e |
 | [gemini-review/](gemini-review/) | The Gemini review, divided into one folder for each claim |
 
 The documents use ASD-STE100 Simplified Technical English.
