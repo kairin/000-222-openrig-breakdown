@@ -18,7 +18,7 @@ applies. This document is the replacement documentation outcome for d5d13/f7f4e;
 it does not independently approve or close their Kanban cards.
 
 Decision provenance: d47aa's explicit delegation and the read-only board snapshot
-at `/home/kkk/.cline/kanban/workspaces/openrig-breakdown/board.json`, inspected
+at `/home/kkk/.cline/kanban/workspaces/openrig-breakdown/board.json` (local tool state, not in this repository), inspected
 on 2026-09-27. In that snapshot, 1f28b's review records acceptance and integration;
 43d5c has a scope correction; f4958 has an explicit integrator-only handoff.
 Board contents are mutable operational evidence, not a versioned source contract.
