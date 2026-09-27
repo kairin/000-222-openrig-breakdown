@@ -11,8 +11,14 @@ send changes to, the original project.
 
 ## Status
 
-Early. The code is still the same as upstream OpenRig 0.5.16. No
+Research. The code is still the same as upstream OpenRig 0.5.16. No
 simplification has been made yet.
+
+The current work reads the source and records evidence: what each workflow
+does, which state it keeps, and which capabilities are optional. The owner's
+stated goal is a fully Rust tool with no Node.js. The research examines how to
+reach that goal. No design or plan is approved. Open decisions for the owner are in
+[research-owner-decision-brief.md](breakdown/research-owner-decision-brief.md).
 
 Until the tool is renamed, it still uses the upstream command names (`rig`,
 `openrig-tui`), package names (`@openrig/*`) and state folder (`~/.openrig`).
@@ -45,7 +51,26 @@ All analysis lives in [`breakdown/`](breakdown/README.md):
 | [04-review-method.md](breakdown/04-review-method.md) | How each claim about the tool is checked against the code |
 | [05-simplification-rules.md](breakdown/05-simplification-rules.md) | Rules for changing the code safely |
 | [06-open-questions.md](breakdown/06-open-questions.md) | Decisions still to make, including the final name |
+| [07-review-task-list.md](breakdown/07-review-task-list.md) | Review tasks, status, dependencies and completion evidence |
+| [08-current-state-evidence.md](breakdown/08-current-state-evidence.md) | Source, history and runtime evidence for the current code |
+| [09-adversarial-review-and-research-charter.md](breakdown/09-adversarial-review-and-research-charter.md) | The research plan and the criteria for a simplification |
+| [10-rust-and-node-removal-plan.md](breakdown/10-rust-and-node-removal-plan.md) | Node.js inventory, Rust boundaries and conditional stages (a plan, not approved) |
+| [11-coordination-outcomes.md](breakdown/11-coordination-outcomes.md) | Research ownership, acceptance dependencies and migration dispositions |
 | [gemini-review/](breakdown/gemini-review/README.md) | An outside review, split into 24 claims to check |
+
+Research notes (source reading only; none is an approved decision):
+
+| Document | Subject |
+| :--- | :--- |
+| [research-workflow-scope.md](breakdown/research-workflow-scope.md) | Candidate operator workflows (CAP-1) |
+| [research-workflow-traces.md](breakdown/research-workflow-traces.md) | Traces of setup, work, inspection and recovery |
+| [research-state-invariants.md](breakdown/research-state-invariants.md) | State invariants and recovery boundaries (CAP-3) |
+| [research-capability-inventory.md](breakdown/research-capability-inventory.md) | Optional and adjacent capabilities (CAP-4) |
+| [research-owner-decision-brief.md](breakdown/research-owner-decision-brief.md) | Owner decisions N1–N10 for Rust and Node.js removal |
+| [research-runtime-verification-plan.md](breakdown/research-runtime-verification-plan.md) | Protocols for runtime checks (not run) |
+| [research-runtime-verification.md](breakdown/research-runtime-verification.md) | Blocked runtime verification for WT-10, CAP-8 and Node.js removal |
+| [research-review-matrix.md](breakdown/research-review-matrix.md) | Independent review of research artifacts |
+| [research-coordinator-review-a6c2b.md](breakdown/research-coordinator-review-a6c2b.md) | Coordinator review of three research artifacts |
 
 ## What the code does today
 
