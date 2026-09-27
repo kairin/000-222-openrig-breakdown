@@ -19,7 +19,7 @@ Evidence labels:
 
 The integrated register records the linked A5/F4/S2, A8/F9/S5, F5/S3 conclusions and source-only limits [E01](#e01). Coordination identifies a1fa6's eight-page ownership and the c28a2 acceptance/dependency contract [E02](#e02). A read-only inspection of `/home/kkk/.cline/kanban/workspaces/openrig-breakdown/board.json` on 2026-09-27 additionally found a1fa6's coordinator approval naming integrated commits `3ce80cea2db3e1bcaaf546ede874f3a4b8e36c6f` and `273417729f59cebbebb1cb87c1cb9b859926aacb`. That mutable board testimony is supplementary, not a pinned source guarantee.
 
-**U0 — accepted workflow prerequisite:** the available workflow artifact explicitly calls itself partial and lists independent acceptance as outstanding [E03](#e03). Its current board prompt requests completion but contains no acceptance receipt. This map cross-checks the available pinned traces, not an invented accepted replacement. **Next evidence:** coordinator/reviewer receipt identifying the accepted a4d7b artifact commit, followed by a source-effect cross-check against that exact version. This acceptance-checklist item remains open; completing this source map does not close another card.
+**Workflow integration evidence (rechecked):** live GitHub PR #6 is merged; its head artifact is `9c5a639eb7b7ec9445e742caf9ca55414308aa2d`, merged by `1568d6b5911c5148e6c3e84715389f1009099c24` at 2026-09-26T22:36:16Z. This corrects the earlier conclusion based only on divergent local `main`. The merged workflow artifact was read and cross-checked [E59](#e59). PR integration establishes an available integrated document, not that every assertion or card criterion passed; its review API reports a COMMENTED review, not an approval. The mutable board still lists a4d7b In Progress. **U0 — card acceptance authority:** next evidence is the coordinator's disposition reconciling that board task with the merged revision. This map does not infer Done from a merge.
 
 ## Reading the ownership map
 
@@ -97,7 +97,7 @@ These are source-path boundaries, not commands executed during this research. Ev
 
 ## Cross-check with workflow traces and accepted linked evidence
 
-All rows below are **O** comparisons of documents/source, not renewed claim verdicts. The accepted a1fa6 pages were read as eight pages, not three independent guarantees; [E01](#e01) supplies their linked register conclusions and [E51](#e51)–[E58](#e58) their exact reviewed evidence sections.
+All rows below are **O** comparisons of documents/source, not renewed claim verdicts. The five-journey comparison was also repeated against the merged workflow revision [E59](#e59): its install/start gaps remain explicit; launch compensation and dirty-workspace effects remain unresolved; queue retry language still needs I5’s separate-ladder qualification; inspection adds TUI/browser/MCP consumers without proving reconnect; stop/resume retains the I2 transport-classification overstatement. These are source disagreements, not reasons to edit the other card’s artifact. The accepted a1fa6 pages were read as eight pages, not three independent guarantees; [E01](#e01) supplies their linked register conclusions and [E51](#e51)–[E58](#e58) their exact reviewed evidence sections.
 
 | Existing evidence | State/effect cross-check | Qualification / next evidence |
 |---|---|---|
@@ -116,7 +116,7 @@ Unresolved source coverage is explicit rather than hidden behind an assertion of
 
 | ID | Unresolved point | Next evidence needed / boundary |
 |---|---|---|
-| U0 | Accepted workflow prerequisite not evidenced at this checkout. | Coordinator supplies accepted a4d7b commit/review receipt; researcher compares this map with its changed effects/citations. No shared edits or board mutation. |
+| U0 | Merged workflow revision cross-checked, but board-card acceptance is not reconciled. | Coordinator confirms disposition of a4d7b against merged artifact `9c5a639eb7b7ec9445e742caf9ca55414308aa2d`, addressing I2/I5 qualifications. No shared edits or board mutation. |
 | U1 | Universal preservation of tracked edits, index, untracked data, nested repos and linked worktree metadata; custom path overlap with destroy. | Audit selected startup actions/services/native tool commands and resolved destructive targets; separately authorized disposable run comparing tracked bytes, staged blobs/index, untracked bytes, nested repos, `.git` link/common-dir metadata before/after normal stop, failed snapshot, abrupt stop and resume. |
 | U2 | Concurrent edits, shared-cwd block ownership, partial projection/uninstall and rollback crash windows. | Trace actual selected resource/install plan and all outer error handlers; fault-inject interruption and edit-after-install in disposable paths, inspect user text/digests/backups/manifest and emitted errors. Review path-specific expectations, not a new owner policy. |
 | U3 | Full cascade/lifecycle surface beyond listed core tables; pod removal, process leftovers after failed cleanup, abrupt daemon death. | Follow later migration rebuilds and remaining lifecycle delegates for the selected rig; inspect process tree/DB/WAL and errors under kill/DB failure, daemon signal versus rig stop. Do not infer OS termination from DB compensation. |
@@ -131,7 +131,7 @@ Unresolved source coverage is explicit rather than hidden behind an assertion of
 
 ## Validation and acceptance disposition
 
-The source map explicitly covers every requested state class and the normal/delegated cleanup paths identified above. It does **not** claim an exhaustive whole-product writer/deleter proof: U3/U5–U11 identify remaining breadth and runtime evidence. In particular, **accepted-workflow cross-check is not complete until U0 resolves**. Submit as source research with those limitations, not as a passed full acceptance checklist or a gate result.
+The source map explicitly covers every requested state class and the normal/delegated cleanup paths identified above. It does **not** claim an exhaustive whole-product writer/deleter proof: U3/U5–U11 identify remaining breadth and runtime evidence. The merged workflow revision has now been cross-checked; **card acceptance authority remains U0**, distinct from that completed document comparison. Submit as source research with those limitations, not as a passed full acceptance checklist or a gate result.
 
 Document checks: verify every pinned source link's blob exists and line range is in bounds; verify evidence reference definitions/usages; check required state/cleanup/invariant IDs and U0–U11 next-evidence rows; inspect citations for semantic support; run `git diff --check`; ensure only the owned Markdown output is staged/committed. No product tests are represented by these checks. Final command results and output commit are reported in the handoff rather than embedding a self-referential commit ID here.
 
@@ -429,3 +429,8 @@ Each E-ID below is the exact path/range evidence for the scoped claims above; mu
 ### E58
 
 - [breakdown/gemini-review/claims/strengths/S3-ownership-prevents-drift/README.md:26–50](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/breakdown/gemini-review/claims/strengths/S3-ownership-prevents-drift/README.md#L26-L50)
+
+### E59
+
+- [breakdown/research-workflow-traces.md:20–115](https://github.com/kairin/openrig-breakdown/blob/9c5a639eb7b7ec9445e742caf9ca55414308aa2d/breakdown/research-workflow-traces.md#L20-L115) — separately pinned integrated workflow revision; product citations inside retain their own baseline.
+- Operational provenance: `gh pr view 6 --json url,state,mergedAt,mergeCommit,headRefOid,reviews` returned MERGED with the head/merge/time recorded above. Live API testimony is not a source-code citation or a task acceptance verdict.
