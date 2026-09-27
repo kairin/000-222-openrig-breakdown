@@ -43,7 +43,7 @@ are in [10](10-rust-and-node-removal-plan.md#reproducible-count-reconciliation).
 | Package directories / npm workspaces | 5 directories (`cli`, `daemon`, `tui`, `ui`, `test-system`); 4 active workspaces, excluding `test-system` (`package.json:7-12`) |
 | TypeScript files in `packages/` | 2,364 tracked `.ts`/`.tsx` files, including tests; supersedes the undefined approximate 2018 count |
 | Files in `scripts/` | 57 tracked files, not all executable scripts |
-| License | Apache License 2.0 |
+| License | Apache License 2.0 (upstream code). This project's own work: AGPL-3.0-only plus a commercial license; see `REUSE.toml` |
 
 ## 1.3 Scope of this folder
 
