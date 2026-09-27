@@ -2,7 +2,7 @@
 
 ## Scope, baseline and evidence rules
 
-Inspected commit: **`ea7c268f576ada8434d3dae3e6ac972264910d4c`**. Every evidence link below names a file and inclusive line range at this commit in the task repository. Evidence IDs are local to this document. They do not change shared claim verdicts. This replaces the earlier partial source sketch; it does not certify a live workflow.
+Inspected implementation commit: **`ea7c268f576ada8434d3dae3e6ac972264910d4c`**. Implementation citations use this pin. Cross-check references X1–X3 use the main-workspace research snapshot **`dc8a6077baf37d9331d5ad0130dcd64e523d3c44`**; X4 uses accepted workflow merge **`1568d6b5911c5148e6c3e84715389f1009099c24`** (PR #6). Every evidence link names its exact commit, file and inclusive line range. Git comparison found no changes between the implementation and research pins under packages, scripts or the getting-started guide. Evidence IDs are local to this document; they do not change shared verdicts or certify a live workflow.
 
 The five journeys follow the assigned [workflow contract][C1]. The local CLI and one local project are the primary scope. The guide's `first-project` example is an investigation anchor, not an approved retained product scope. Commands in this document were **read, not executed**. No installation, daemon, agent, queue mutation, stop, resume, product test or runtime fault injection was run. Reading a test is not running it.
 
@@ -87,7 +87,7 @@ Scope: ordinary `rig down <rig>` without `--delete`, followed by `rig up <rig> -
 
 ## Cross-check against available capability and state evidence
 
-**observed-in-source (document availability):** at the pinned tree, the dedicated capability inventory and state-invariant ledger assigned by [C1] are absent. Only this workflow research file is present among those three destinations. The accepted dependency/execution inventory [C2], selected state map [C3] and accepted claim-review limitations [C4] are available. Do not relabel the dependency inventory as the completed capability card.
+**observed-in-source (document availability):** the dedicated research documents are absent at the implementation pin but present at the separately pinned main-workspace snapshot: capability inventory [X1] and state ledger [X2], [X3]. They were read from Git objects, not assumed from a dirty working copy. The accepted dependency/execution inventory [C2], selected state map [C3] and claim-review qualifications [C4] remain inputs. Do not confuse the integrated CAP-4 baseline with acceptance of the ongoing expanded capability card 662c4.
 
 | Available inventory/state area | Workflow alignment and disposition |
 |---|---|
@@ -97,23 +97,52 @@ Scope: ordinary `rig down <rig>` without `--delete`, followed by `rig up <rig> -
 | CLI, TUI, browser UI and MCP ([C2]) | CLI primary paths investigated. Other consumer implementations and reconnect parity deferred from paired traces with explicit G4 evidence needs, not marked removed or retained. |
 | Snapshot, transcript, filesystem and process state ([C3], [C4]) | W5 confirms conditional resume and best-effort capture/cleanup, not a backup contract. Managed-guidance edits narrow the earlier “project directory untouched” reading. G5 remains open. |
 | Runners, operational upgrade/backup scripts, build/test/generation, packaging/CI/testbed, lockfile/native install and update/reinstall ([C2]) | Inventory cross-check only. These are adjacent workflows, not silently covered by a successful local start. G6 names missing package/install/update evidence. |
-| Multi-host, explicit workflow engine, context/spec/plugin and workspace surfaces named in capability assignment ([C1]) | Only incidental local spec/projection/workspace dependencies are followed here. Full capability mapping awaits accepted inventory; G0/G6 prevent an exhaustive-coverage claim. |
+| Multi-host, explicit workflow engine, context/spec/plugin and workspace surfaces named in capability assignment ([C1]) | Only incidental local spec/projection/workspace dependencies are followed here. The available inventory's explicit omissions remain explicit below; G6 prevents an exhaustive-capability claim. |
 
-The accepted linked claims distinguish durable identity from liveness, snapshot recovery from backup, and a wake intent from receipt or correct action ([C4]). These traces preserve those qualifications. **unresolved:** reconciliation with accepted capability card 662c4 and state card c28a2 remains pending, not implicitly satisfied by this baseline cross-check. [C1] records coordinator-controlled sequencing; user approval authorized this document work, not independent acceptance or changes to that sequencing.
+The accepted linked claims distinguish durable identity from liveness, snapshot recovery from backup, and a wake intent from receipt or correct action ([C4]). These traces preserve those qualifications. The available-artifact reconciliation is complete below; acceptance of other ongoing cards, integration into main, and Gates A–D remain separate. The user's continuation/closure instruction does not authorize changing their outputs or decisions.
+
+### Capability inventory reconciliation
+
+**observed-in-source (research artifact):** [X1] gives eleven named surface rows and explicit omissions. The following covers every row without upgrading its evidence or deciding owner value. W1–W5 correspond to its provisional J1–J5, not a promise that every capability is required.
+
+| Inventory row | Workflow cross-check | Disposition / next evidence |
+|---|---|---|
+| CAP C1 — MCP | W1/W2/W4/W5 share daemon operations; accepted PR #6 preserves MCP error mapping ([X4]). | Consumer evidence retained below; full tool parity/reconnect remains G4. |
+| CAP C2 — Browser UI | W4 inspection; workflow trace page and SSE refresh are present in PR #6 ([X4]). | Do not erase this prior source evidence; runtime reconnect remains G4. |
+| CAP C3 — TUI | W4 result projection and adjacent W3/W5 operations ([X1], [X4]). | Prior rendering evidence retained; no live parity claim, G4. |
+| CAP C4 — Gateway/Slack | Adjacent W3 delivery/W4 inspection, not W3's pane-bound transport ([X1], [Q4a]). | Implemented connector and deferred model-divergence notification remain distinct; end-to-end delivery G3/G6. |
+| CAP C5 — Pi | Alternate W2/W5 adapter, not demonstrated by Codex trace ([X1]). | Runtime/provider configuration and teardown evidence remain G2/G5. |
+| CAP C6 — Stub/test-system | Verification infrastructure for journey-like cases, not operator success ([X1]). | Preserve distinction between daemon fixture runner and unproven test-system scenario consumer; G6, no tests run. |
+| CAP C7 — Plugins | Adjacent W2 projection/W4 discovery ([X1]). | Read-only discovery does not establish writer/cleanup chain; G2/G6. |
+| CAP C8 — Specs/workspace/context | W1/W2 inputs and projections; W3 context is only an adjacent use ([X1], [L5a]). | Concrete launch chain traced; complete library lifecycle remains G6. |
+| CAP C9 — Multi-host | Adjacent distributed W3/W4, outside the local paired trace ([X1]). | No remote transaction or retry guarantees borrowed from local create; G3/G6. |
+| CAP C10 — Providers/services | W2 process creation and W5 delegated service teardown ([X1], [S11], [S12]). | Compose policies now explicit below; other provider lifecycles remain G2/G5. |
+| CAP C11 — Generated docs/skills | W1 packaging/W2 startup context, not merely passive prose ([X1]). | Packaging/generation failure and ownership remain G6. |
+| Explicit omissions in CAP-4 | Workflow/views/images/files/terminal/health/queue API families, copied assets, Slack deferral and scenario invocation ([X1]). | Core queue/start/stop subsets are traced here; remaining adjacent paths stay G6, not silently claimed complete. |
+
+### State ledger and accepted workflow reconciliation
+
+**observed-in-source (research artifact):** [X2] separates project catalog/files, Git index and worktrees, seat/session/occupant identity, native conversation/transcript, queue/history, events/snapshots, managed configuration and daemon/services. W1's instance/DB effects, W2's projection/session ordering, W3's commit-before-wake, W4's read-only lookup and W5's conditional restore agree with those distinctions. [X3] expressly leaves exhaustive writers/deleters and runtime preservation unresolved; this document does not close those state-card obligations.
+
+**observed-in-source — delegated deletion:** W5 calls service teardown even without `--delete`. The service owner reads persisted policy (default `down`); Compose makes `leave_running` a no-op and adds `--volumes` for `down_and_volumes` ([S11], [S12]). Thus configured volumes can be removed by ordinary rig stop. Moreover, teardown awaits the service call but does not inspect a returned `{ok:false}`; only a thrown error reaches its warning catch ([S2a], [S11]). **inferred:** a non-throwing Compose failure can be absent from the CLI's teardown warnings. Actual volume effects and error presentation remain G5. This narrows, rather than repeats, any broad “files untouched” claim.
+
+**observed-in-source (accepted artifact):** PR #6 already included TUI workflow-model rendering, browser workflow-page/shared SSE invalidation, and MCP stdio-to-daemon tooling with `isError` mapping ([X4]). Those source findings are retained as inherited evidence, not newly executed checks. Its referenced tests remain test assertions, not passes. This revision adds complete five-link failure pairs, direct command/route/result citations and concrete cleanup boundaries; it does not invalidate the earlier artifact's acceptance or broaden its runtime claims.
+
+**stated-intent / unresolved:** the available state ledger explicitly cites PR #6 as accepted ([X3]), but that does not make this new revision independently reviewed or merged. Artifact integration remains the normal handoff, not an unsatisfied source-evidence link. No prerequisite is claimed accepted solely because a Kanban column changed.
 
 ## Missing evidence and next evidence needed
 
-All rows below are **unresolved**. Source-path completion is separate from runtime demonstration.
+Rows G1–G6 are **unresolved**. G0 records the closed availability/cross-check gap. Source-path completion is separate from runtime demonstration.
 
 | ID | Missing evidence | Next evidence needed |
 |---|---|---|
-| G0 | Dedicated accepted capability inventory and state ledger unavailable at pin; acceptance sequencing not established here. | Obtain coordinator-accepted artifact commits/links. Reconcile relevant capabilities/state effects and report contradictions through coordinator, without editing shared outputs. State ledger may arrive downstream of these traces. |
+| G0 | **Closed for this source-only card:** available capability/state artifacts and accepted workflow PR are pinned and reconciled above ([X1]–[X4]). | Future accepted revisions require a delta check; do not mistake the ongoing capability/state cards or main integration for already-completed acceptance. No missing input remains for this available-artifact comparison. |
 | G1 | Clean installation/auth; missing tools, occupied endpoint, interrupted child startup and migration/cleanup outcomes. | Authorized disposable home/DB and package install; record versions, commands, output/exit status, lock/state/log files and process/DB state before/after each fault. Check leftover package/setup changes separately. |
 | G2 | Actual agent readiness, Claude parity, cwd/isolation, partial launch/projection cleanup and attention recovery. | Isolated Claude/Codex rigs; capture topology/session rows, projected-file diffs, process identity and native terminal output through successful, attention and terminal-failure launch. Prove cleanup rather than assuming best-effort calls succeeded. |
 | G3 | Recipient acceptance/completion, missed wake repair, disconnect/duplicate handling and terminal-handoff wake recovery. | Disposable queue/transport with controlled failures; record item/transition/event/wake state and terminal evidence before/after commit, response loss and restart. Compare same-ID and new-ID retries; observe recipient action separately from pane text. |
 | G4 | Stale-process display, reconnect/replay and CLI/TUI/UI/MCP consistency. | Trace each additional consumer's query/subscription/projection implementation, then run authorized disconnection and stale-process cases; compare display to DB and independently observed process state. No client parity claim follows from W4. |
 | G5 | Work preservation and exact conversation continuity across stop, snapshot failure, kill failure, reboot and optional service/workspace cleanup. | Inspect delegated cleanup/removal paths; on disposable copies compare tracked bytes, staged index, untracked files, nested repos/worktree metadata, managed guidance, transcripts and service volumes before/after. Verify native token/process identity and resumed conversation independently. |
-| G6 | Full capability disposition and adjacent install/update/packaging/plugin/remote workflows. | Reconcile accepted capability inventory, then inspect selected entrypoints through owners/effects/output. Use isolated package/update/remote demonstrations only under separate authorization. Do not infer retained product scope. |
+| G6 | Full capability disposition and adjacent install/update/packaging/plugin/remote workflows beyond the cross-checked baseline. | Use the inventory reconciliation above to select remaining entrypoints through owners/effects/output. Recheck later accepted inventory deltas; use package/update/remote demonstrations only under separate authorization. Do not infer retained product scope. |
 
 ## Validation and review boundary
 
@@ -121,7 +150,7 @@ Coverage contract: W1-N/F through W5-N/F each contain Input, Client/command, Run
 
 Validation for this documentation-only revision uses Git-tree citation/range checks, reference-definition checks, five-journey/two-path/five-link coverage checks, manual source-to-claim review, `git diff --check` and a one-owned-path diff check. Product tests and lifecycle demonstrations are not substitutes for these checks and were not run. Check results and resulting documentation commit are reported in the task handoff, avoiding a self-referential commit claim here.
 
-No implementation, shared index/register, owner decision or Gate A–D change is part of this document. Source review remains subject to explicit G0 dependency; this document does not itself record reviewer acceptance, runtime proof or a gate pass.
+No implementation, shared index/register, owner decision or Gate A–D change is part of this document. The five source-level paired traces and available-artifact cross-check are complete. This document does not itself record independent reviewer acceptance, runtime proof, main integration or a gate pass.
 
 ## Pinned evidence references
 
@@ -262,3 +291,15 @@ No implementation, shared index/register, owner decision or Gate A–D change is
 [S10]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/restore-orchestrator.ts#L239-L250 "packages/daemon/src/domain/restore-orchestrator.ts:239-250"
 
 [Q4c]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/queue-repository.ts#L3536-L3545 "packages/daemon/src/domain/queue-repository.ts:3536-3545"
+
+[X1]: https://github.com/kairin/openrig-breakdown/blob/dc8a6077baf37d9331d5ad0130dcd64e523d3c44/breakdown/research-capability-inventory.md#L3-L90 "breakdown/research-capability-inventory.md:3-90"
+
+[X2]: https://github.com/kairin/openrig-breakdown/blob/dc8a6077baf37d9331d5ad0130dcd64e523d3c44/breakdown/research-state-invariants.md#L69-L81 "breakdown/research-state-invariants.md:69-81"
+
+[X3]: https://github.com/kairin/openrig-breakdown/blob/dc8a6077baf37d9331d5ad0130dcd64e523d3c44/breakdown/research-state-invariants.md#L83-L159 "breakdown/research-state-invariants.md:83-159"
+
+[X4]: https://github.com/kairin/openrig-breakdown/blob/1568d6b5911c5148e6c3e84715389f1009099c24/breakdown/research-workflow-traces.md#L71-L84 "breakdown/research-workflow-traces.md:71-84"
+
+[S11]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/service-orchestrator.ts#L136-L163 "packages/daemon/src/domain/service-orchestrator.ts:136-163"
+
+[S12]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/adapters/compose-services-adapter.ts#L80-L100 "packages/daemon/src/adapters/compose-services-adapter.ts:80-100"
