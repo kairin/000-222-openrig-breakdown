@@ -131,6 +131,33 @@ Unresolved source coverage is explicit rather than hidden behind an assertion of
 
 ## Validation and acceptance disposition
 
+### Decomposed completion pass
+
+The user requested decomposition and Backlog placement, then continued investigation. The existing card was retained (no duplicate research cards). Its prompt now contains S1–S4; the supported Kanban `workspace.saveState` API with an expected revision moved c28a2 to Backlog, confirmed by `workspace.getState` at revision 309. This operational record is not source behavior and does not amend gate or owner decisions.
+
+| Work package | Bounded closure condition | This pass |
+|---|---|---|
+| S1 — project and continuity ownership | Identify catalog authority, scaffold mutation, startup/continuity writers and cascade deletion; distinguish missing callers from proven runtime writes. | Additional source inspected; findings below, E60–E62. |
+| S2 — fork and managed artifacts | Follow provider fork command, new token capture, image writer/remover, projection marker and CLI reset paths. | Additional source inspected; E63–E65. Native-provider storage durability remains external evidence, not a required runtime experiment here. |
+| S3 — delegated cleanup | Follow pod removal and service error propagation; classify context/bundle/restore-packet cleanup targets. | Additional source inspected; E66–E68. Remaining auxiliary source paths are explicitly listed, not declared covered. |
+| S4 — acceptance and handoff | Validate exact citations, row/link coverage, owned-file-only diff and commit; distinguish remaining source gaps from runtime proposals. | Checks run after edits. Done remains conditional on full source-path coverage, not just row counts. |
+
+### Additional source findings from the completion pass
+
+- **O — project catalog is a separate authority (F1/F5):** `workspace.yaml` maps project ID to root; duplicate IDs reject, selection resolves realpath, catalog/manifest disagreement and changed selected root produce named errors. The additive scaffold creates missing files/directories after collision checks, skips existing files, and has no filesystem transaction or failure rollback around the writes [E60](#e60). **I:** project identity can survive agent restart but a changed catalog/root needs reselection; it is not rig/node identity. No catalog deletion authority is established by these read/scaffold functions; U1/U11 retain the external-writer audit.
+- **O — startup metadata writer and deletion (R4):** after pre-launch file delivery, StartupOrchestrator inserts/replaces node startup context unless preservation was requested; persistence failure reports failed startup. It stores projection/file/action descriptions, not original file bytes. The node-keyed schema cascades on node deletion. PodRepository upserts continuity status/artifact JSON under `(pod_id,node_id)`; either pod/node deletion cascades continuity, while node pod membership becomes null when only the pod row is removed [E61](#e61). A repository-wide source search for `createCheckpoint` and `updateContinuityState` found their definitions but no production call sites under `packages/daemon/src`; **U:** these methods alone do not prove an active checkpoint/continuity writer. Next evidence: dynamic callers or a configured integration invoking those methods. Snapshot/restore readers remain evidenced by E10/E24/E27.
+- **O — pod removal is sequential (D2):** lifecycle shrink calls removeNode for each member; if a later member fails after prior removal, it returns a partial result with removed logical IDs. Only after the loop does a transaction persist `pod.deleted` and delete the pod, then notify [E62](#e62). Already removed members are not resurrected by a later failure. Raw PodRepository deletion is a narrower operation than this lifecycle workflow.
+- **O — native fork delegates history copying (R2):** Claude adapter invokes native `--resume … --fork-session`, polls for a post-fork ID and errors if capture fails; Codex adapter invokes native `fork`, captures a thread ID and errors if absent. The returned token comes from capture, not a direct assignment of parent ID [E63](#e63). **I:** comments intend a new identity, but the cited branches do not themselves compare captured ID against parent; native tool/version correctness remains U5. Rebuild instead resolves existing artifact paths as fresh-start `send_text`, reports missing paths, and fails if none exist. It does not copy an entire conversation store [E63](#e63).
+- **O — agent-image lifetime:** SnapshotCapturer derives source token/cwd, constructs a name/version manifest and calls the library installer with explicitly supplied files (empty map by default). Installer writes manifest/stats/optional files; consumption mutates stats and pin/unpin creates/deletes a sentinel [E64](#e64). Image prune/delete is already mapped in D8/E41; removing the image source may invalidate future forks but does not prove deletion of native provider history. These images are not full native conversation backups.
+- **O — two additional managed-state owners (C3/C4):** ProjectionManifestStore upserts only the last hash/time/spec/category per target path and reads it for classification; its readability probe reports unavailable storage. It stores no original bytes. CLI ConfigStore independently writes/read-verifies its config and reset without a key unlinks the whole configured file [E65](#e65). These are not covered by merely naming the daemon SettingsStore. Whole-store destroy remains their ultimate deletion boundary; general uninstall completeness remains U9.
+- **O — service failure propagation (D1/D4):** ServiceOrchestrator returns `{ok:false}` on compose failure. RigTeardown awaits it but does not inspect the returned result; only a thrown error adds a service warning on the live-session branch, and the already-stopped branch swallows thrown errors. Ordinary down route can therefore return 200 when service failure is represented only by the ignored result. In contrast, the explicit environment-down route checks `result.ok` and returns 500 on failure [E09](#e09), [E42](#e42), [E66](#e66). This source disagreement is resolved; U10 now concerns actual service/mount data and external failure outcomes, not uncertainty about these callers.
+- **O — bounded auxiliary cleanup (D10):** composed context-pack creation records whether it created the target, deletes that directory after write failure, writes manifest last, and also deletes on failed post-write discoverability. Bundle source cleanup recursively removes its extraction directory best-effort. Restore-packet writer uses a sibling temporary directory, validates on-disk summary, renames to final target, and removes the temporary directory after failure [E67](#e67). These target classes are not synonymous with arbitrary project checkout deletion. Crash/race preservation remains unproven.
+- **O — search boundary:** product searches for `DELETE FROM events`, `DELETE FROM queue_items`, `DELETE FROM outbox_entries` and `DROP TABLE events` found no matches in the searched production packages/scripts (test files excluded). This is a bounded lexical observation, **not** proof against dynamic SQL, whole-store destroy, operator deletion or external tools. A shell-deletion sweep also identified package-build, VM-bootstrap, smoke-install and testbed-image paths [E68](#e68). The inspected package build derives its target paths from the repository root and deletes CLI bundled daemon/UI/TUI plus the vendored daemon dependency. Smoke-install invokes that build and its exit trap removes its mktemp directory **and all CLI tarballs**; testbed build removes its mktemp context. The VM bootstrap match is printed reset instructions, **not an executed deletion in that function**. This distinguishes generated/scratch deletion from prose suggesting an operator deletion; other auxiliary callers remain U11.
+
+### Remaining completion blockers after S1–S3
+
+The new findings close the specific startup/continuity schema, pod-removal, native-fork command, image-write, CLI-reset and service-result propagation questions. They do not close every question in U1–U11. In particular, auxiliary shell cleanup and its configured target/caller coverage, all selected custom actions, and complete managed uninstall coverage still need source inspection. Native-provider flush/recovery and fault-injection evidence remain future runtime work; they are not a reason by themselves to fail this source-only card. Card acceptance reconciliation U0 is operational and separate from the already completed merged-workflow comparison.
+
 The source map explicitly covers every requested state class and the normal/delegated cleanup paths identified above. It does **not** claim an exhaustive whole-product writer/deleter proof: U3/U5–U11 identify remaining breadth and runtime evidence. The merged workflow revision has now been cross-checked; **card acceptance authority remains U0**, distinct from that completed document comparison. Submit as source research with those limitations, not as a passed full acceptance checklist or a gate result.
 
 Document checks: verify every pinned source link's blob exists and line range is in bounds; verify evidence reference definitions/usages; check required state/cleanup/invariant IDs and U0–U11 next-evidence rows; inspect citations for semantic support; run `git diff --check`; ensure only the owned Markdown output is staged/committed. No product tests are represented by these checks. Final command results and output commit are reported in the handoff rather than embedding a self-referential commit ID here.
@@ -434,3 +461,58 @@ Each E-ID below is the exact path/range evidence for the scoped claims above; mu
 
 - [breakdown/research-workflow-traces.md:20–115](https://github.com/kairin/openrig-breakdown/blob/9c5a639eb7b7ec9445e742caf9ca55414308aa2d/breakdown/research-workflow-traces.md#L20-L115) — separately pinned integrated workflow revision; product citations inside retain their own baseline.
 - Operational provenance: `gh pr view 6 --json url,state,mergedAt,mergeCommit,headRefOid,reviews` returned MERGED with the head/merge/time recorded above. Live API testimony is not a source-code citation or a task acceptance verdict.
+
+### E60
+
+- [packages/daemon/src/domain/workspace/project-read.ts:10–84](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/workspace/project-read.ts#L10-L84)
+- [packages/daemon/src/domain/workspace/project-catalog.ts:15–36](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/workspace/project-catalog.ts#L15-L36)
+- [packages/daemon/src/domain/workspace/default-workspace-scaffold.ts:97–152](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/workspace/default-workspace-scaffold.ts#L97-L152)
+
+### E61
+
+- [packages/daemon/src/domain/startup-orchestrator.ts:195–224](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/startup-orchestrator.ts#L195-L224)
+- [packages/daemon/src/domain/pod-repository.ts:80–111](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/pod-repository.ts#L80-L111)
+- [packages/daemon/src/db/migrations/014_agentspec_reboot.ts:6–46](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/db/migrations/014_agentspec_reboot.ts#L6-L46)
+- [packages/daemon/src/db/migrations/015_startup_context.ts:6–14](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/db/migrations/015_startup_context.ts#L6-L14)
+
+### E62
+
+- [packages/daemon/src/domain/rig-lifecycle-service.ts:540–573](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rig-lifecycle-service.ts#L540-L573)
+- [packages/daemon/src/domain/rig-lifecycle-service.ts:602–632](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rig-lifecycle-service.ts#L602-L632)
+
+### E63
+
+- [packages/daemon/src/adapters/claude-code-adapter.ts:245–279](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/adapters/claude-code-adapter.ts#L245-L279)
+- [packages/daemon/src/adapters/codex-runtime-adapter.ts:345–380](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/adapters/codex-runtime-adapter.ts#L345-L380)
+- [packages/daemon/src/domain/session-source-rebuild-resolver.ts:54–88](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/session-source-rebuild-resolver.ts#L54-L88)
+
+### E64
+
+- [packages/daemon/src/domain/agent-images/snapshot-capturer.ts:61–104](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/agent-images/snapshot-capturer.ts#L61-L104)
+- [packages/daemon/src/domain/agent-images/agent-image-library-service.ts:149–210](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/agent-images/agent-image-library-service.ts#L149-L210)
+- [packages/daemon/src/domain/agent-images/agent-image-library-service.ts:306–372](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/agent-images/agent-image-library-service.ts#L306-L372)
+
+### E65
+
+- [packages/daemon/src/domain/projection-manifest-store.ts:19–82](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/projection-manifest-store.ts#L19-L82)
+- [packages/cli/src/config-store.ts:1184–1269](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/config-store.ts#L1184-L1269)
+
+### E66
+
+- [packages/daemon/src/routes/down.ts:34–60](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/down.ts#L34-L60)
+- [packages/daemon/src/routes/env.ts:105–130](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/env.ts#L105-L130)
+
+### E67
+
+- [packages/daemon/src/domain/context-packs/context-pack-library-service.ts:359–399](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/context-packs/context-pack-library-service.ts#L359-L399)
+- [packages/daemon/src/domain/bundle-source-resolver.ts:99–113](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/bundle-source-resolver.ts#L99-L113)
+- [packages/daemon/src/domain/bundle-source-resolver.ts:182–195](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/bundle-source-resolver.ts#L182-L195)
+- [packages/cli/src/restore-packet/packet-writer.ts:260–300](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/restore-packet/packet-writer.ts#L260-L300)
+
+### E68
+
+- [scripts/build-package.sh:4–21](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/scripts/build-package.sh#L4-L21)
+- [scripts/build-package.sh:140–152](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/scripts/build-package.sh#L140-L152)
+- [scripts/vm-bootstrap/two-daemon-start.sh:39–51](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/scripts/vm-bootstrap/two-daemon-start.sh#L39-L51)
+- [scripts/smoke-fresh-install.sh:16–37](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/scripts/smoke-fresh-install.sh#L16-L37)
+- [scripts/build-testbed-image.sh:32–40](https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/scripts/build-testbed-image.sh#L32-L40)
