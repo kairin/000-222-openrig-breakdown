@@ -12,24 +12,23 @@ target-specific run sheets still require owner approval before execution.
 Source inspection used `aa51d3581825ce286d9dc2b379e21bee92a2a1c6`.
 The focused publication branch starts at remote main
 `9db3ed6c406be5c3d9a84720383fcf6b543169e6` to avoid implicitly publishing
-16 unrelated local documentation commits. The application source inspected is
+16 unrelated local documentation commits (these were integrated later). The application source inspected is
 the existing TypeScript/Node implementation, not a Rust replacement.
 
-Three requested documents were absent from the inspected checkout and remote
-main: `breakdown/research-workflow-traces.md`,
+At authoring time, three requested documents were absent from the inspected
+checkout and remote main (all three are now on main): `breakdown/research-workflow-traces.md`,
 `breakdown/research-capability-inventory.md`, and
 `breakdown/research-state-invariants.md`. WT-10/CAP-8 could not be located.
 Their exact wording and invariant IDs must be supplied before coverage approval.
 Do not manufacture replacement research or mark those criteria complete.
 
 The inspected `breakdown/10-rust-and-node-removal-plan.md` exists at the inspected
-commit but is not yet on remote main. Its future acceptance section requires
+commit and is now on main as
+[10-rust-and-node-removal-plan.md](10-rust-and-node-removal-plan.md). Its future acceptance section requires
 isolated install/lifecycle proof, preservation and rollback, explicit external
 tool exceptions, separate runtime/full-toolchain removal, and comparison against
 the baseline. This protocol prepares those cases without importing the other
-branch's documents or declaring Gates A–D passed. Retrieve that document from
-the stated commit when reconciling criteria. Missing documents are named as text,
-not broken local links.
+branch's documents or declaring Gates A–D passed. Use that document when reconciling criteria.
 
 Source reading and tests read or run in isolation are not proof of the full
 runtime journeys. No Rust implementation, successful migration, or Node removal

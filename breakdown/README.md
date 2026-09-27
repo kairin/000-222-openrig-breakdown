@@ -10,9 +10,24 @@ This folder contains the analysis for a simpler version of OpenRig. Start with `
 | [04-review-method.md](04-review-method.md) | How to examine the Gemini review |
 | [05-simplification-rules.md](05-simplification-rules.md) | Rules for changes to the code |
 | [06-open-questions.md](06-open-questions.md) | Decisions that the owner must make |
+| [07-review-task-list.md](07-review-task-list.md) | Review tasks, status, dependencies and completion evidence |
 | [08-current-state-evidence.md](08-current-state-evidence.md) | Current source, history, runtime flows and Rust boundary evidence |
 | [09-adversarial-review-and-research-charter.md](09-adversarial-review-and-research-charter.md) | Research plan and criteria for evaluating simplifications |
+| [10-rust-and-node-removal-plan.md](10-rust-and-node-removal-plan.md) | Source-cited Node inventory, Rust/removal boundaries, owner decisions, conditional stages and acceptance criteria |
+| [11-coordination-outcomes.md](11-coordination-outcomes.md) | Research ownership, acceptance dependencies and gated migration dispositions for d5d13/f7f4e |
 | [research-runtime-verification.md](research-runtime-verification.md) | Blocked WT-10/CAP-8 and Node-removal verification protocols, authorization requirements and evidence contract; no runtime proof |
 | [gemini-review/](gemini-review/) | The Gemini review, divided into one folder for each claim |
 
 The documents use ASD-STE100 Simplified Technical English.
+
+As of 2026-09-27, all 24 claim pages agree with the
+[claim register](gemini-review/README.md): 6 `yes`, 18 `part`.
+[T2–T4](07-review-task-list.md#tasks) are source-review complete only.
+T5 remains incomplete pending owner input, and T6–T9 remain blocked.
+
+The Rust/Node-removal document is a planning baseline, not completed migration
+work or Gate D approval. No Gate A–D is declared passed. Read the
+[source-review limits and linked conclusions](gemini-review/README.md#source-review-status-2026-09-27)
+before treating source mechanisms as runtime-verified behavior. The claim
+reviews do not establish successful installation, recovery, work preservation,
+measured usability or completion of the wider research program.

@@ -20,10 +20,9 @@ The destination is fully Rust retained project functionality and full project
 Node removal. Runtime-only removal is intermediate, not an alternative end goal.
 Any non-Rust or Node exception requires an explicit owner decision. The questions below
 define its acceptance boundary, not whether an unapproved rewrite is complete.
-All remain open. The local research baseline records evidence and conditional
-stages in `breakdown/10-rust-and-node-removal-plan.md` at commit `aa51d358`.
-That document is not yet integrated into remote main; this update does not
-publish or approve the separate research backlog.
+All remain open. Evidence and conditional stages are in
+[10-rust-and-node-removal-plan.md](10-rust-and-node-removal-plan.md). That
+document does not approve the separate research backlog.
 
 | No. | Owner question | Decision needed before |
 |---|---|---|
@@ -117,7 +116,7 @@ accepted, integrated or runtime-verified. Remote main at the delivery baseline i
 | Capability inventory, CAP-1/4/5/7 | Required journeys and retained capability value are unknown; measurements/comparison depend on scoped workflows. | H1: H-SCOPE and N1–N10. Source agents: remaining capability/consumer evidence. A–D obligations remain separate. |
 | Capability inventory, CAP-2/3/6/8 | Workflow/state depth and historical rationale are incomplete; no isolated runtime demonstration. | Source researchers own traces/history; H2 assignment and operational authorization are needed for runtime work. A evidence and B/C comparison/validation inputs. |
 | Workflow traces, WT-1–8 | Missing end-to-end failure, cleanup, reconnect, consumer and state links; preservation scenarios lack before/after evidence. | Source researchers verify mechanisms; H1 supplies policy through N2/N3 and H-PRESERVE. A–C evidence, D compatibility scope. |
-| Workflow traces, WT-9 | Explicit owner answers are absent. | H1; T5 remains incomplete and T6–T9 remain blocked in the local research baseline. B–D downstream decisions. |
+| Workflow traces, WT-9 | Explicit owner answers are absent. | H1; T5 remains incomplete and T6–T9 remain blocked in [07](07-review-task-list.md). B–D downstream decisions. |
 | Workflow traces, WT-10 | No measured install/launch/assign/inspect/stop/resume or failure/recovery run. | H2 unassigned; require disposable data/environment and explicit authorization, never the sole live database. Relevant A–C evidence and later validation; source reading is not runtime proof. |
 | Workflow traces, WT-11 | Independent review acceptance is outstanding. | Assigned reviewer/coordinator, not automatically the human owner. Resolve any required human authority through H1/H3; documentation checks do not pass A–D. |
 | State invariants, invariants 5 and completion boundary | Project/worktree write/delete authority, stop/failure/crash recovery and native resume proof remain incomplete; files, index, transcripts and conversations are distinct stores. | Source researchers verify paths; H1 decides H-PRESERVE; H2 enables later safe runs. A state understanding, C preservation/recovery, D compatibility. |
@@ -136,9 +135,10 @@ Inspection locations and limitations:
 - State: `/home/kkk/.cline/worktrees/c28a2/openrig-breakdown/breakdown/research-state-invariants.md`,
   “Invariants for later workflow traces” and “Completion boundary and next evidence.”
   Specialist worktree HEAD at delivery recheck: `03f508c53348d4a343c423cd751e7ab74dc706cb`.
-- Coordination: `breakdown/11-coordination-outcomes.md` at local commit `aa51d358`,
-  “Disposition of all ten f7f4e suggestions” and “Dependency outcome and no-go boundary.”
-  This file and the local T5 task list are not yet integrated into remote main.
+- Coordination: [11-coordination-outcomes.md](11-coordination-outcomes.md)
+  (first written at commit `aa51d358`), “Disposition of all ten f7f4e suggestions”
+  and “Dependency outcome and no-go boundary.” The T5 task list is in
+  [07-review-task-list.md](07-review-task-list.md).
 
 The research documents themselves cite source baseline `9db3ed6c`; reading their
 tests/citations does not establish passing behavior. Their missing integration,

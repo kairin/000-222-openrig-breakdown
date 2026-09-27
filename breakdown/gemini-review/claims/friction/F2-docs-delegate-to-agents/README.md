@@ -1,6 +1,6 @@
 # F2: The docs tell humans to hand setup and operation over to their agents.
 
-**Verdict:** ? (unverified)
+**Verdict:** yes — current documentation explicitly asks the user to delegate permission configuration and reviewed work to agents. This does not mean all setup or operation requires an agent.
 
 ## What the report says
 
@@ -26,7 +26,17 @@ Read `docs/reference/getting-started.md` and the README. Can a human finish setu
 
 ## Evidence from this repo
 
-_Not checked yet. Add file:line references here._
+Reviewed at source commit `9db3ed6c406be5c3d9a84720383fcf6b543169e6` (2026-09-27).
+
+- **Stated intent:** `/home/kkk/Apps/openrig-breakdown/docs/reference/getting-started.md:8–15` links “Ask your agent to configure that choice”; lines 239–252 explicitly say the user chooses scope and the agent inspects/applies permissions, with an example delegation prompt.
+- **Stated intent:** `/home/kkk/Apps/openrig-breakdown/docs/reference/getting-started.md:101–125` directs the human to send an outcome to the owner, which creates/claims a durable task and routes an independent check; the human can inspect queue state directly.
+- **Counterevidence to mandatory delegation:** `/home/kkk/Apps/openrig-breakdown/docs/reference/getting-started.md:22–80` supplies direct TUI, prerequisite/login, preview and launch instructions. Lines 268–282 describe optional recipes and editing a user-owned spec.
+- **Observed in source:** `/home/kkk/Apps/openrig-breakdown/packages/cli/src/front-door.ts:276–283` implements the human bare-command TUI path; `/home/kkk/Apps/openrig-breakdown/packages/cli/src/commands/up.ts:68–88` exposes direct YAML launch and plan options.
 
 ## Notes
+
+- **Scope:** the verdict confirms the narrow documentary claim, not Gemini's implication that humans cannot operate the product themselves. The infographic's separate process-hosting assertion is not evidence for delegation.
+- **Contradiction / limitation:** current documentation contains both agent-delegation advice and direct human instructions. These coexist; interpreting the former as exclusive contradicts the latter. “Frequently” has not been quantified across the complete documentation corpus.
+- **Inference / evidence still needed:** whether a new human can finish every setup step unaided needs a walkthrough on a specified clean environment; documentation and available command paths alone cannot prove that outcome.
+- **Runtime-unverified:** no setup, login, launch, permission change or usability trial was performed.
 

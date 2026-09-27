@@ -8,7 +8,7 @@ Prepared on 2026-09-26 against checkout `147993aa` by an Astra review with repos
 
 The current goal is a smaller personal tool for running Claude Code and Codex CLI agents together as a team. Its owner should have less to learn, fewer moving parts to maintain, and enough clarity to set it up, run it, and fix it without asking an agent to interpret the system. Stopping must preserve uncommitted work. The derivative should be self-contained with respect to the original project's services and distributed resources.
 
-The user's additional preference is for a Rust-first project. Research should find the smallest understandable system that fulfills the useful workflow and determine where Rust helps achieve that result. A language preference does not settle which behaviors, interfaces, or subsystems are worth retaining.
+The owner's destination is fully Rust for all retained project functionality and full Node removal from project-owned runtime, installation, update, generation, build, test and release paths, not merely a Rust-first preference or core-only hypothesis. Non-Rust or Node exceptions require explicit owner approval. This 2026-09-27 clarification is a stated requirement, not a source-derived result or implementation approval. Research must find the smallest understandable system that fulfills the useful workflow within that destination. It must still establish which behaviors, interfaces and subsystems earn their cost. See [10](10-rust-and-node-removal-plan.md) for exact source evidence, boundaries and conditional stages, and [07](07-review-task-list.md) for preserved T1–T9 statuses and dependencies.
 
 The learning outcome is the ability to explain and eventually change this system with confidence: what happens for an owner action, which component owns each effect, where state lives, how failures are recovered, why complexity appeared, and what must remain true if the implementation changes.
 
@@ -105,7 +105,7 @@ The initial source research has already found four concrete reasons to investiga
 
 These findings also challenge a simplistic definition of “fewer moving parts.” Removing a daemon, queue, or terminal dependency can move its responsibilities elsewhere. The research must identify which responsibilities can disappear with scope reduction and which must still be implemented.
 
-## What “simpler” and “Rust-first” should mean during research
+## What “simpler” and the fully Rust destination mean during research
 
 Simplicity is primarily an owner outcome. Establish measurements before assigning numerical targets; no usability timings or runtime benchmarks were performed in this pass.
 
@@ -118,16 +118,16 @@ Simplicity is primarily an owner outcome. Establish measurements before assignin
 | Change comprehensibility | Number of independently maintained layers/contracts touched by a representative change. | Can a future maintainer predict the effects of a small change? |
 | Preservation and reliability | Specified work-preservation and recovery contracts, supported by source now and targeted demonstrations later. | Does the simpler design maintain the behaviors the owner depends on? |
 
-Rust-first needs an explicit boundary. Possible meanings include a Rust launcher, a Rust CLI, Rust ownership of domain/state/lifecycle behavior, or an entirely Rust application. They provide different benefits. The useful working hypothesis to evaluate is Rust ownership of the necessary core behavior and deployment path, with other technology justified by retained user value. This remains a hypothesis until the dependency and contract maps support it.
+The destination is firm; the architecture, retained scope and transition order are not. A Rust launcher or CLI over the current Node daemon cannot meet Node elimination. A runtime-only milestone may retain named build/test tooling temporarily, but full removal must also replace or retire required Node generators, scripts, tests and release tooling. Browser JavaScript is not Node; external agent tools require their own stated boundary rather than an unsupported promise of a Node-free host. Retaining non-Rust browser functionality, shell entrypoints or native libraries requires an explicit owner boundary/exception decision, not just a claim of user value. The dependency and contract maps must demonstrate a credible path to the destination before a Rust boundary is recommended.
 
 | Candidate | What it could improve | Main challenge or reason to reject it |
 | --- | --- | --- |
-| Simplify the current TypeScript system | Establishes which complexity can be removed through scope, defaults and interface design; provides a comparison baseline. | Retains Node and may retain installation or packaging costs the owner wishes to eliminate. |
-| Rust CLI over the existing daemon | Allows a narrower native command experience while retaining established domain behavior. | Can add another language and client/server compatibility surface while leaving the original runtime burden intact. |
+| Simplify the current TypeScript system (comparison baseline or temporary step only) | Establishes which complexity can be removed through scope, defaults and interface design; provides a comparison baseline. | Retains Node; cannot be accepted as the requested final state. Any temporary use needs an exit dependency and later replacement/removal proof. |
+| Rust CLI over the existing daemon (temporary bridge only) | Allows a narrower native command experience while retaining established domain behavior. | Adds another language and compatibility surface while retaining Node. Requires a concrete daemon/consumer exit path; not Node-elimination completion. |
 | Rust core and CLI, optional presentation layer | May consolidate state/lifecycle ownership and make nonessential UI optional. | Requires deliberate behavior mapping for persistence, events, process control and external-agent integrations. |
 | Full replacement of all retained components | Gives freedom to redesign a coherent small product. | Has the largest evidence and compatibility burden; a line-for-line rewrite risks preserving unnecessary complexity. |
 
-Score each candidate against the same owner scenario, required behavior, runtime footprint, implementation scope, dependency seams, data transition, learning burden and reversibility. Do not invent weighted scores until priorities are established. Identify a counterexample that would make each candidate unattractive.
+Score each candidate against the same owner scenario, required behavior, runtime footprint, implementation scope, dependency seams, data transition, learning burden and reversibility. Do not invent weighted scores until priorities are established. Identify a counterexample that would make each candidate unattractive. The TypeScript candidate is a comparison baseline; mixed Rust/Node candidates are intermediate only. If evidence challenges the destination's feasibility, report it and seek an owner decision instead of lowering the goal. Gates A–D below are unchanged.
 
 Before recommending Rust scope, answer: Which concrete deployment or maintenance pain would it remove? Which contracts would need reimplementation? Which capabilities can disappear instead? Is the seam real in the current dependency graph? Can one bounded behavior demonstrate the premise in a later implementation phase? If these remain unknown, report uncertainty rather than endorsing a rewrite.
 
@@ -160,6 +160,14 @@ Use a compact vocabulary sheet linking current terms to plain-language meaning a
 **Gate C — enough evidence to recommend a Rust direction:** the candidate architectures have been compared against the same contracts; preservation and recovery obligations are understood; the intended Rust boundary has a specific owner benefit and a bounded way to validate it later.
 
 **Gate D — ready for an implementation plan:** the retained product scope, operating mode, compatibility promises and unanswered high-impact questions are explicit. Implementation is a later task, not an automatic consequence of producing this research.
+
+The Node-elimination requirement does not bypass any gate. At Gate C, show how
+the candidate reaches a compliant final state; distinguish comparative baselines
+and temporary mixed-runtime steps. At Gate D, record the runtime-only milestones,
+remaining build/test/release dependencies, external-tool boundary and full-removal
+acceptance criteria. A permanent project-owned Node exception requires an explicit
+owner change to the goal; it is not completion of that goal. T2–T9 retain their
+statuses in 07, and this charter does not authorize the later stages in 10.
 
 Existing documents should be checked before treating any of these as open: supported operating systems, whether a daemon is essential, whether tmux is a chosen user interface or an internal dependency, which presentation surface is essential, whether existing installations/data must migrate, and exactly what self-contained installation means for bundled assets versus external agent executables. The current root README already names Claude Code and Codex CLI; older unanswered agent-set questions should be reconciled with it.
 
