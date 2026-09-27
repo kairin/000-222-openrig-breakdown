@@ -115,5 +115,18 @@ describe where this code came from. It is not the name of this project.
 
 ## License
 
-Apache License 2.0. See [LICENSE](LICENSE). The original copyright notice is
-kept. Files changed in this project will be marked as changed.
+This repository holds work under two licenses. [REUSE.toml](REUSE.toml) gives
+the license for each path.
+
+- **Upstream OpenRig code** stays under the Apache License 2.0
+  ([text](LICENSES/Apache-2.0.txt)). The original copyright notice is kept.
+  Files changed in this project will be marked as changed.
+- **Original work in this project** (currently this README and `breakdown/`,
+  and all new code) is under the GNU Affero General Public License v3.0 only
+  ([text](LICENSES/AGPL-3.0-only.txt)). If you distribute it, or run a
+  modified version as a network service, you must publish your full source
+  under the same license.
+- **Commercial license.** For use that cannot meet the AGPL terms, see
+  [COMMERCIAL.md](COMMERCIAL.md).
+
+See [LICENSE](LICENSE) and [NOTICE](NOTICE) for the full statement.

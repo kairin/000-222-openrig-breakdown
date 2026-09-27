@@ -1,0 +1,7 @@
+No license is granted for these files.
+
+They are output from a third-party AI research tool, and they quote material
+owned by other persons. They are kept only as review input. kairin does not
+claim copyright in them and does not license them under the AGPL-3.0, the
+Apache-2.0 or a commercial license. Do not redistribute them unless you have
+rights from the relevant owners.

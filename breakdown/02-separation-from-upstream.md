@@ -39,11 +39,15 @@ CAUTION: THE DAEMON TRIES TO DOWNLOAD CODE FROM AN UPSTREAM REPOSITORY AT EACH S
 
 ## 2.4 License and name
 
-The Apache License 2.0 applies to the code. These conditions apply when you give copies of the code to other persons:
+The Apache License 2.0 applies to the upstream code. Original work in this project is under AGPL-3.0-only, with a commercial license also offered (`COMMERCIAL.md`). `REUSE.toml` maps each path to its license. These conditions apply when you give copies of the code to other persons:
 
-- Keep the `LICENSE` file.
+- Keep the Apache text in `LICENSES/Apache-2.0.txt` and ship it with any package that contains upstream code. The CLI build copies it into the package as `LICENSE`.
 - Put a clear notice in each file that you change. The notice must tell that you changed the file (section 4(b)).
-- There is no `NOTICE` file in the repository. Thus section 4(d) does not apply now.
+- Upstream has no `NOTICE` file, so section 4(d) does not apply to upstream code. The `NOTICE` file in this repository is this project's own attribution statement.
+- When a new file is written from scratch, give it the header `SPDX-License-Identifier: AGPL-3.0-only`. When an upstream file is changed, keep it Apache-2.0 and add the change notice. Add the AGPL header only for a substantial rewrite.
+- A distributed work that combines both parts must meet the AGPL-3.0 terms as a whole. Apache-2.0 is compatible with GPLv3 and AGPLv3.
+- A commercial license can cover only work whose copyright belongs to the owner. Accept outside contributions to AGPL parts only with a written grant (see `COMMERCIAL.md`).
+- Before a dependency is added to the Rust tool, check that its license is compatible with AGPL-3.0 (for example MIT, BSD, Apache-2.0, MPL-2.0, LGPL, GPL-3.0). Do not add dependencies under GPL-2.0-only, SSPL, or non-commercial or source-available terms.
 
 The license does not give permission to use the name "OpenRig" (section 6). If you publish the simpler tool, use a different name.
 
