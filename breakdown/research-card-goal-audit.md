@@ -1,5 +1,15 @@
 # Research-card goal audit — independent review submission
 
+> **Status (added 2026-09-27 on merge):** Historical snapshot only. Do not use
+> it as the current state. The audited baseline `ea7c268f` is not on remote
+> `main`; it exists only on the owner's local branch
+> `backup/local-main-2026-09-27`. The `/home/kkk/.cline/worktrees/948ca/...`
+> paths refer to a worktree that no longer exists; read them as repository
+> paths at `ea7c268f`. Later merges (#16–#22) changed the state. For example,
+> `research-capability-inventory.md` and `research-state-invariants.md` are
+> now on `main`, so the "absent on M" findings no longer hold. Before acting
+> on any verdict, re-check it against current `main`.
+
 ## Baseline and evidence boundary
 
 Read-only inspection on **2026-09-26 UTC (2026-09-27 local)**. Verdicts assess the **current card prompts**, not whether an older, narrower delegation once completed. PASS means observable evidence meets that objective; FAIL means a demonstrated gap; UNKNOWN means acceptance evidence was not established. No product lifecycle or tests were run. Source mechanisms are not runtime proof.
