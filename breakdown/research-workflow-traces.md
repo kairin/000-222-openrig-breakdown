@@ -1,108 +1,264 @@
-# Workflow traces: setup, work, inspection and recovery
+# Five source-level operator workflow traces
 
-## Scope and evidence rules
+## Scope, baseline and evidence rules
 
-This source-research note traces the provisional operator journey in [the research charter](09-adversarial-review-and-research-charter.md#-a-provisional-workflow-to-investigate-first). It is not an owner decision, implementation recommendation, runtime demonstration or Gate A–D result. Source citations below are pinned to inspected source commit [`9db3ed6c406be5c3d9a84720383fcf6b543169e6`](10-rust-and-node-removal-plan.md#status-and-evidence-rules). Line ranges name paths at that commit unless noted. **Reading tests is not passing tests.** No installation, daemon, agent, queue, teardown or restore workflow was run for this trace.
+Inspected commit: **`ea7c268f576ada8434d3dae3e6ac972264910d4c`**. Every evidence link below names a file and inclusive line range at this commit in the task repository. Evidence IDs are local to this document. They do not change shared claim verdicts. This replaces the earlier partial source sketch; it does not certify a live workflow.
 
-Labels: **Observed in source** describes a mechanism present in the cited code. **Stated intent** records a documented goal or expected behavior. **Inferred** connects the evidence but is not guaranteed by it. **Unresolved** identifies evidence not obtained. Normal and failure paths below are source-path readings, not outcomes demonstrated on a live system.
+The five journeys follow the assigned [workflow contract][C1]. The local CLI and one local project are the primary scope. The guide's `first-project` example is an investigation anchor, not an approved retained product scope. Commands in this document were **read, not executed**. No installation, daemon, agent, queue mutation, stop, resume, product test or runtime fault injection was run. Reading a test is not running it.
 
-## Trace 1 — install prerequisites and start a project
+Classification and confidence:
 
-| Link | Normal path | Failure path |
+- **observed-in-source**: executable mechanism in the cited ranges; high confidence within the named branch, not a runtime success claim.
+- **stated-intent**: guide, help text or prior review conclusion; not independent implementation proof.
+- **inferred**: a bounded consequence of the cited ordering; medium confidence and no broader guarantee.
+- **unresolved**: evidence is missing; no outcome confidence. The gap ledger names the next evidence needed.
+
+Each table has a normal and failure path through all five links. A failure means the operator's requested outcome is not established; it need not mean an HTTP error. Daemon readiness, agent interactivity, notification delivery, task acceptance and correct work are different results.
+
+## Trace 1 — install prerequisites and start
+
+Scope: packaged CLI installation/setup, then explicit `rig daemon start`. Project launch follows in Trace 2. This split makes daemon readiness independently visible.
+
+| Link | Normal path — W1-N | Failure path — W1-F |
 |---|---|---|
-| Input | **Stated intent:** prepare one project, inspect setup, preview, then launch (`docs/reference/getting-started.md:54-80`). | **Stated intent:** setup guide calls out prerequisite/auth checks; charter names missing tools, malformed config, occupied endpoint as cases to investigate (`docs/reference/getting-started.md:54-80`; `09-adversarial-review-and-research-charter.md:46-54`). |
-| Client/command | `rig setup --dry-run`, then `rig specs preview first-project`, `rig up first-project --cwd . --plan`, then `rig up first-project --cwd .` (`docs/reference/getting-started.md:54-80`). | Setup contains tmux and Codex checks/install/auth branches (`packages/cli/src/commands/setup.ts:357-380,541-570`). `rig up` detects a name matching both a spec and stopped rig and asks for an explicit path or `--existing` (`packages/cli/src/commands/up.ts:287-315`). |
-| Runtime owner | **Observed in source:** CLI setup owns host prerequisite checks and managed tmux config edits (`packages/cli/src/commands/setup.ts:357-380,586-624`). CLI daemon lifecycle starts/probes the daemon; daemon entry resolves DB/listener settings and constructs startup (`packages/cli/src/daemon-lifecycle.ts:215-220,651-660`; `packages/daemon/src/index.ts:236-298`). Startup opens/migrates persistent state (`packages/daemon/src/startup.ts:240-249`). | **Observed in source:** ambiguity is rejected in CLI resolution, not silently selected (`packages/cli/src/commands/up.ts:287-315`). Health probe failure and listener checks are distinct daemon lifecycle conditions (`packages/cli/src/daemon-lifecycle.ts:90-126,520-549`). |
-| Durable/process effect | **Observed in source:** setup may install/check tools and edits a managed `~/.tmux.conf` block; daemon startup initializes SQLite and migrations (`setup.ts:357-380,586-624`; `startup.ts:240-249`). | **Inferred:** failed prerequisite or ambiguous resolution prevents a reliable launch path; this reading does not establish exact machine state after interruption during install/start. |
-| Visible result | **Stated intent:** guide uses plan/preflight and then reports daemon/seat readiness (`getting-started.md:66-80`). | **Observed in source:** CLI prints an ambiguity instruction or prerequisite failure; exact user-facing output for each environmental failure has not been exercised. |
+| Input | **stated-intent:** install OpenRig, inspect `rig setup --dry-run`, check executables/auth in the launch shell, then apply only the intended setup. The starter needs tmux and Codex; full setup covers more tools ([I1]). | **observed-in-source:** request daemon start with tmux absent from PATH; preflight produces a failed `tmux` check ([I4]). |
+| Client/command | **observed-in-source:** the package exposes `rig` and a Node postinstall ABI check; postinstall loads `better-sqlite3`. Setup invokes `runSetup` and prints individual steps; daemon start resolves configuration and runs `SystemPreflight` ([I2a], [I2b], [I3], [I5]). | **observed-in-source:** `rig daemon start` calls preflight, prints each failed check with reason/fix, sets exit code 1 and returns before calling `startDaemon` ([I5]). |
+| Runtime owner | **observed-in-source:** the shipped postinstall owns the native-load check. CLI setup owns tool/config operations. CLI lifecycle reserves startup, initializes the instance and spawns the daemon; daemon entry passes the resolved DB path to `createDaemon` ([I2b], [I6a], [I6b], [I7], [I8]). **inferred:** npm's package installation is an external prerequisite, not daemon-owned. | **observed-in-source:** CLI `SystemPreflight` owns this rejection, not daemon startup. Its message is `tmux was not found in PATH.` with platform install hints ([I4], [I5]). |
+| Durable/process effect | **observed-in-source:** setup can install tmux and write the managed tmux configuration block. Startup creates a detached Node child and log output; daemon opens SQLite with WAL/foreign keys and applies unapplied migrations transactionally. CLI publishes daemon state only after child/listener identity and liveness checks ([I6a], [I6b], [I7], [I9a], [I9b], [I9c], [I10a], [I10b]). | **inferred:** this rejected daemon-start request does not reach child spawn or daemon DB migration; earlier installation/setup effects are not undone. This is not a promise that preflight has no host effects or that installation was rolled back ([I5], [I7]). |
+| Operator-visible result | **observed-in-source:** setup prints step status and either `Setup complete` or attention guidance. Successful start prints port/PID. Optional `--wait-for-kernel` polls separately and can still exit 1; daemon-ready is not kernel-agent-ready ([I3], [I5]). | **observed-in-source:** failed tmux check, why/fix text, exit 1. **inferred:** fix tmux in the intended launch shell and rerun checks before retrying; no new daemon from this request needs teardown ([I4], [I5]). |
 
-**Unresolved:** clean-machine installation and auth behavior; malformed config and occupied-port behavior end-to-end; whether setup side effects are easily reversed; actual readiness under supported hosts. The guide recommends setup checks, but this research did not execute them.
+**observed-in-source — additional edges:** occupied-port preflight reports the endpoint and a config/lsof remedy ([I4]). ABI postinstall failure prints its diagnostic and exits 1, but npm's resulting package state was not demonstrated ([I2b]). After child spawn, health/identity failure attempts SIGTERM of only that child; unconfirmed exit retains the reservation and reports the child PID, lock and log to inspect. A failed state publication removes only matching state ([I7], [I10b]). **unresolved:** interruption/cleanup and clean-machine installation require G1.
 
 ## Trace 2 — launch agents into the project
 
-| Link | Normal path | Failure path |
-|---|---|---|
-| Input | **Stated intent:** start the starter in the chosen working directory (`docs/reference/getting-started.md:66-80`). | **Stated intent:** inspect failure before readiness and existing local changes (`09-adversarial-review-and-research-charter.md:46-54`). |
-| Client/command | `rig up first-project --cwd .`; plan mode is a separate preview (`docs/reference/getting-started.md:66-80`; `packages/cli/src/commands/up.ts:61-80`). | Existing rig restore can report per-seat outcomes; a seat with prior session but no resume token waits for a decision rather than silently starting fresh (`packages/cli/src/commands/up.ts:530-570`; `packages/daemon/src/domain/restore-orchestrator.ts:976-1006`). |
-| Runtime owner | **Observed in source:** daemon runtime adapter contract projects files/startup content and launches the harness within tmux (`packages/daemon/src/domain/runtime-adapter.ts:21-51,121-150`). Claude/Codex runtime adapters implement the external command/session path (current-state evidence cites `packages/daemon/src/adapters/claude-code-adapter.ts:281-296` and `packages/daemon/src/adapters/codex-runtime-adapter.ts:383-412`). | **Observed in source:** restore probes live tmux sessions; live or uninspectable sessions block restore rather than being treated as absent (`packages/daemon/src/domain/restore-orchestrator.ts:239-250,782-812`). Missing resume metadata can produce `awaiting-decision` without launch (`:976-1006`). |
-| Durable/process effect | **Observed in source:** launch creates/updates OpenRig topology/session state and starts an external harness in tmux; adapter may project workspace files and hooks (`runtime-adapter.ts:21-51,121-150`; `claude-code-adapter.ts:730-818`). | **Inference:** stored seat/session identity and actual process liveness can diverge; restore distinguishes live, stale and unknown probes (`08-current-state-evidence.md:288-294`). No live agent process was inspected here. |
-| Visible result | **Stated intent:** `rig status` and `rig ps` show readiness (`getting-started.md:71-80`). | **Observed in source:** restore presents per-node statuses and warnings (`up.ts:530-549`). **Unresolved:** whether the presentation is understandable or accurately reflects a real failed launch. |
+Scope: a pod-aware local spec with a Codex seat and successful prerequisite resolution. Failure selection: startup readiness requires attention, rather than silently treating a created tmux session as an interactive agent.
 
-**Unresolved:** real Claude and Codex launch, authentication prompts, working-directory behavior, isolation and partial launch cleanup. The accepted inventory identifies tmux-backed runtime and adapter boundaries, not a demonstrated successful launch (A3, `breakdown/gemini-review/claims/architecture/A3-runs-in-tmux/README.md:36-48`).
+| Link | Normal path — W2-N | Failure path — W2-F |
+|---|---|---|
+| Input | **stated-intent:** select `first-project`, preview/plan, then launch with the intended working directory ([I1]). | **observed-in-source:** the same launch reaches an adapter/readiness result classified as `attention_required` ([L5b]). |
+| Client/command | **observed-in-source:** `rig up first-project --cwd .` posts source, plan flag and resolved cwd to `/api/up`; the route records a running bootstrap operation and calls `BootstrapOrchestrator` ([L1], [L2]). | **observed-in-source:** the same client/request path carries the attention result back; this is not a separate fresh launch or automatic retry ([L1], [L2]). |
+| Runtime owner | **observed-in-source:** bootstrap calls `PodRigInstantiator`; it creates rig topology and delegates session creation to `NodeLauncher`, then calls `StartupOrchestrator` with the runtime adapter. Startup projects resources, delivers context, launches the harness and checks readiness. Codex sends its constructed command to tmux ([L3a], [L3b], [L4], [L5a], [L5b], [L6a], [L6b], [L7]). | **observed-in-source:** startup owns the readiness/launch classification and persists failure status. Instantiator preserves the recoverable rig; bootstrap maps it to partial; the route builds the attention response ([L5b], [L8a], [L8b], [L3a], [L9]). |
+| Durable/process effect | **observed-in-source:** tmux is created before the atomic session/binding/`node.launched` transaction; subscribers are notified after commit. Startup persists context and, after readiness/context actions, sets startup status `ready` and emits `node.startup_ready`. Codex may record a native resume token ([L4], [L5a], [L5b], [L5c], [L7]). | **observed-in-source:** status becomes `attention_required` and `node.startup_failed` is emitted. With attention nodes, instantiator does not run all-terminal cleanup: rig/session state and panes remain available for inspection. This does not prove the harness is alive. All-terminal failure instead attempts best-effort pane kills and rig deletion ([L8a], [L8b]). |
+| Operator-visible result | **observed-in-source:** completed bootstrap returns HTTP 201 with rig/attach information; CLI prints status/stages, rig ID, warnings and attach command ([L2], [L10b]). | **observed-in-source:** attention yields HTTP 409, a fact/consequence/action diagnostic and per-node reasons. CLI prints them and exits 1. The consequence explicitly says members are not proven interactive and a runtime may have exited; action is to inspect named sessions before recovery ([L2], [L9], [L10a]). |
+
+**observed-in-source — other cleanup boundaries:** a failed session DB transaction attempts tmux cleanup ([L4]); that is not proof cleanup succeeded. A CLI apply timeout prints that the daemon may still be processing, suggests `rig ps`, and exits 1 instead of asserting rollback ([L1]). **unresolved:** actual Claude/Codex launch, partial-file cleanup, attention recovery and live readiness require G2. A model/config declaration is not native runtime proof ([I1]).
 
 ## Trace 3 — assign and follow work
 
-| Link | Normal path | Failure path |
-|---|---|---|
-| Input | **Stated intent:** send one bounded request and inspect durable assignment/result (`docs/reference/getting-started.md:90-126`). | Charter asks about duplicate action, stale owner, disconnected client and partial write/missed notification (`09-adversarial-review-and-research-charter.md:46-54`). |
-| Client/command | `rig queue create`/claim/update/handoff or `rig send`; queue command exposes the durable task path (`packages/cli/src/commands/queue.ts:558-644,743-823`; `08-current-state-evidence.md:207-246`). | `rig send` checks positive evidence of an interactive prompt; dangerous override requires reason and is audit logged (`packages/cli/src/commands/send.ts:230-283`). |
-| Runtime owner | **Observed in source:** CLI calls daemon queue routes; repository owns SQLite item/transition writes and transaction boundaries (`packages/daemon/src/domain/queue-repository.ts:1165-1198,1507-1669`; migrations `024_queue_items.ts:19-52`, `025_queue_transitions.ts:13-29`). | **Observed in source:** ordinary create commits row/event before best-effort notification/nudge; nudge failure is recorded without undoing the row. Terminal handoff stages a successor wake intent transactionally and delivers after commit (`queue-repository.ts:807-846,910-945,1114-1162,1320-1358,1608-1669`). |
-| Durable/process effect | **Observed in source:** queue item stores owner/state/closure and delivery metadata; transitions are an audit log (`08-current-state-evidence.md:224-241`). A pane nudge is distinct from the durable row. | **Observed in source:** failed/indeterminate terminal wake intents remain visible and are not automatically resent; ordinary nudge failure does not roll back creation (`08-current-state-evidence.md:234-241`). Missing actor identity and invalid terminal closure are rejected (`:243-246`). |
-| Visible result | **Stated intent:** guide directs the operator to read the durable queue row and transition log and inspect the repository artifact (`getting-started.md:117-126`). | **Observed in source:** CLI reports delivery/verification outcome separately from assignment; `send --verify` proves text appeared, not that an agent read or acted (`packages/cli/src/commands/send.ts:256-272`). |
+Scope: a real, transport-identified seat creates a local queue item for a valid pane-bound destination. An unbound human shell is not instructed to impersonate a seat. The guide's initial `rig send` conversation and subsequent durable queue assignment are separate steps ([Q0]).
 
-**Unresolved:** real delivery, duplicate/retry behavior from disconnected clients, human interpretation of delivery states, and whether the recipient accepts or completes the work. A durable wake intent is not receipt or correct action. Accepted linked claims F5/S3 remain qualified; their review explicitly says overhead and drift prevention are unmeasured (`breakdown/gemini-review/README.md:65-69`).
+| Link | Normal path — W3-N | Failure path — W3-F |
+|---|---|---|
+| Input | **stated-intent:** give a bounded outcome; the agent creates/claims durable work. **observed-in-source:** queue route resolves sender identity and requires destination/body ([Q0], [Q2]). | **observed-in-source:** same valid assignment, but its post-commit terminal notification returns a definite failure or throws a non-timeout error ([Q4a]). |
+| Client/command | **observed-in-source:** `rig queue create` posts body, destination, optional ID and nudge options to `/api/queue/create`; `queue claim`/`update` operate on the item; `show`/`transitions` follow it ([Q1], [Q7], [R1]). | **observed-in-source:** create uses the same request; client receives the persisted item even when transport failure is recorded as a nudge outcome. It does not get a fabricated transaction rollback ([Q1], [Q3a], [Q4a]). |
+| Runtime owner | **observed-in-source:** daemon queue route validates identity/input and calls `QueueRepository.create`; repository owns the SQLite transaction and post-commit wake send ([Q2], [Q3a], [Q3b], [Q4a]). | **observed-in-source:** `performWakeSend` catches/classifies transport failure; `maybeNudge` records the outcome separately. Gateway destinations have a different owner and are not covered by this pane-bound trace ([Q4a]). |
+| Durable/process effect | **observed-in-source:** one transaction creates a pending item, created transition and `queue.created` event; then subscribers are notified and a verified-send request is made to transport. Claim/update are separate later requests, not consequences guaranteed by create ([Q3a], [Q3b], [Q4a], [Q7]). | **observed-in-source:** `failed:<detail>` is written to `last_nudge_result` with `last_nudge_attempt`; already-committed item remains. Timeouts instead classify as indeterminate; successful but unverified sends become `delivered-ack-pending`. No transport or `--no-nudge` skips this send ([Q4a], [Q4b]). |
+| Operator-visible result | **observed-in-source:** route returns HTTP 201 and reread row; CLI renders JSON (pretty JSON by default). Operator can inspect item and transition history. **stated-intent:** delivery is not agent acknowledgement or a reviewed result ([Q1], [Q2], [Q5], [Q0], [Q6]). | **observed-in-source:** HTTP 201 still represents successful persistence; generic output does not set an error exit code for nudge failure. Read recorded `lastNudgeResult` with `show` ([Q4c]); `queue undelivered` is the explicit failed-create-nudge inspection surface ([Q4b], [Q5], [Q8], [R1]). **inferred:** inspect destination and existing row before retrying; recreating work is not notification repair. |
+
+**observed-in-source — retry boundary:** an explicit duplicate item ID returns the existing row only when source and destination match; it does not compare the whole body or emit another event/nudge. Reusing that ID with different identities throws `qitem_id_reuse` ([Q3a]). This is not blanket exactly-once behavior for fresh-ID retries. The available state map distinguishes ordinary create from terminal handoff's transactional successor wake intent ([C3]); this trace does not extend that guarantee to ordinary create. **unresolved:** recipient acceptance, real wake delivery, disconnected retry and terminal-handoff recovery require G3.
 
 ## Trace 4 — inspect results and diagnose state
 
-| Link | Normal path | Failure path |
+Scope: inspect the durable work result with `queue show`/`transitions`, then correlate with status and actual project artifact. Failure selection: a requested queue item does not exist. It is a complete rejected read path, not a hypothetical reconnect scenario.
+
+| Link | Normal path — W4-N | Failure path — W4-F |
 |---|---|---|
-| Input | Operator asks what is running and whether work completed. | Process/session status disagrees, or the client reconnects after losing contact. |
-| Client/command | `rig status`, `rig ps --nodes ...`, queue show/log, and inspect the project artifact (`docs/reference/getting-started.md:71-80,117-126`). | Re-run status/ps and inspect durable queue transition history; avoid treating a stored running row as proof of a live process (`08-current-state-evidence.md:288-308`). |
-| Runtime owner | **Observed in source:** CLI queries daemon; SQLite holds session and queue records, while tmux probe supplies separate process evidence (`08-current-state-evidence.md:288-308,323-330`). Events are persisted before subscriber notification (`event-bus.ts:52-91`). | **Observed in source:** tmux differentiates absent from unavailable transport; restore treats probe exceptions as unknown and blocks rather than guessing (`tmux.ts:82-91,133-157`; `restore-orchestrator.ts:797-809`). |
-| Durable/process effect | **Observed in source:** read path combines persisted state and live-process observations; queue events/transitions are durable records. | **Inference:** reconnect can present stale projections until re-query/reconciliation; precise UI/client reconnection behavior was not traced or demonstrated. |
-| Visible result | **Stated intent:** inspect queue history and actual repository artifact; message delivery does not mean acceptance (`getting-started.md:90-126`). | **Unresolved:** exact recovery instructions and consistency of each presentation surface under a real lost transport. |
+| Input | **stated-intent:** ask whether assigned outcome was completed and independently checked; read the exact artifact, not only delivery status ([Q0]). | **observed-in-source:** operator requests an absent item ID from this daemon ([R2], [R3]). |
+| Client/command | **observed-in-source:** `rig queue show <id> --full --json` gets `/api/queue/<id>`; `rig queue transitions <id>` gets its transitions. Default show is bounded and supplies a full-record command ([R1]). | **observed-in-source:** identical GET request with an unknown ID; error responses bypass preview formatting and go to `printResult` ([R1]). |
+| Runtime owner | **observed-in-source:** queue routes call `QueueRepository.getById` and `listTransitions`; `getById` selects SQLite state and adds available delivery-ledger outcome ([R2], [R3]). | **observed-in-source:** repository returns null on no row; route returns HTTP 404 with `qitem_not_found` before transition listing or item rendering ([R2], [R3]). |
+| Durable/process effect | **observed-in-source:** item lookup selects the stored row and derives its presentation; it does not claim an agent process is live. Transition history is fetched separately ([R2], [R3]). **inferred:** these reads do not themselves complete, claim or reopen the task. | **observed-in-source:** the no-row branch issues no queue mutation or process launch. **inferred:** failed lookup does not prove the task never existed on another instance, or that project work was lost ([R2], [R3]). |
+| Operator-visible result | **observed-in-source:** full JSON record/transition output, or bounded preview with truncation metadata. **stated-intent:** inspect and exercise project artifact and confirm which candidate was reviewed; queue does not independently prove correctness ([R1], [Q5], [Q0]). | **observed-in-source:** JSON error `qitem_not_found`, CLI exit 1 (4xx). No repair guidance is added by this formatter ([Q5], [R1], [R2]). **inferred:** verify ID and target instance before retrying; no mutation from this lookup needs undoing. |
 
-**Unresolved:** no daemon/UI/client reconnect or stale-process scenario was executed. The accepted capability inventory includes CLI, TUI, experimental web UI and MCP consumers; this trace covers CLI-level commands only (`10-rust-and-node-removal-plan.md:76-82`; claim A2 at `breakdown/gemini-review/claims/architecture/A2-daemon-hono-sqlite-tui/README.md:34-47`).
+**observed-in-source — status cross-check:** `rig ps` requests `/api/ps`; that route delegates to `PsProjectionService`. Node inspection fetches per-rig nodes; default is snapshot-based activity, while `--full` requests more expensive pane evidence. A failed rig-list HTTP request prints a `rig status` hint and exits 2; a failed node fetch prints a warning and continues with other rigs ([R4a], [R4b], [R4c]). Do not describe every status read as a fresh tmux probe. Restore's separate running-session classifier distinguishes live/stale/unknown and catches probe errors as unknown ([S7]). **unresolved:** full projection/reconnect behavior and UI/TUI/MCP parity require G4; this document does not assert those clients are absent or excluded from product scope.
 
-## Trace 5 — stop and resume without losing work
+## Trace 5 — stop and resume
 
-| Link | Normal path | Failure path |
+Scope: ordinary `rig down <rig>` without `--delete`, followed by `rig up <rig> --existing`. Normal resume assumes a usable snapshot, valid native token and successful runtime proof. Stopping the rig is not stopping the daemon.
+
+| Link | Normal path — W5-N | Failure path — W5-F |
 |---|---|---|
-| Input | Operator stops the rig, then later selects the existing rig to resume (`docs/reference/getting-started.md:181-190`). | Snapshot failure, host reboot/lost tmux, live or uninspectable session, or missing resume token. |
-| Client/command | `rig down` performs teardown; later `rig up --existing` selects restore path (`packages/cli/src/commands/up.ts:287-315`; guide `getting-started.md:181-190`). | Same restore path reports blockers/decision-needed states rather than silently replacing a conversation (`restore-orchestrator.ts:782-812,976-1006`). |
-| Runtime owner | **Observed in source:** teardown attempts best-effort `auto-pre-down` snapshot, then kills tmux sessions and clears matching state (`packages/daemon/src/domain/rig-teardown.ts:103-135`). Restore orchestrator reconciles stored records against tmux before mutation (`restore-orchestrator.ts:239-250,782-812`). | **Observed in source:** snapshot failure is recorded but teardown proceeds (`rig-teardown.ts:103-113`). A host reboot can leave project and queue while tmux sessions are gone (guide `getting-started.md:181-190`). |
-| Durable/process effect | **Observed in source:** snapshot captures selected topology/continuity metadata, not a full project archive or process memory (A8 review, `breakdown/gemini-review/claims/architecture/A8-snapshot-restore/README.md:27-41`). Normal teardown path kills sessions and mutates OpenRig state, not project checkout (`08-current-state-evidence.md:248-266`). | **Inference:** saved project files and resumable agent conversation are different preservation promises; snapshot failure may lose live context, but does not alone establish deletion of saved files (`08-current-state-evidence.md:259-266`). |
-| Visible result | **Observed in source:** teardown result and restore per-seat statuses/warnings are surfaced by CLI (`packages/cli/src/commands/up.ts:530-549`). | **Unresolved:** whether actual uncommitted, untracked and indexed changes survive all cleanup options; whether resume restores the same conversation; behavior under abrupt termination. |
+| Input | **observed-in-source:** request stop, then restore existing rig from eligible saved state ([S1a], [S1b], [S4]). | **observed-in-source:** stop encounters snapshot capture failure; separately, return finds a prior resume-if-possible seat with no token. These are independent failure conditions, not a claim that the first necessarily causes the second ([S2a], [S6]). |
+| Client/command | **observed-in-source:** down posts rig ID/options to `/api/down`; existing up posts to `/api/up`, whose restore path selects a usable snapshot or checks current-state rehydrate eligibility ([S1a], [L1], [S4]). | **observed-in-source:** same stop request receives accumulated warnings; same restore request receives per-seat decision-needed status ([S1a], [S4], [S6]). |
+| Runtime owner | **observed-in-source:** down route calls `RigTeardownOrchestrator`; snapshot capture owns recovery metadata capture. Restore route calls `RestoreOrchestrator`, which uses node launch/startup and runtime resume machinery ([S1b], [S2a], [S3], [S4], [S5a], [S5b], [S5c]). | **observed-in-source:** teardown catches snapshot exceptions and proceeds. Restore classifies missing token before that seat's stale-state clearing and launch, returning `awaiting-decision` ([S2a], [S6]). |
+| Durable/process effect | **observed-in-source:** snapshot and event commit together; capture contains topology/session/continuity/startup metadata. Stop halts transcript rotation, kills sessions, marks successfully killed/already-absent sessions exited and clears bindings transactionally; managed guidance cleanup and service teardown also run. Restore launches a new process/session, carries native resume through startup and requires joined identity proof before reporting `resumed` ([S2a], [S2b], [S3], [S5a], [S5b], [S5c], [S5d]). | **observed-in-source:** failed capture adds `Snapshot failed: ...` but does not veto killing sessions. Kill failure leaves that node's session/binding unchanged; deletion, if requested, is blocked by kill failures. Missing-token return starts no session for that seat and does not clear its prior state. Other seats/global restore work are not claimed mutation-free ([S2a], [S6]). |
+| Operator-visible result | **observed-in-source:** clean down prints stopped/session count, snapshot and restore instruction. Restore prints aggregate result and per-node statuses; JSON carries response fields ([S1a], [S4], [S8], [L1]). | **observed-in-source:** snapshot error yields warning text/session kill count and CLI exit 2 even though ordinary down route returns HTTP 200. Missing-token restore prints reason and explicit fresh/manual-restore alternative; TTY asks before deliberate fresh launch, while headless remains decision-needed ([S1a], [S1b], [S6], [S8]). |
 
-**Unresolved:** no dirty-worktree stop, failed snapshot, reboot, resume, nested repository or interrupted cleanup was run. Accepted A8/F9/S5 conclusions are limited to source mechanisms: snapshots are not full backups; teardown continues after capture failure; full fleet recovery is conditional (`breakdown/gemini-review/README.md:65-69`; A8 page above). Do not infer work preservation from a source path alone.
+**observed-in-source — preservation boundary:** teardown selects the rig's Claude guidance file or Codex `AGENTS.md`; cleanup strips managed blocks, may rewrite remaining text and deletes a file when stripped content is empty ([S9a], [S9b]). Thus “stop does not touch project files” is too broad. Snapshot metadata is not a complete checkout, Git index, untracked-file, transcript or volume backup ([S3], [C4]). Live or unknown process evidence can block restore; missing-token refusal is not automatic fresh replacement ([S6], [S7], [S10]). **unresolved:** dirty/index/untracked/nested-worktree preservation, service volume cleanup, reboot recovery and actual conversation continuity require G5.
 
-## Cross-check: accepted capability inventory and evidence gaps
+## Cross-check against available capability and state evidence
 
-The accepted capability inventory is the dependency/execution inventory in `10-rust-and-node-removal-plan.md:66-91`, read alongside the source-reviewed claim register and limitations (`breakdown/gemini-review/README.md:39-58,76-113`). It covers more than the narrow operator traces here: npm/runtime installation and update, CLI/TUI/UI/MCP, daemon and SQLite, tmux and external agents, managed hooks and generated assets, runners, packaging/CI/testbed and recovery scripts. The claims are source-review conclusions, not demonstrations; inspected tests are not passing-test evidence.
+**observed-in-source (document availability):** at the pinned tree, the dedicated capability inventory and state-invariant ledger assigned by [C1] are absent. Only this workflow research file is present among those three destinations. The accepted dependency/execution inventory [C2], selected state map [C3] and accepted claim-review limitations [C4] are available. Do not relabel the dependency inventory as the completed capability card.
 
-| Capability/inventory area | Trace coverage | Missing runtime demonstration / remaining research |
+| Available inventory/state area | Workflow alignment and disposition |
+|---|---|
+| CLI/package/native ABI, external setup, daemon and SQLite ([C2]) | Investigated in W1. Installation outcome, package contents and interrupted migrations remain G1; no dependency removal decision. |
+| tmux, adapters, managed hooks/files; rig/node/session/binding/resume ([C2], [C3]) | Investigated local Codex/startup path in W2 and lifecycle in W5. Stored session, interactive readiness and native continuity are not interchangeable. Other adapters and hook ownership need G2/G5. |
+| Queue ownership/history, events and notification ([C3], [C4]) | W3 follows ordinary create and W4 reads result/history. Event persistence precedes wake. Terminal handoff, remote transactions and acceptance remain qualified; see G3. |
+| CLI, TUI, browser UI and MCP ([C2]) | CLI primary paths investigated. Other consumer implementations and reconnect parity deferred from paired traces with explicit G4 evidence needs, not marked removed or retained. |
+| Snapshot, transcript, filesystem and process state ([C3], [C4]) | W5 confirms conditional resume and best-effort capture/cleanup, not a backup contract. Managed-guidance edits narrow the earlier “project directory untouched” reading. G5 remains open. |
+| Runners, operational upgrade/backup scripts, build/test/generation, packaging/CI/testbed, lockfile/native install and update/reinstall ([C2]) | Inventory cross-check only. These are adjacent workflows, not silently covered by a successful local start. G6 names missing package/install/update evidence. |
+| Multi-host, explicit workflow engine, context/spec/plugin and workspace surfaces named in capability assignment ([C1]) | Only incidental local spec/projection/workspace dependencies are followed here. Full capability mapping awaits accepted inventory; G0/G6 prevent an exhaustive-coverage claim. |
+
+The accepted linked claims distinguish durable identity from liveness, snapshot recovery from backup, and a wake intent from receipt or correct action ([C4]). These traces preserve those qualifications. **unresolved:** reconciliation with accepted capability card 662c4 and state card c28a2 remains pending, not implicitly satisfied by this baseline cross-check. [C1] records coordinator-controlled sequencing; user approval authorized this document work, not independent acceptance or changes to that sequencing.
+
+## Missing evidence and next evidence needed
+
+All rows below are **unresolved**. Source-path completion is separate from runtime demonstration.
+
+| ID | Missing evidence | Next evidence needed |
 |---|---|---|
-| Setup, daemon startup and health | Partial source path in Trace 1 | Clean install; missing dependencies/auth; malformed config; occupied endpoint; interrupted startup. |
-| Claude/Codex agents, tmux, project files/hooks | Source path in Trace 2 | Actual launch/readiness, working directory/isolation, hook ownership and partial launch cleanup. |
-| Queue, send, identity, notification | Source path in Trace 3 | Duplicate/disconnected requests; real delivery and acceptance; retry and recovery. |
-| Status/ps, TUI, web UI, MCP | CLI source path only in Trace 4 | Reconnect and status disagreement in each retained client; UI/MCP behavior not traced. |
-| Snapshot, teardown, restore | Source path in Trace 5 | Dirty/untracked/indexed work, failed snapshot, abrupt stop, reboot and native agent resume. |
-| Install/update, packaged scripts, CI/build/test, external tools | Inventory cross-check only | Isolated package install/update/recovery and process/network/artifact observation; no test suite was run. |
+| G0 | Dedicated accepted capability inventory and state ledger unavailable at pin; acceptance sequencing not established here. | Obtain coordinator-accepted artifact commits/links. Reconcile relevant capabilities/state effects and report contradictions through coordinator, without editing shared outputs. State ledger may arrive downstream of these traces. |
+| G1 | Clean installation/auth; missing tools, occupied endpoint, interrupted child startup and migration/cleanup outcomes. | Authorized disposable home/DB and package install; record versions, commands, output/exit status, lock/state/log files and process/DB state before/after each fault. Check leftover package/setup changes separately. |
+| G2 | Actual agent readiness, Claude parity, cwd/isolation, partial launch/projection cleanup and attention recovery. | Isolated Claude/Codex rigs; capture topology/session rows, projected-file diffs, process identity and native terminal output through successful, attention and terminal-failure launch. Prove cleanup rather than assuming best-effort calls succeeded. |
+| G3 | Recipient acceptance/completion, missed wake repair, disconnect/duplicate handling and terminal-handoff wake recovery. | Disposable queue/transport with controlled failures; record item/transition/event/wake state and terminal evidence before/after commit, response loss and restart. Compare same-ID and new-ID retries; observe recipient action separately from pane text. |
+| G4 | Stale-process display, reconnect/replay and CLI/TUI/UI/MCP consistency. | Trace each additional consumer's query/subscription/projection implementation, then run authorized disconnection and stale-process cases; compare display to DB and independently observed process state. No client parity claim follows from W4. |
+| G5 | Work preservation and exact conversation continuity across stop, snapshot failure, kill failure, reboot and optional service/workspace cleanup. | Inspect delegated cleanup/removal paths; on disposable copies compare tracked bytes, staged index, untracked files, nested repos/worktree metadata, managed guidance, transcripts and service volumes before/after. Verify native token/process identity and resumed conversation independently. |
+| G6 | Full capability disposition and adjacent install/update/packaging/plugin/remote workflows. | Reconcile accepted capability inventory, then inspect selected entrypoints through owners/effects/output. Use isolated package/update/remote demonstrations only under separate authorization. Do not infer retained product scope. |
 
-This note extends the selected existing source traces in `08-current-state-evidence.md:183-281`; it does not complete the capability inventory, decide retained scope, alter accepted claim verdicts, or declare any research gate passed. The present report itself says the wider capability coverage, workflow traces, state/invariant research and owner decisions remain separate completion work (`breakdown/gemini-review/README.md:49-58`).
+## Validation and review boundary
 
-## Review blockers and actionable closure work
+Coverage contract: W1-N/F through W5-N/F each contain Input, Client/command, Runtime owner, Durable/process effect and Operator-visible result. Each unresolved item names next evidence. Citations below are commit-pinned, not floating working-tree line numbers.
 
-The review is still open because the evidence required by the charter is broader than a source-path sketch. In particular, a named failure case is not a traced failure path until the client action, owning code, durable/process result and operator-visible result are all evidenced; nor does source inspection demonstrate actual behavior. The current note is therefore a useful partial trace, not evidence that the workflow-trace objective is complete.
+Validation for this documentation-only revision uses Git-tree citation/range checks, reference-definition checks, five-journey/two-path/five-link coverage checks, manual source-to-claim review, `git diff --check` and a one-owned-path diff check. Product tests and lifecycle demonstrations are not substitutes for these checks and were not run. Check results and resulting documentation commit are reported in the task handoff, avoiding a self-referential commit claim here.
 
-The following tasks decompose the remaining blockers. They are execution instructions, not new task-list statuses or owner decisions. Keep evidence additions in this owned document unless the coordinator assigns a different artifact. Do not modify the shared claim register or mark gates complete as a result of this table.
+No implementation, shared index/register, owner decision or Gate A–D change is part of this document. Source review remains subject to explicit G0 dependency; this document does not itself record reviewer acceptance, runtime proof or a gate pass.
 
-| Task | Blocking gap | Action and evidence to collect | Dependency / closure condition |
-|---|---|---|---|
-| WT-1: close source-path gaps | Some rows currently cite a guide or charter for a hypothetical failure but not the implementation path/output; several visible-result rows are stated intent. | For each named case in Traces 1–5, inspect the exact command handler, daemon route/domain owner, persistence/process effect and output formatter at one pinned commit. Replace generic language with exact path and line ranges; retain an explicit unresolved label where no source path settles it. | Source-only; can be done without runtime. Close when every normal/failure column has all five mapping links or explicitly states why a link is unresolved. |
-| WT-2: install/start failure trace | Missing tool/auth, malformed configuration, existing daemon/occupied endpoint and interrupted startup are only listed, not traced end-to-end. | Trace each case separately through setup/preflight, daemon discovery/start, daemon health/listener checks, state writes and emitted diagnostics. Do not merge distinct failures. Record which cases code handles and which are only charter test scenarios. | Depends on WT-1; source inspection can close mechanism mapping. Runtime outcome remains separately unresolved unless demonstrated. |
-| WT-3: launch/cleanup failure trace | Agent exit-before-ready, partial launch, dirty workspace, isolation and owned-hook cleanup are not established by the current summary. | Trace launch ordering and compensation/cleanup from CLI entry through adapter/session registry and file projection. Identify state written before readiness and cleanup on each failure edge. Cite exact implementation; inspect tests only as “test assertion,” never as passing evidence. | Source-only mapping depends on WT-1. End-to-end result needs an isolated test rig and explicit runtime authorization. |
-| WT-4: assignment/reconnect trace | Duplicate create/retry, stale owner, disconnected client, partial write and missed notification are not resolved by normal-create and handoff descriptions. | Trace request identity/idempotency, transaction boundary, client timeout/retry behavior, subscriber reconnect/replay, delivery ledger and operator/agent view for one ordinary create and one terminal handoff. Record whether each failure is handled, merely visible, or unknown. | Source work depends on WT-1; runtime proof needs a disposable DB/rig and a repeatable fault-injection/reconnect procedure. Do not imply that handoff and ordinary create share guarantees. |
-| WT-5: inspect/reconcile trace | CLI is only partial; TUI, browser UI, MCP, logs and reconnect projections are not traced, and source-vs-live disagreement has not been demonstrated. | Cross-reference every accepted capability in the inventory to its consumer, source of truth, refresh/reconnect path and visible error/status. Explicitly mark not-retained/owner-choice areas as pending, not absent. | Inventory cross-check is source-only; actual UI/MCP reconnect behavior needs isolated runtime work. Do not infer retained scope. |
-| WT-6: stop/preserve-work contract | “Uncommitted work” is not decomposed into working-tree, index, untracked files, nested repository, worktree metadata, transcript and managed files; exceptional cleanup routes remain unexamined. | Search all teardown, delete, cleanup, workspace and service-volume paths. Produce a state-by-state owner/writer/remover/recovery table. Then exercise dirty tracked + staged + untracked files and any supported nested repo on a disposable copy through normal stop, snapshot failure, abrupt daemon stop and resume; compare bytes/status before and after. | Source part can proceed now; runtime part requires disposable environment and authorization. Close only with source map plus recorded before/after evidence for each supported cleanup route; otherwise keep unresolved. |
-| WT-7: capability coverage | The cross-check summarizes the accepted inventory but does not map every capability to a workflow or justify deferral. | Build a row for every capability/surface in `10-rust-and-node-removal-plan.md:66-91`, assigning workflow, owner package, trace status (`investigated`, `scheduled`, or `deferred`), dependency and reason. Reconcile with the claim pages without editing their verdicts. | Source-only; required by charter work package 1. Close when there are no silent inventory omissions; this alone does not pass Gate A. |
-| WT-8: state/invariant map | Current trace names selected SQLite/tmux state but not all stores, writers, removers, identity mappings, transaction boundaries and reconciliation policies. | Create a compact map for rig/node/session/binding/resume, queue item/transition/wake intent, events/snapshots, project files/hooks and daemon/process state; cite creation, update, removal and disagreement handling. | Source-only, following WT-1/WT-7. Required evidence for charter work package 3 and before preservation/recovery conclusions. |
-| WT-9: owner choices (T5) | High-impact scope/compatibility choices are intentionally unanswered; source evidence cannot decide them. | Obtain explicit answers to the relevant N1–N10 questions in `06-open-questions.md`; record answer, owner authority/date, affected workflows and resulting boundary there via the assigned owner. | **Blocked on owner input.** Do not infer or decide on the owner's behalf. Until recorded, downstream T6–T9 remain blocked. |
-| WT-10: measured behavior | No install, launch, assignment, inspection, stop or resume scenario has been run; source traces do not establish success or usability. | An authorized operator runs the normal and selected failure cases in a disposable, instrumented environment. Capture exact software/host baseline, commands, process tree, relevant state before/after, logs, user-visible output and cleanup; label failed/unrun cases. No sole live project/database. | **Blocked on runtime authorization and disposable environment.** Reading test files is not closure. This document alone cannot satisfy runtime evidence. |
-| WT-11: review acceptance | No independent reviewer has accepted this trace against the workflow deliverable criteria. | Reviewer checks citation accuracy at the pinned commit, completeness of mapping links and normal/failure pairings, inventory coverage, uncertainty labels, and scope hygiene; record review outcome in the coordinator-owned place. | **Blocked on reviewer/coordinator action.** Document validation is not reviewer acceptance and not Gate A–D approval. |
+## Pinned evidence references
 
-### Current disposition
+[C1]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/breakdown/11-coordination-outcomes.md#L119-L190 "breakdown/11-coordination-outcomes.md:119-190"
 
-- **Can progress within this source-research task:** WT-1 through WT-8, subject to the existing document ownership boundary. This revision identifies these work items but has not completed their source investigations.
-- **Cannot be closed by this seat's source-only authority:** WT-9 needs the owner; WT-10 needs authorized runtime execution; WT-11 needs independent review. Their unresolved status is a real blocker, not a reason to invent evidence.
-- **Downstream blocked:** T5 remains owner-input incomplete; T6–T9 remain blocked as recorded in `07-review-task-list.md:32-36`. Full work-package and gate criteria remain in the charter (`09-adversarial-review-and-research-charter.md:71-83,154-170`) and conditional stage plan (`10-rust-and-node-removal-plan.md:126-135`). Nothing in this note marks Gate A, B, C or D passed.
+[C2]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/breakdown/10-rust-and-node-removal-plan.md#L66-L91 "breakdown/10-rust-and-node-removal-plan.md:66-91"
+
+[C3]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/breakdown/08-current-state-evidence.md#L283-L330 "breakdown/08-current-state-evidence.md:283-330"
+
+[C4]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/breakdown/gemini-review/README.md#L39-L69 "breakdown/gemini-review/README.md:39-69"
+
+[I1]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/docs/reference/getting-started.md#L54-L80 "docs/reference/getting-started.md:54-80"
+
+[I2a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/package.json#L28-L45 "packages/cli/package.json:28-45"
+
+[I2b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/scripts/check-abi.mjs#L104-L122 "packages/cli/scripts/check-abi.mjs:104-122"
+
+[I3]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/setup.ts#L756-L797 "packages/cli/src/commands/setup.ts:756-797"
+
+[I4]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/system-preflight.ts#L138-L192 "packages/cli/src/system-preflight.ts:138-192"
+
+[I5]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/daemon.ts#L124-L227 "packages/cli/src/commands/daemon.ts:124-227"
+
+[I6a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/setup.ts#L357-L380 "packages/cli/src/commands/setup.ts:357-380"
+
+[I6b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/setup.ts#L586-L624 "packages/cli/src/commands/setup.ts:586-624"
+
+[I7]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/daemon-lifecycle.ts#L581-L665 "packages/cli/src/daemon-lifecycle.ts:581-665"
+
+[I8]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/index.ts#L236-L319 "packages/daemon/src/index.ts:236-319"
+
+[I9a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/startup.ts#L240-L249 "packages/daemon/src/startup.ts:240-249"
+
+[I9b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/db/connection.ts#L7-L13 "packages/daemon/src/db/connection.ts:7-13"
+
+[I9c]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/db/migrate.ts#L13-L42 "packages/daemon/src/db/migrate.ts:13-42"
+
+[I10a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/daemon-lifecycle.ts#L688-L748 "packages/cli/src/daemon-lifecycle.ts:688-748"
+
+[I10b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/daemon-lifecycle.ts#L750-L795 "packages/cli/src/daemon-lifecycle.ts:750-795"
+
+[L1]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/up.ts#L384-L422 "packages/cli/src/commands/up.ts:384-422"
+
+[L2]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/up.ts#L369-L424 "packages/daemon/src/routes/up.ts:369-424"
+
+[L3a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/bootstrap-orchestrator.ts#L635-L734 "packages/daemon/src/domain/bootstrap-orchestrator.ts:635-734"
+
+[L3b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rigspec-instantiator.ts#L1255-L1298 "packages/daemon/src/domain/rigspec-instantiator.ts:1255-1298"
+
+[L4]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/node-launcher.ts#L126-L238 "packages/daemon/src/domain/node-launcher.ts:126-238"
+
+[L5a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/startup-orchestrator.ts#L157-L223 "packages/daemon/src/domain/startup-orchestrator.ts:157-223"
+
+[L5b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/startup-orchestrator.ts#L228-L325 "packages/daemon/src/domain/startup-orchestrator.ts:228-325"
+
+[L5c]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/startup-orchestrator.ts#L392-L445 "packages/daemon/src/domain/startup-orchestrator.ts:392-445"
+
+[L6a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rigspec-instantiator.ts#L1924-L1964 "packages/daemon/src/domain/rigspec-instantiator.ts:1924-1964"
+
+[L6b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rigspec-instantiator.ts#L2110-L2178 "packages/daemon/src/domain/rigspec-instantiator.ts:2110-2178"
+
+[L7]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/adapters/codex-runtime-adapter.ts#L383-L412 "packages/daemon/src/adapters/codex-runtime-adapter.ts:383-412"
+
+[L8a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/startup-orchestrator.ts#L496-L512 "packages/daemon/src/domain/startup-orchestrator.ts:496-512"
+
+[L8b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rigspec-instantiator.ts#L1510-L1596 "packages/daemon/src/domain/rigspec-instantiator.ts:1510-1596"
+
+[L9]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/up.ts#L32-L67 "packages/daemon/src/routes/up.ts:32-67"
+
+[L10a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/up.ts#L444-L487 "packages/cli/src/commands/up.ts:444-487"
+
+[L10b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/up.ts#L608-L635 "packages/cli/src/commands/up.ts:608-635"
+
+[Q0]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/docs/reference/getting-started.md#L90-L126 "docs/reference/getting-started.md:90-126"
+
+[Q1]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/queue.ts#L520-L554 "packages/cli/src/commands/queue.ts:520-554"
+
+[Q2]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/queue.ts#L389-L479 "packages/daemon/src/routes/queue.ts:389-479"
+
+[Q3a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/queue-repository.ts#L1310-L1358 "packages/daemon/src/domain/queue-repository.ts:1310-1358"
+
+[Q3b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/queue-repository.ts#L1438-L1499 "packages/daemon/src/domain/queue-repository.ts:1438-1499"
+
+[Q4a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/queue-repository.ts#L1187-L1307 "packages/daemon/src/domain/queue-repository.ts:1187-1307"
+
+[Q4b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/queue-repository.ts#L3330-L3338 "packages/daemon/src/domain/queue-repository.ts:3330-3338"
+
+[Q5]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/queue.ts#L139-L146 "packages/cli/src/commands/queue.ts:139-146"
+
+[Q6]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/send.ts#L256-L272 "packages/cli/src/commands/send.ts:256-272"
+
+[Q7]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/queue.ts#L558-L641 "packages/cli/src/commands/queue.ts:558-641"
+
+[Q8]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/queue.ts#L1134-L1169 "packages/cli/src/commands/queue.ts:1134-1169"
+
+[R1]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/queue.ts#L965-L1007 "packages/cli/src/commands/queue.ts:965-1007"
+
+[R2]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/queue.ts#L970-L985 "packages/daemon/src/routes/queue.ts:970-985"
+
+[R3]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/queue-repository.ts#L2939-L2952 "packages/daemon/src/domain/queue-repository.ts:2939-2952"
+
+[R4a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/ps.ts#L921-L929 "packages/cli/src/commands/ps.ts:921-929"
+
+[R4b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/ps.ts#L1068-L1107 "packages/cli/src/commands/ps.ts:1068-1107"
+
+[R4c]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/ps.ts#L7-L16 "packages/daemon/src/routes/ps.ts:7-16"
+
+[S1a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/down.ts#L182-L247 "packages/cli/src/commands/down.ts:182-247"
+
+[S1b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/down.ts#L22-L61 "packages/daemon/src/routes/down.ts:22-61"
+
+[S2a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rig-teardown.ts#L82-L167 "packages/daemon/src/domain/rig-teardown.ts:82-167"
+
+[S2b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rig-teardown.ts#L170-L176 "packages/daemon/src/domain/rig-teardown.ts:170-176"
+
+[S3]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/snapshot-capture.ts#L60-L166 "packages/daemon/src/domain/snapshot-capture.ts:60-166"
+
+[S4]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/routes/up.ts#L97-L195 "packages/daemon/src/routes/up.ts:97-195"
+
+[S5a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/restore-orchestrator.ts#L1085-L1106 "packages/daemon/src/domain/restore-orchestrator.ts:1085-1106"
+
+[S5b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/restore-orchestrator.ts#L1333-L1358 "packages/daemon/src/domain/restore-orchestrator.ts:1333-1358"
+
+[S5c]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/restore-orchestrator.ts#L1375-L1399 "packages/daemon/src/domain/restore-orchestrator.ts:1375-1399"
+
+[S5d]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/restore-orchestrator.ts#L1450-L1493 "packages/daemon/src/domain/restore-orchestrator.ts:1450-1493"
+
+[S6]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/restore-orchestrator.ts#L976-L1006 "packages/daemon/src/domain/restore-orchestrator.ts:976-1006"
+
+[S7]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/restore-orchestrator.ts#L782-L812 "packages/daemon/src/domain/restore-orchestrator.ts:782-812"
+
+[S8]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/cli/src/commands/up.ts#L522-L607 "packages/cli/src/commands/up.ts:522-607"
+
+[S9a]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/rig-teardown.ts#L202-L231 "packages/daemon/src/domain/rig-teardown.ts:202-231"
+
+[S9b]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/managed-blocks.ts#L88-L116 "packages/daemon/src/domain/managed-blocks.ts:88-116"
+
+[S10]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/restore-orchestrator.ts#L239-L250 "packages/daemon/src/domain/restore-orchestrator.ts:239-250"
+
+[Q4c]: https://github.com/kairin/openrig-breakdown/blob/ea7c268f576ada8434d3dae3e6ac972264910d4c/packages/daemon/src/domain/queue-repository.ts#L3536-L3545 "packages/daemon/src/domain/queue-repository.ts:3536-3545"
