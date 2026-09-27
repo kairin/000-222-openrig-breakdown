@@ -15,9 +15,9 @@ Research. The code is still the same as upstream OpenRig 0.5.16. No
 simplification has been made yet.
 
 The current work reads the source and records evidence: what each workflow
-does, which state it keeps, and which capabilities are optional. The research
-also examines a Rust-first design and the removal of Node.js. No design is
-approved. Open decisions for the owner are in
+does, which state it keeps, and which capabilities are optional. The owner's
+stated goal is a fully Rust tool with no Node.js. The research examines how to
+reach that goal. No design or plan is approved. Open decisions for the owner are in
 [research-owner-decision-brief.md](breakdown/research-owner-decision-brief.md).
 
 Until the tool is renamed, it still uses the upstream command names (`rig`,
