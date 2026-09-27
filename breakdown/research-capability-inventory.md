@@ -1,91 +1,581 @@
-# CAP-4 — source capability inventory: optional and adjacent surfaces
+# Capability inventory — source coverage and open evidence
 
-## Scope and evidence boundary
+## Evidence contract
 
-This is the CAP-4 source-only coverage pass, inspected at source commit
-`aa51d3581825ce286d9dc2b379e21bee92a2a1c6` (2026-09-27). The new document is
-being authored on that same checkout; source paths/line citations refer to that
-commit. It traces scheduled,
-deferred, and adjacent optional surfaces from declaration/entrypoint to a
-consumer and its API, service, process, or artifact. The file records source
-structure, not successful execution, runtime support in a particular
-environment, or owner value. Labels are **Observed in source**, **Stated
-intent**, **Inferred**, and **Unresolved**, following
-[`09-adversarial-review-and-research-charter.md`](09-adversarial-review-and-research-charter.md#evidence-discipline).
+Inspected source commit: **`ea7c268f576ada8434d3dae3e6ac972264910d4c`**. All source citations in this document refer to that Git tree, not to installed code or a running daemon. The later commit containing this document is a documentation commit. Inspection date: 2026-09-27.
 
-This pass reuses the package/deployment map and Node dependency evidence in
-[`08-current-state-evidence.md`](08-current-state-evidence.md) and
-[`10-rust-and-node-removal-plan.md`](10-rust-and-node-removal-plan.md#evidence-backed-dependency-inventory).
-It deliberately adds no package, dependency, file, workspace, or Node counts.
-It does not complete another work package's workflow/state analysis, make a
-retention/removal recommendation, or decide owner value. Candidate workflow
-references use the charter's provisional journeys only (charter lines 40–54):
-**J1** install/start; **J2** put agents in a project; **J3** assign/follow work;
-**J4** understand results; **J5** stop/return. A linkage is not a claim that
-the journey requires the surface.
+The scope is capability coverage, not a retained-scope decision. No owner questions are answered, no retention/removal recommendation is made, and no Gate A–D status is assigned. No product tests, daemon, agent, installer, scenario, eval, Slack connection or recovery workflow was run. Reading a test or a source comment is not a passing test result.
 
-### Coverage key
+Evidence labels:
 
-- **Investigated** — the declared entry and at least one consumer/effect are
-  visible in source below; not a statement that all runtime behavior is proved.
-- **Scheduled** — source exposes a remaining trace needed to settle the
-  declared capability/effects, with that next research named.
-- **Deferred** — current source or an explicit source contract says the path is
-  not delivered/active or not in the current scope; the cited reason is
-  evidence, not a product decision.
+- **O — observed-in-source:** executable wiring or behavior in the cited source; not demonstrated execution.
+- **S — stated-intent:** documentation, comments, help or declarations that state purpose; not enough alone to establish effects.
+- **I — inferred:** a connection supported indirectly; the inference is not a guaranteed behavior.
+- **U — unresolved:** missing evidence, with the needed evidence stated.
 
-| ID | Surface and evidence trace | External dependency and managed effect (observed) | Candidate workflow / value | Coverage disposition |
-|---|---|---|---|---|
-| C1 | **MCP.** `rig mcp serve` is registered from `packages/cli/src/index.ts:200`; `packages/cli/src/commands/mcp.ts:14-51` selects daemon status/port, creates a `DaemonClient`, connects `createMcpServer` over `StdioServerTransport`, and waits for termination. `packages/cli/src/mcp-server.ts:1-4,47-80` constructs the server with MCP SDK and Zod, and maps tools to daemon HTTP routes (for example `/api/up`; additional tools follow in that file). | MCP SDK stdio transport; daemon API and daemon process/port. Tool calls can invoke mutating daemon operations, including bootstrap/teardown, snapshots, restore and queue/session surfaces as declared by individual tools. | J1/J2/J4/J5 are plausible API use cases based on tool names and endpoints; workflow fit and owner value unresolved. | **Investigated:** registered path, protocol transport, HTTP consumer and side-effect class identified. Exact per-tool API/error parity and full tool-to-route/effect enumeration remains **scheduled** for any later contract comparison; not implied by a CLI port. |
-| C2 | **Browser UI.** `rig ui open` is registered at `packages/cli/src/index.ts:183`; `packages/cli/src/commands/ui.ts:11-58` states experimental/maintenance/best-effort and opens an override URL or daemon URL. `packages/daemon/src/server.ts:806-835` serves static files with SPA fallback when a built UI index exists. The daemon registers route families used by clients at `packages/daemon/src/server.ts:684-800`; implementation resides in `packages/ui/`. | Browser and daemon HTTP; browser-side UI/build dependencies are catalogued in plan §Evidence-backed dependency inventory. Daemon reads packaged UI files; UI clients can invoke daemon APIs and terminal transport. | J1/J3/J4; UI is explicitly maintenance mode, but necessity/value is unresolved. | **Investigated:** CLI → daemon-hosted static artifact/API consumer. Detailed screen/action-to-API and every filesystem/process effect remain **scheduled**; do not equate maintenance status with owner decision. |
-| C3 | **Terminal UI/TUI.** `rig tui` entry is registered at `packages/cli/src/index.ts:184`; `packages/cli/src/commands/tui.ts:39-104` opens standalone Mission Control or attaches to shared kernel terminal. `packages/tui/src/main.ts:1-38,45-74,118-137` is the executable UI entry; it uses CLI child processes/config, daemon client, live refresh and activity events. | Node process and child CLI invocations; daemon HTTP/event stream; terminal/TTY and optionally shared tmux terminal. Writes terminal control sequences and may invoke native seat attachment (`main.ts:184-220`). | J3/J4/J5 supported as likely surfaces from command functions, but which presentation is required and owner value are unresolved. | **Investigated:** declared entry to CLI/daemon/process consumers and terminal effects. Remaining screen-by-screen action trace is **scheduled**; do not infer TUI is dispensable from the UI maintenance note. |
-| C4 | **Human gateway registry / Slack connector.** `rig gateway` and `rig slack` registrations are `packages/cli/src/index.ts:179,207`. `packages/cli/src/commands/gateway.ts:3-16,50-82,119-145` lazily calls the daemon registry and readiness API; its add path writes a human fragment through the registry operation. `packages/cli/src/commands/slack.ts:1-12,67-108,134-200` configures/verifies/enables/disables the connector. Daemon mounts `/api/gateway` at `packages/daemon/src/server.ts:790-791`; routes are in `packages/daemon/src/routes/gateway.ts:30-104`. `packages/daemon/src/startup.ts:2303-2324` wires an in-daemon subsystem; `packages/daemon/src/domain/gateway/slack/slack-subsystem.ts:1-35,51-66,117-127` shows outbound/inbound composition, tokens and durable seen/deadletter/inbound state contracts. | Slack API/websocket/network and bot/app tokens resolved from environment or a secrets env file (CLI lines 31-35,77-108; subsystem lines 19-34,51-52); OpenRig home config/state, human fragment/projection, queue, inbound media files and dispatch state. Human registry only declares Slack connector kind (`packages/daemon/src/domain/gateway/human-registry.ts:26-28,56-63`). | J3/J4 potentially via human delivery/reply, but not established as required for provisional core workflow; owner value unresolved. | **Investigated:** current Slack connector is an in-daemon path, not the retired CLI relay. Separate from that, **deferred** Slack channel in model-divergence notifications has explicit “M1 not landed” reason (`packages/daemon/src/domain/model-divergence/model-divergence-monitor.ts:19-21,90,233-237`; contract test `packages/daemon/test/model-divergence-monitor.test.ts:138-141`). These are distinct capabilities; do not treat the deferral as describing the shipped connector. Deeper delivery/replay/recovery proof is **scheduled**. |
-| C5 | **Pi runner/runtime.** Daemon startup builds Pi resume and runtime adapters at `packages/daemon/src/startup.ts:509-518,650-659`, and passes Pi resume into restore at `527-529`. Adapter `packages/daemon/src/adapters/pi-runtime-adapter.ts:60-92,220-275,339-375` manages readiness, launch-scoped sidecar and resume token. Protocol `packages/daemon/src/adapters/pi-runner-protocol.ts:9-17,22-40,50-71,160-204` specifies `node <runner>` in tmux and `pi --mode rpc`. | Node runner plus external `pi` CLI/RPC and configured model/provider credentials; tmux pane; `OPENRIG_HOME/state/pi/<session>` agent/session directories and `runner-state.json`; resume token. | J2/J5 possible (agent launch/resume), but the stated core goal names Claude Code and Codex CLI, not Pi (plan lines 31-37). Pi owner value unresolved. | **Investigated:** startup registration → runtime/resume adapter → runner → external Pi process and artifacts. Whether this adapter falls inside retained scope is **unresolved**, not chosen here. Deeper trust/config and teardown artifact trace is **scheduled**. |
-| C6 | **Stub runner and test-system.** Daemon constructs stub adapter/compiled runner at `packages/daemon/src/startup.ts:660-664`; adapter has production runner and in-memory hermetic paths (`packages/daemon/src/adapters/stub-runtime-adapter.ts:69-85,172-205`); protocol `packages/daemon/src/adapters/stub-runner-protocol.ts:10-17,22-46,85-117` launches Node in tmux and uses `.openrig/stub/state.json` plus scenario `script.json`. `packages/test-system/README.md:1-5,17-28,30-43` declares assets and dependencies; `ROUTING.md:1-6,8-23,25-73` routes gaps. The runner core executes injected actions/observations (`packages/daemon/test/helpers/scenario-runner.ts:1-13,26-38,70-97`) and has unit coverage with injected dependencies (`packages/daemon/test/scenario-runner.test.ts:1-14,48-98`). Separately, `packages/daemon/scripts/run-scenarios.mjs:1-22,27-71` is a standalone tsx scenario entry over `packages/daemon/test/fixtures/scenarios/`, not `packages/test-system/scenarios/`; it requires built CLI/daemon binaries and an owned tmux scaffold. | Project test fixtures, YAML scenarios, stub Node runner, tsx, built rig CLI, tmux, scenario-local environment/home and daemon/API surfaces; managed scripts/sidecars under fixture cwd. Test-system README says its authored acceptance scenarios do not run until stated dependencies land; daemon runner/unit test evidence refers to a distinct fixture tree and injected executor. | Not an owner-facing workflow; supports verification of J2–J5-like behavior but is not itself the owner workflow. Owner value as shipped product vs test infrastructure unresolved. | **Investigated** as adjacent test/fixture capability. **Deferred** for live execution claims about `packages/test-system/scenarios/` because its README/ROUTING states outstanding dependencies and the found standalone runner instead targets `packages/daemon/test/fixtures/scenarios/`. Separate runner-core and fixture test paths are source-observed; this audit did not execute them. |
-| C7 | **Plugins.** `rig plugin` registered at `packages/cli/src/index.ts:220`; `packages/cli/src/commands/plugin.ts:1-27,127-169,197-220` is read-only CLI inspection over daemon `/api/plugins`. Daemon mounts `/api/plugins` at `packages/daemon/src/server.ts:727`; `packages/daemon/src/routes/plugins.ts:107-230` serves discovery and file reads; `packages/daemon/src/domain/plugin-discovery-service.ts:199-279` scans roots. Startup configures OpenRig plugins plus Claude/Codex runtime caches at `packages/daemon/src/startup.ts:1231-1244`. The service contains hook/manifest writing helpers (`plugin-discovery-service.ts:365-430`), but this read-only command trace does not establish their caller or complete lifecycle. | OpenRig home plugins/spec root, Claude and Codex plugin cache directories; filesystem discovery/read; runtime plugin manifests can declare skills, hooks and MCP servers (CLI type shape `plugin.ts:93-118`). Some service methods write hook/manifest files, but exact writer-to-call path unresolved here. | J2/J4 possible as integration/context inspection; evidence does not show these are necessary to the provisional workflow. Owner value unresolved. | **Investigated:** registered inspection path and daemon service roots/consumers found. Exact mutation/refresh invocation and ownership lifecycle remains **scheduled**, reusing plan Node inventory for managed plugin scripts. |
-| C8 | **Specs and workspace/context libraries.** CLI registrations for specs/context/workspace are at `packages/cli/src/index.ts:218-220,72-73`; daemon route mounts include spec libraries, skills, context packs, agent images, workspace and projects (`packages/daemon/src/server.ts:725-745`). Skills are served by `packages/daemon/src/routes/skills.ts:65-199`; context-pack service initialization and roots are `packages/daemon/src/startup.ts:761-780,1248-1250`. Package-time context generation is `scripts/generate-context-packs.mjs:1-24,45-78`, which states source → built-in context artifact and daemon parser validation. Canonical skill mirroring is `scripts/mirror-skills.mjs:21-35,90-107,151-200`. | Authored specs, shared skills, plugin skills, generated context-pack files, generated membership/layout/digest JSON; filesystem/package build pipeline and daemon library HTTP APIs. These are user-visible/agent-consumed content artifacts, not just documentation. | J1/J2/J3/J4 potentially provide operating instructions or work/project context. Specific owner reliance/value unresolved; the provisional journey alone does not establish necessity. | **Investigated:** CLI/daemon entry families and generation/projection consumer chain identified. Full trace of every producer-to-packaged artifact and every consuming runtime is **scheduled**; use existing context generation evidence rather than duplicate Node/tooling counts. |
-| C9 | **Multi-host and gateway-adjacent fanout.** CLI `host`/gateway commands are registered at `packages/cli/src/index.ts:179,198`; daemon mounts `/api/hosts` at `packages/daemon/src/server.ts:752-759`, and applies host read-through middleware at `617-623`. | Remote daemon/API connections, configured host identities and credentials/tokens, HTTP forwarding and connector services. Exact owner-managed host state is beyond this CAP-4 surface sample. | Candidate relation to J3 (distributed coordination) is inferential; single-project provisional workflow does not establish multi-host need. Owner value unresolved. | **Scheduled:** entry/mount and broad boundary found, but full command → host registry → forwarding/API → state/process trace is needed before complete disposition. Explicitly included so multi-host does not disappear from capability coverage. |
-| C10 | **Other adapters, service orchestration, terminal providers.** Daemon has typed tmux/cmux dependencies and adapter fields (`packages/daemon/src/server.ts:14-18,143-160`), registers rig-cmux/terminal APIs (`server.ts:686-688,764-768`), and constructs compose services (`packages/daemon/src/startup.ts:23-27,519-523`). | tmux/cmux executables, compose/Docker and external runtime CLIs; process/session and service lifecycle; terminal attach surfaces. | J2/J5 likely adjacent because launch/stop interacts with agent process lifecycle, but exact owner selection of terminal provider/service features unresolved. | **Scheduled:** broad component/consumer paths located. Complete provider-by-provider entrypoint, process ownership, generated files and teardown trace belongs to workflow/state research; this inventory does not infer optionality from package names. |
-| C11 | **Generated context and documentation/skills as distributed artifacts.** `scripts/generate-context-packs.mjs:2-24` says public skills/static packs are projected at package time into daemon context packs; `scripts/mirror-skills.mjs:21-35,151-200` projects daemon skill source into canonical root skills with exclusions, membership and leak scanning. CLI `context`, `skill`, `plugin`, `specs` commands are registered at `packages/cli/src/index.ts:218-220`; daemon serves context packs, skills and spec libraries at `packages/daemon/src/server.ts:725-732`. The operator skill docs are an entry surface, not all generated payloads. | Node generation scripts, rsync for mirroring, source skill/spec/plugin files, generated/packaged context assets, daemon parser/API and local installation state. Reuse plan rows “Build/test/generation,” “Shipped operational scripts,” and “Packaging/CI/testbed”; no repeated counts. | Can support J1–J5 through instructions and agent context; direct dependency on a specific owner action remains unresolved. | **Investigated** for core producer-to-consumer shape; **scheduled** for complete inventory of generated/embedded files, external-copy locations, and failure/rollback behavior. Historical or non-operational docs must be separated from active consumer instructions in any later path audit. |
+Dispositions describe research, not product retention: **investigated** means the stated source chain was examined; **deferred** means the named deeper trace or runtime check remains open for the stated reason. No future work is called scheduled without an assignment. A family can have an investigated representative chain and deferred member-level evidence. The declaration ledger below makes that distinction explicit.
 
-## Explicit omissions and next evidence
+Reuse, not a second count audit: the accepted dependency/execution inventory and its reproducible package/Node/file counts remain in `breakdown/10-rust-and-node-removal-plan.md:66-117`; its original source pin is in `breakdown/10-rust-and-node-removal-plan.md:5-9`. The package/deployment map remains in `breakdown/08-current-state-evidence.md:64-130`. This document does not repeat those totals or promote them to measurements of capability, complexity or owner value. Task ownership and the coverage contract are in `breakdown/11-coordination-outcomes.md:119-135`.
 
-| Surface class | Evidence found / reason covered here | Remaining work (scheduled, not silent omission) |
+Workflow association is narrow. The guide states setup/launch/inspect at `docs/reference/getting-started.md:54-80`, assign/follow work at `docs/reference/getting-started.md:90-126`, and stop/resume at `docs/reference/getting-started.md:181-190`. These are **S**, not proof of actual owner use. The existing workflow research at `breakdown/research-workflow-traces.md:3-7` has its own older pin and limits. Rows below associate a mechanism with a journey only where its source chain supports it. **Owner value remains U for every row**: source does not establish which optional surface the owner needs, its frequency of use, or its net benefit.
+
+## Capability chains
+
+Each C-row is an explicit disposition. Dependencies listed here are path-specific, not a duplicate package inventory. Registered members and adjacent files receive additional dispositions in the declaration ledger. References between C-rows reuse a shared chain, not an assertion that every consumer implements every operation.
+
+### Core operation and durable work
+
+| ID / capability / disposition | Entrypoint → implementation / consumer, with evidence | Effects, dependencies, supported journey and remaining evidence |
 |---|---|---|
-| Other optional API/client surfaces (workflow, views, images, files, terminal, health, queue, etc.) | They are registered as daemon API families in `packages/daemon/src/server.ts:684-800`; CLI command registration establishes many consumers at `packages/cli/src/index.ts:173-220`. They are not all optional; names alone cannot classify them. | Map each command/API capability and its state/process/artifact to charter journeys in the broader workflow/capability work; avoid inferring owner value here. |
-| Skills, plugins, specs and policy content that is copied into agent homes | Existing Node plan covers managed hooks and shipped operational scripts; generation/mirroring sources above prove content projection exists. | Trace each install target, ownership marker, overwrite/removal rule, and recovery on copies. |
-| Slack notification deferral versus implemented Slack connector | Explicit source distinction in C4. | Verify which callers emit the named model-divergence deferral and whether any later source revision changes it; do not substitute Slack connector existence for that notification route. |
-| **Test-system command invocation and scenario dependencies** | The daemon standalone runner explicitly scans `packages/daemon/test/fixtures/scenarios/` (`packages/daemon/scripts/run-scenarios.mjs:27-32,49-60`); test-system docs describe a separate `packages/test-system/scenarios/` set and its dependencies. | Search at this source commit found no consumer of `packages/test-system/scenarios/`; do not claim it runs through the daemon runner. Further trace of any non-text/dynamic external invocation remains scheduled. |
+| C01 — CLI, setup and installation — investigated; host execution deferred | **O:** published bins and postinstall are declared at `packages/cli/package.json:28-45`; the wrapper checks/re-executes the runtime at `packages/cli/src/bin-wrapper.ts:25-79`; commands are registered at `packages/cli/src/index.ts:171-261`. Setup's prerequisite/install/config branches are at `packages/cli/src/commands/setup.ts:357-380` and `packages/cli/src/commands/setup.ts:504-624`. | **O:** shell/tool checks and managed tmux configuration edits; runtime/native-module prerequisites. **S:** setup journey above. **U:** clean-host installation, external authentication, interrupted install and reversibility require isolated host evidence. Packaging/update are C27, not inferred from successful argument parsing. |
+| C02 — daemon, local API and persistence — investigated; live startup deferred | **O:** CLI spawns daemon with its runtime at `packages/cli/src/daemon-lifecycle.ts:651-660`; daemon resolves startup at `packages/daemon/src/index.ts:236-298`; DB initialization is at `packages/daemon/src/startup.ts:240-249`. SQLite settings are at `packages/daemon/src/db/connection.ts:1-13`; migration ordering/transactions at `packages/daemon/src/db/migrate.ts:13-42`. | **O:** process/listener and persistent schema effects; SQLite/native module and filesystem dependencies. API registration at `packages/daemon/src/server.ts:684-798` feeds CLI/MCP/UI/TUI consumers. Setup/inspection chain; **U:** occupied listener, permission failure, interrupted migrations and shutdown durability need runtime evidence. |
+| C03 — bootstrap, launch, specs/packages/bundles — investigated representative chain; format branches deferred | **O:** `up` exposes source/plan at `packages/cli/src/commands/up.ts:68-80`; API invokes bootstrap at `packages/daemon/src/routes/up.ts:299-344`; bootstrap applies external installs/packages and instantiates topology at `packages/daemon/src/domain/bootstrap-orchestrator.ts:477-562`, with pod-aware launch at `packages/daemon/src/domain/bootstrap-orchestrator.ts:635-637`. Spec review returns review/error results at `packages/daemon/src/routes/spec-review.ts:7-41`; bundle handlers depend on archive, integrity and resource routers at `packages/daemon/src/routes/bundles.ts:8-34`. **O:** CLI `rig doctor` imports `@openrig/daemon/spec-conformance` and compares authored specifications against live topology (`packages/cli/src/commands/doctor.ts:1-17`). | **O:** install journal, resource installation, topology and agent process paths; YAML/JSON schemas, archives, filesystem, external tools and runtime adapters. Launch journey supported. **U:** complete legacy/pod/bundle branch equivalence, conflict cleanup and trust/approval behavior require branch-level traces and isolated exercises. Import/export/discovery are explicitly included, not assumed synonymous with `up`. |
+| C04 — topology mutation, binding and archive — investigated representative chain; destructive variants deferred | **O:** CLI registration at `packages/cli/src/index.ts:186-197` and `packages/cli/src/index.ts:238-249`; rig add-member route validates input and calls `convergeOp` at `packages/daemon/src/routes/rigs.ts:785-829`; archive/unarchive writes and event tokens at `packages/daemon/src/routes/rigs.ts:478-520`. | **O:** topology operations, reversible archive state and events; DB, instantiator and runtime/terminal dependencies. **S:** source says supplied edges persist but have no edge-runtime behavior at `packages/daemon/src/routes/rigs.ts:791-795`; do not infer execution from graph edges. **U:** expand/grow/remove/shrink/destroy/adopt/bind cleanup and dirty-worktree safety need individual effect/ownership traces; no blanket preservation claim. |
+| C05 — stop, snapshot and restore — investigated; recovery demonstration deferred | **O:** down route invokes teardown at `packages/daemon/src/routes/down.ts:22-55`; teardown attempts snapshot, kills sessions and cleans state at `packages/daemon/src/domain/rig-teardown.ts:103-176`. Restore refuses live/unknown sessions and can await a decision at `packages/daemon/src/domain/restore-orchestrator.ts:782-812` and `packages/daemon/src/domain/restore-orchestrator.ts:976-1006`. | **O:** process termination, session/binding cleanup, snapshot metadata and restore outcomes. Snapshot failure does not stop teardown. Stop/resume journey supported; tmux, DB and native resume metadata are dependencies. **U:** work preservation, full conversation continuity, crash-cart/fleet restore completeness and interrupted cleanup require isolated dirty-worktree/recovery evidence; snapshots are not established as full backups. |
+| C06 — status, ps, transcripts and diagnostic projections — investigated representative reads; accuracy deferred | **O:** rig summary folds DB inventory at `packages/daemon/src/routes/rigs.ts:215-238`; status composes lifecycle/restore/kernel inputs at `packages/daemon/src/routes/rigs.ts:247-280`. Browser reads this summary at `packages/ui/src/hooks/useRigSummary.ts:19-37`; TUI wires hydration and recovery dependencies at `packages/tui/src/main.ts:21-33`. | **O:** visible read projections; persisted identity is not proof of live process health. Inspection journey supported. **U:** every diagnostic's stale/missing-source behavior, transcript retention/rotation and cross-client consistency need targeted traces and runtime comparisons. |
+| C07 — send, capture, broadcast, walk and ask — investigated transport chain; orchestration variants deferred | **O:** CLI registration at `packages/cli/src/index.ts:204-217`; transport routes resolve/send/capture/broadcast at `packages/daemon/src/routes/transport.ts:93-105`, `packages/daemon/src/routes/transport.ts:170-205` and `packages/daemon/src/routes/transport.ts:217-275`; ask delegates to AskService at `packages/daemon/src/routes/ask.ts:6-21`. CLI send distinguishes verification and prompt override at `packages/cli/src/commands/send.ts:230-283`. | **O:** pane input/output and transport result; terminal/session identity dependencies. Assign/inspect journey supported for transport, not proof of agent acceptance or completion. **U:** walk sequencing, remaining ask search branches and every runtime's delivery behavior remain deeper traces; unavailable/prompt-blocked/retry behavior needs execution evidence. |
+| C08 — durable queue, claim, handoff and human work — investigated; delivery outcome deferred | **O:** queue create handler passes identity and content to repository at `packages/daemon/src/routes/queue.ts:389-480`; repository persists creation at `packages/daemon/src/domain/queue-repository.ts:1310-1358` and separates nudge effects at `packages/daemon/src/domain/queue-repository.ts:1187-1197`; terminal transitions/wake intent are at `packages/daemon/src/domain/queue-repository.ts:1507-1669`. | **O:** SQLite work rows, transition evidence and post-commit transport attempts; assign/follow journey supported. Durable work is distinct from pane receipt. Slack continuation is C16. **U:** real retries, disconnected clients, recipient behavior and exactly-once end-to-end outcomes need experiments, not just transaction inspection. |
+| C09 — stream intake, chat and classification — investigated stream/classifier chain; chat details deferred | **O:** stream emit route derives identity and calls store at `packages/daemon/src/routes/stream.ts:55-87`; store inserts immutable intake at `packages/daemon/src/domain/stream-store.ts:83-119`; project route classifies at `packages/daemon/src/routes/projects.ts:109-154`, and classifier checks lease/existence then inserts at `packages/daemon/src/domain/project-classifier.ts:102-145`. Chat is mounted separately at `packages/daemon/src/server.ts:739-742`. | **O:** intake/classification rows and read results; DB, identity, classifier lease and events. Source supports intake→classification, not a required owner workflow. **U:** remaining chat operations and classification usefulness require deeper consumer traces; owner value unresolved. |
+| C10 — events and live refresh — investigated; reconnect demonstration deferred | **O:** EventBus inserts before notification at `packages/daemon/src/domain/event-bus.ts:56-91`; SSE subscribes then replays/buffers at `packages/daemon/src/routes/events.ts:12-73`; browser parses and notifies listeners at `packages/ui/src/lib/topology-events.ts:61-96`; TUI feature-detects and reconnects established streams at `packages/tui/src/live-events.ts:31-85`. | **O:** durable event rows, network streams and client refresh notifications. Inspection is supported; browser and TUI reconnect mechanisms are not identical. **U:** ordering under connection loss, poison events and UI refresh accuracy require runtime evidence. |
 
-## Findings and limits
+### Presentations, connectivity and runtimes
 
-- **Observed in source:** MCP, TUI, browser UI, Slack/human gateway, Pi, stub,
-  plugins, skills/context/spec libraries, and adjacent host/provider surfaces
-  have concrete declarations and consumers. “Optional” is a research category
-  in the acceptance contract, not proof these features are unused or safe to
-  omit.
-- **Observed in source:** Slack has both a present in-daemon connector and a
-  separately named deferred model-divergence notification path. The two must
-  not be collapsed into one status.
-- **Stated intent:** the charter names a provisional Claude Code/Codex CLI
-  workflow, explicitly makes it a research anchor, and asks that optional UI,
-  TUI, MCP, multi-host, workflow, context/spec/plugin, workspace and adapter
-  capabilities receive coverage (charter `09:40-54,75-80`; coordination
-  outcome `11:119-135`).
-- **Inferred:** MCP, presentation surfaces, plugins/context packs, gateway and
-  alternate runtimes may connect to parts of that scenario based on their
-  entrypoint/API names and consumers. The evidence does not establish necessity,
-  frequency, cost to owner, or the best scope choice. A plausible competing
-  explanation is that some exist for adjacent workflows, integration, or
-  verification rather than the provisional personal workflow.
-- **Unresolved:** owner value/retained scope for all listed optional surfaces;
-  completeness of dynamic entrypoints and package artifacts; detailed command
-  → state/process/effect traces; current execution status of all test-system
-  scenarios; and precise external-tool installation/runtime behavior.
+| ID / capability / disposition | Entrypoint → implementation / consumer, with evidence | Effects, dependencies, supported journey and remaining evidence |
+|---|---|---|
+| C11 — MCP — investigated stdio/server→daemon HTTP chain; per-tool effects remain mapped to owning capabilities | **O:** registration at `packages/cli/src/index.ts:200-200`; serve resolves daemon and connects stdio at `packages/cli/src/commands/mcp.ts:14-50`; server setup and representative `rig_up`/`rig_down` handlers are at `packages/cli/src/mcp-server.ts:48-107`; each of the 18 handler→HTTP target mappings is ledgered below (do not imply lines 52-105 cover all handlers). MCP result conversion/errors are at `packages/cli/src/mcp-server.ts:21-44`. | **O:** agent-facing stdio protocol, daemon HTTP requests and tool text/JSON response; durable/process effect belongs to each owning C-row. `rig_capture` maps to `/api/transport/capture` (`packages/cli/src/mcp-server.ts:337-360`) and chat watch returns bounded history rather than a stream (`packages/cli/src/mcp-server.ts:399-429`). **U:** external client compatibility, cancellation and live parity need runtime evidence; owner value unresolved. |
+| C12 — browser UI — investigated shell, representative reads, and explicit route dispositions; action parity remains partial | **O:** React entry mounts App at `packages/ui/src/main.tsx:9-22`; App renders router and notice at `packages/ui/src/App.tsx:18-57`; routes import topology, project, workflow, files, settings, specs and lab consumers at `packages/ui/src/routes.tsx:23-77`; summary fetch is C06. Daemon serves assets/SPA and injects terminal token at `packages/daemon/src/server.ts:806-835`. **O:** the inventory route ledger includes routes that render placeholders/redirects: `/discovery` is a placeholder (`packages/ui/src/routes.tsx:449-464`); `/context`, `/mission-control`, `/slices`, `/progress`, `/steering`, and generic spec route redirect to other routes (`packages/ui/src/routes.tsx:266-276,488-530`). These paths are not separate complete feature consumers. | **O:** browser rendering, localStorage notice/token, HTTP consumers, route redirects/placeholders; React/router/query, browser and built assets. **S:** experimental/maintenance-mode notice at `packages/ui/src/App.tsx:7-8`, not this research's retention recommendation. **U:** remaining action-by-action writes, browser auth posture, accessibility, and feature completeness require review. Route registration alone does not prove a feature. |
+| C13 — TUI, bare CLI front door and control socket — investigated; interactive verification deferred | **O:** executable declaration at `packages/tui/package.json:8-14`; bare-rig routing is declared at `packages/cli/src/index.ts:277-285`; main selects demo/live data and client at `packages/tui/src/main.ts:45-74`; socket path/state and parser dependencies at `packages/tui/src/socket-server.ts:13-19` and `packages/tui/src/socket-server.ts:24-85`; live refresh is C10. | **O:** terminal presentation, per-instance view state, local socket and daemon/CLI reads. Demo data is explicitly separate from live hydration. Inspection/recovery wiring is visible at `packages/tui/src/main.ts:21-33`. **U:** command registry action parity, socket permission/lifetime behavior and keyboard/mouse/recovery UX need deeper checks; no equivalence with browser/MCP inferred. |
+| C14 — terminal providers and browser terminal — investigated service seam; provider internals deferred | **O:** terminal route opens a view through TerminalService at `packages/daemon/src/routes/terminal.ts:52-83`; service resolves provider, composes and checks preview identity before `openView` at `packages/daemon/src/domain/terminal/terminal-service.ts:143-182`. WebSocket route is wired at `packages/daemon/src/server.ts:713-720`; auth/broker attach at `packages/daemon/src/routes/terminal-ws.ts:29-125`. | **O:** view-open process requests and terminal network subscriptions; herdr/cmux provider availability, tmux, bearer and browser WS dependencies. **U:** provider-specific launches, resize/input/backpressure and remote SSH behavior need implementation/runtime traces. Owner value unresolved. |
+| C15 — multi-host registry, routing and fleet reads — investigated representative durable/network chains; broader remote mutation recovery deferred | **O:** `rig host add/select` writes registry/config state (`packages/cli/src/commands/host.ts:458-550`); `/api/hosts` probes registered hosts and implements target approval/local pairing (`packages/daemon/src/routes/hosts.ts:127-145,151-221,246-385`); approved pairing persists a mode-0600 token and registry entry. Queue forwarding resolves only HTTP hosts, forwards to origin and creates no local row (`packages/daemon/src/routes/queue.ts:175-229`); fleet review returns local-plus-registered aggregation (`packages/daemon/src/routes/review.ts:74-96`). CLI send supports distinct SSH subprocess versus HTTP-direct remote daemon paths (`packages/cli/src/commands/send.ts:235-236,274-282`). | **O:** selected-host/config/token/registry artifacts, target human-gate qitem, remote HTTP/SSH process activity and host/fleet projections. Dependencies: registry/config, SSH or HTTP, bearer file, remote compatibility, human gate, filesystem/network. **U:** broader remote mutation retry and identity isolation require specific traces; no owner journey inferred. Workflow step pins separately refuse non-local workflow step host (C21); that restriction is not contradicted by generic remote queue forwarding. |
+| C16 — gateway and Slack — investigated inbound/outbound chains; external delivery deferred | **O:** startup builds in-daemon subsystem at `packages/daemon/src/startup.ts:2309-2324`; network services start separately at `packages/daemon/src/index.ts:330-330`; enable/readiness routes at `packages/daemon/src/routes/gateway.ts:37-102`; configuration yields an inert wire if neither leg is ready at `packages/daemon/src/domain/gateway/slack/slack-subsystem.ts:199-218`. Outbound queue poller dispatches and inbound socket wires router/state at `packages/daemon/src/domain/gateway/slack/slack-subsystem.ts:472-567`. | **O:** attempted/delivered/seen JSONL, dead letters/receipts, queue work and thread map; secrets, Slack HTTP/Socket Mode and filesystem/DB. Inbound creates correlated work then marks seen at `packages/daemon/src/domain/gateway/slack/inbound.ts:197-230`; human reply calls existing resolve/update at `packages/daemon/src/domain/gateway/slack/slack-subsystem.ts:75-112`. **U:** live permissions/rate limits, delivery ambiguity and attachment transfer need external exercises. Source supports human-work continuation, not proof the owner uses Slack. |
+| C17 — Claude Code and Codex managed seats — investigated launch/projection wiring; native readiness deferred | **O:** adapters receive managed hooks and filesystem ports at `packages/daemon/src/startup.ts:651-656`; Claude launch path at `packages/daemon/src/adapters/claude-code-adapter.ts:214-296`; Codex launches native command at `packages/daemon/src/adapters/codex-runtime-adapter.ts:311-394`; Claude managed hook projection at `packages/daemon/src/adapters/claude-code-adapter.ts:709-819`. | **O:** external harness commands in tmux and managed files/hooks; installed vendor CLIs, auth, runtime configuration and relay assets. Launch/continuity chain supported. **U:** native login, version-specific hook/trust behavior, partial launch and preservation of user-authored configuration need isolated tests. |
+| C18 — Pi runner and resume — investigated; native RPC behavior deferred | **O:** Pi paths/resume are wired at `packages/daemon/src/startup.ts:509-518`; runtime adapter at `packages/daemon/src/startup.ts:658-659`; command builder launches Node at `packages/daemon/src/adapters/pi-runner-protocol.ts:164-188`; runner spawns `pi`, writes RPC, mirrors output, posts activity and writes sidecar at `packages/daemon/src/adapters/pi-runner.ts:568-622`. | **O:** Pi child process, pane output, activity HTTP and runner-state file; Pi executable/RPC contract, tmux and endpoint token. Optional launch adapter, not established owner workflow. **U:** native resume/fork correctness, env isolation and child failure require Pi execution. Activity and sidecar writes are best-effort, not proof of daemon receipt. |
+| C19 — stub runner and terminal runtime — investigated; fixture adequacy deferred | **O:** stub and terminal are registered at `packages/daemon/src/startup.ts:660-664` and `packages/daemon/src/startup.ts:844-844`; stub writes readiness atomically at `packages/daemon/src/adapters/stub-runner.ts:54-61`; script dispatch implements compaction, chunked output, death and restore at `packages/daemon/src/adapters/stub-runner.ts:127-183`. Terminal adapter is no-op/ready and rejects fork at `packages/daemon/src/adapters/terminal-adapter.ts:19-48`. | **O:** sidecars, pane text, activity, process death and real compaction/restore helper calls; not a model. `slow_output` loops chunks without a wall-clock delay. Test-system consumer is C26. **U:** equivalence to native agent failure behavior is not established; terminal startup actions live outside this adapter. |
+| C20 — optional Docker Compose services — investigated; service readiness deferred | **O:** startup injects Compose adapter/orchestrator at `packages/daemon/src/startup.ts:520-528`; bootstrap creates prelaunch hook at `packages/daemon/src/domain/bootstrap-orchestrator.ts:635-637`; adapter invokes `docker compose up`, status and policy-dependent down at `packages/daemon/src/adapters/compose-services-adapter.ts:64-119`; teardown invokes service cleanup at `packages/daemon/src/domain/rig-teardown.ts:137-145`. | **O:** external containers and possible volume removal when `down_and_volumes` is selected; Docker, Compose spec and readiness dependency. Source supports service-before-agent composition, not owner necessity. **U:** all readiness probes and volume/data safety need explicit runtime evidence. |
 
-No application, daemon, connector, agent, scenario runner, migration, install,
-or recovery workflow was run for this source-only pass. Tests were inspected as
-source only. This document does not change the shared claim register, task list,
-another research artifact, source code, or Gates A–D. It does not recommend
-retention/removal and does not constitute owner approval or implementation
-authorization.
+### Coordination, content and engineering surfaces
+
+| ID / capability / disposition | Entrypoint → implementation / consumer, with evidence | Effects, dependencies, supported journey and remaining evidence |
+|---|---|---|
+| C21 — workflows — instantiate/project and remote-boundary chains investigated; other transitions remain open | **O:** CLI workflow operations call `/api/workflow` and render CLI projections (`packages/cli/src/commands/workflow.ts:253-440`); route delegates instantiate/project at `packages/daemon/src/routes/workflow.ts:196-256`; runtime creates instance and entry queue item with durable state/event in its notification envelope at `packages/daemon/src/domain/workflow-runtime.ts:710-797`. Browser list/instance routes consume the surface at `packages/ui/src/routes.tsx:66-69,177-195`. Dependencies: workflow spec/cache, role/owner resolution, SQLite instance/frontier/queue, event bus, optional human gate. **O:** runtime refuses every non-local host-pinned workflow step at instantiation (`packages/daemon/src/domain/workflow-runtime.ts:443-457`). A separate remote queue HTTP forwarding path exists (`packages/daemon/src/routes/queue.ts:175-229`), but no workflow-runtime consumer adapts a pinned step to it; remote workflow execution is not supported by the cited chain. | **O:** durable instance/frontier/current-step/bound-rig state, queue item/event, CLI/UI projections; remote pin refusal. **U:** full compile/revise/abort/resume/deadline/exception transition coverage and owner workflow value. The remote queue mechanism is not evidence of remote workflow execution. |
+| C22 — watchdog, health, attention and notifications — investigated registration/read paths; automated policy effects deferred | **O:** watchdog validates/registers and emits at `packages/daemon/src/routes/watchdog.ts:67-139`; health routes return projection findings at `packages/daemon/src/routes/health.ts:14-52`; attention reads human-addressed queue and proof state at `packages/daemon/src/routes/attention.ts:24-78`. Optional notification adapter setup is at `packages/daemon/src/startup.ts:1480-1496`. | **O:** job registration/event and user-facing findings/requests; DB, timers/policies, filesystem observations and optional delivery providers. Inspection supported, not guaranteed autonomous recovery. **U:** each policy's firing/retry/escalation, external webhook/ntfy delivery, attention truncation and health accuracy need fuller timer→action traces and live failure evidence. |
+| C23 — workspace, project, scope, files, review and proof — investigated representative read/write chains; remaining mutations deferred | **O:** workspace validation delegates at `packages/daemon/src/routes/workspace.ts:37-73`; config scaffolds at `packages/daemon/src/routes/config.ts:56-64`; file route checks expected mtime/hash then invokes atomic writer at `packages/daemon/src/routes/files.ts:209-267`; writer rename/audit handling at `packages/daemon/src/domain/files/file-write-service.ts:150-206`. Review returns composed agents/rig/fleet at `packages/daemon/src/routes/review.ts:45-95`; proof judge resolves identity, records and notifies at `packages/daemon/src/routes/proof.ts:28-48`; CLI proof add writes an artifact at `packages/cli/src/commands/proof.ts:419-431`. | **O:** workspace files, proof artifacts/judgments, audit and read models; allowlisted roots, indexer, expected revisions, identity and DB/event dependencies. Inspection and authoring supported in source, not a decision about this owner's process. A write may succeed before audit append fails. **U:** every scope/create/move/approve/freeze action, symlink boundary and partial filesystem update needs detailed trace; this is not the separate state-invariant ledger. |
+| C24 — plugins, skills, context and generated content — discovery, composition and delivery-input chains investigated; full projection ownership unresolved | **O:** plugin CLI consumes discovery at `packages/cli/src/commands/plugin.ts:147-169,198-205`; startup vendors/projects global router skill at `packages/daemon/src/startup.ts:712-758`; vendor copies/version-checks at `packages/daemon/src/domain/plugin-vendor-service.ts:130-186`. Skill loadout delegates to daemon export with explicit apply at `packages/cli/src/commands/skill.ts:48-97`. Context routes list/sync/compose at `packages/daemon/src/routes/context-packs.ts:59-117`; composition writes files/manifest at `packages/daemon/src/domain/context-packs/context-pack-library-service.ts:360-379`. The pieces route returns assembled text/bytes/missing members for delivery flags (`packages/daemon/src/routes/context-packs.ts:220-242`); CLI resolver rejects missing members and resolves text (`packages/cli/src/context-resolve.ts:1-61`); `rig send --context` forwards resolved content (`packages/cli/src/commands/send.ts:220-282`). | **O:** installed plugin/skill files and composed context manifests; disk libraries, runtime manifests, version/hash rules, configured roots and session transport. Generation: package builder invokes generator (`scripts/build-package.sh:76-89`), generator copies members/writes manifests (`scripts/generate-context-packs.mjs:395-409`), startup discovers binary-relative library (`packages/daemon/src/startup.ts:761-789`). Startup says pack expansion is unsupported there and separates delivery verbs from library discovery. Mirror source/target are `scripts/mirror-skills.mjs:21-28`. **U:** external harness receipt/reading/acting on delivered text, per-runtime skill projection cleanup/ownership, and conflict recovery remain unverified; availability or composition is not proof of ingestion. |
+| C25 — policies, config, auth/provider, usage and continuity — investigated source chains; external harness enforcement remains bounded | **O:** CLI policy selection records the applied setup result (`packages/cli/src/commands/policy.ts:298-314`); policy refs validate nonempty/builtin/custom-safe paths, reject bare builtin shadowing, and resolve member-over-rig with deliberate `none`/floor/builtin-yolo/full-bypass outcomes (`packages/daemon/src/domain/permission-policy/policy-ref.ts:42-87,150-231`). Preflight emits presentation warnings (`packages/daemon/src/domain/rigspec-preflight.ts:201-229,405-419`); rig/node provenance persists during materialization, with strict write failure versus best-effort refresh (`packages/daemon/src/domain/rigspec-instantiator.ts:650-666,717-748,1814-1833`); resolved provenance/floor reaches launch bindings (`:1877-2003`) and Claude/Codex/Pi adapters (`packages/daemon/src/adapters/yolo-mode.ts:36-72`). Config routes read/write SettingsStore (`packages/daemon/src/routes/config.ts:35-84`); CLI auth/profile/seat registry (`packages/cli/src/commands/auth.ts:54-155`); provider route→service returns `failed_safely/switch_execution_not_yet_wired` rather than account mutation (`packages/daemon/src/routes/provider.ts:103-127`; `packages/daemon/src/domain/provider/provider-service-impl.ts:91-115`); telemetry projects usage (`packages/daemon/src/routes/telemetry.ts:19-59`). Handover/fork/recap follow-ups C25/C24. | **O:** permission-posture inputs reach managed launch flags; Pi is resource trust, terminal has no harness posture flag; custom `surface: config` policy is parsed but no config write is established by policy-ref resolver. **S:** auth seat metadata is not proof of live account (`packages/cli/src/commands/auth.ts:110-110`). **U:** external harness adherence/post-launch tool enforcement, real auth/session continuity, and live usage freshness are not source-proven; no native-equivalence or switch-success claim. |
+| C26 — test-system, scenario runners and evals — runner and fixture-tree reachability investigated; execution not claimed | **O:** standalone scenario entry scans `packages/daemon/test/fixtures/scenarios`, requires built CLI/daemon and calls the pipeline (`packages/daemon/scripts/run-scenarios.mjs:24-71`); pipeline validates/scaffolds/spawns (`packages/daemon/test/helpers/scenario-pipeline.ts:303-384`) and refuses container-mode per-seat stub scripts (`:340-351`). Eval entry directly loads `packages/test-system/evals/cases` (`packages/daemon/scripts/run-evals.mjs:34-67`), supports fake/live providers, optional grade writes and cleanup (`:69-130`). **O reachability limit:** search found no source consumer of `packages/test-system/scenarios`; the scenario runner targets the daemon fixture tree instead. | **O:** separate scenario/eval roots and process/state/result effects; built CLI/daemon, tsx, tmux, optional TUI/Docker/native-seat dependencies. README scenario-runner-awaiting status is stale relative to runner implementation (`packages/test-system/README.md:36-42` versus runner cited above); it does not prove execution or passage. **U:** dynamic/manual invocation of test-system scenarios, per-scenario compatibility, seeded-red evidence, container parity and live eval validity. No tests were run for this inventory. |
+| C27 — build, tests, release, install/update and CI — investigated representative process chains; artifact verification deferred | **O:** root scripts at `package.json:13-28`; package builder compiles/stamps/copies at `scripts/build-package.sh:20-89`; postinstall ABI check at `packages/cli/scripts/check-abi.mjs:104-122`; fresh-install smoke invokes npm/Node at `scripts/smoke-fresh-install.sh:35-78`. CI invokes portability report into summary at `.github/workflows/portability-report.yml:17-33`. Repository gate runner imports lock/hermeticity/run helpers and defines verdict path at `scripts/gate-lane.mjs:7-23`. | **O:** build artifacts, install/native checks, reports and test-runner processes; toolchain and packaging dependencies are reused from accepted baseline, not recounted. **S:** operational upgrade instructions invoke inspection/backup/plugin helpers at `packages/daemon/specs/agents/shared/skills/core/openrig-upgrade/SKILL.md:75-125`. **U:** packaged contents, external CI action runtimes, installer/update/rollback correctness and full helper-call closure require separate execution/artifact audit. Repository test gate machinery is not research Gates A–D. |
+| C28 — docs, demos, UI twin/labs, spikes and archives — investigated declarations; current operational relevance bounded by source callers | **S:** guide offers journeys cited above. **O:** demo shell starts daemon/rig and calls resume/health probes (`demo/run.sh:1-61`); twin runner is reachable via package scripts and uses npm build, Chrome captures, output/diff writes, optional proof URL (`packages/ui/package.json:7-15`; `packages/ui/twin/capture/twin-capture.ts:42-92,108-205`). UI lab routes are explicit `lab` components (`packages/ui/src/routes.tsx:312-351`). | **O:** demo health/seed/verify helpers are called from `demo/run.sh`/`demo/run-proof.sh`; check-health reads summary/nodes and fails on absent/empty rig (`demo/scripts/check-demo-health.ts:1-77`). Twin proof capture is disabled without `--proof-url`; no main package-build/CI invocation stages or runs twin output. `spike/tui-drivability` is a standalone Node stub-data harness with no daemon calls; static search outside its root found no production/package/CI caller (`spike/tui-drivability/README.md:1-22`). Tracked archive is only Context7 config plus original README: no runtime/build import found; README links archived original as documentation (`README.md:66,86`), separation evidence says Context7 config no longer discovered as active (`breakdown/02-separation-from-upstream.md:23-25`). | **U:** actual demo/twin execution, manual/external spike invocation and owner relevance. Archive records are statically bounded as docs/config history; no retention/removal decision. |
+
+## Consequential distinctions and unresolved evidence
+
+### Follow-up source traces after decomposition
+
+These traces close specific previously deferred links, not all remaining member-level research. Source pin and evidence labels remain unchanged.
+
+| Capability | Declared entrypoint → implementation → consumer/effect | Disposition and limits |
+|---|---|---|
+| C22 watchdog scheduled delivery | **O:** daemon supervision starts scheduler (`packages/daemon/src/index.ts:326-326`); startup injects jobs/engine (`packages/daemon/src/startup.ts:1974-1980`); scheduler schedules timeout, lists active jobs, checks cadence and evaluates (`packages/daemon/src/domain/watchdog-scheduler.ts:120-159`). Engine invokes policy (`packages/daemon/src/domain/watchdog-policy-engine.ts:333-333`), performs delivery and records history/condition receipt/event (`packages/daemon/src/domain/watchdog-policy-engine.ts:495-557`). Production delivery creates a continuity baton when present, sends through session transport and reports failure (`packages/daemon/src/startup.ts:1815-1839`). | Investigated timer→policy→transport/durable-receipt chain. **O:** completed continuity action is recorded separately from transport success; condition receipt is banked only on positive delivery. **U:** individual registered policies, firing conditions and live delivery remain distinct checks. No autonomous recovery guarantee. |
+| C25 provider account switching | **O:** API switch calls the service (`packages/daemon/src/routes/provider.ts:103-127`), startup constructs ProviderServiceImpl (`packages/daemon/src/startup.ts:1047-1047`), implementation prechecks account/auth and assumes a live conversation (`packages/daemon/src/domain/provider/provider-service-impl.ts:91-102`). Switch returns `failed_safely`, either for unsafe precheck or `switch_execution_not_yet_wired` (`packages/daemon/src/domain/provider/provider-service-impl.ts:105-114`). | Investigated **declared but non-operational switching endpoint**. Its visible effect is a refusal result, not a changed account. This is a concrete implementation boundary, not merely missing runtime proof. **U:** separate CLI auth profile switching must still be traced; it must not be conflated with this API. Owner value unresolved. |
+| C24/C25 authored seat recap | **O:** CLI recap-write loads shared export, validates topology destination, reads content and calls writer, then prints path/chain size (`packages/cli/src/commands/context.ts:728-757`). Export resolves to seat-recap store (`packages/daemon/src/seat-recap-store-surface.ts:5-13`). Writer checks Markdown addressability, renames existing recap to a collision-disambiguated predecessor and writes current content (`packages/daemon/src/domain/context-packs/seat-recap-store.ts:50-77`). | Investigated command→shared implementation→durable file/visible result. Depends on configured topology root and filesystem. **O:** rename of old recap precedes current-file write; no atomic multi-file transaction is demonstrated. **U:** interruption behavior and actual successor ingestion remain unverified; writing a recap does not prove continuity. |
+
+### Remaining cross-cutting gaps
+
+1. **O — gateway activation is not Slack readiness.** Subsystem `start()` catches wiring failure; `startServices()` is separate (`packages/daemon/src/domain/gateway/gateway-subsystem.ts:123-151`). Missing connector configuration can produce an active subsystem with an inert Slack wire (C16). **U:** live API scopes, Socket Mode, network failure/replay, attachment security and end-to-end duplicate suppression need external evidence.
+2. **O — Slack work has a durable/process chain.** State-store construction and thread DB are at `packages/daemon/src/domain/gateway/slack/slack-subsystem.ts:249-254`; delivery marks attempted, posts, then marks delivered at `packages/daemon/src/domain/gateway/slack/slack-delivery.ts:225-283`; inbound queue/seen ordering is C16. Inbound file port writes local media at `packages/daemon/src/domain/gateway/slack/slack-subsystem.ts:140-188`, wired at `packages/daemon/src/domain/gateway/slack/slack-subsystem.ts:519-529`. **I:** these mechanisms address replay/continuation hazards; they do not prove exactly-once external effects.
+3. **O/S conflict — test-system narrative lags implementation.** The README says scenarios await a runner (`packages/test-system/README.md:36-42`), while a runner and real pipeline exist (C26). Stub header also says seeded behaviors are later (`packages/daemon/src/adapters/stub-runner.ts:10-12`), but executable dispatch handles them (C19). **U:** full authored-scenario compatibility and seeded evidence are still needed. Neither stale prose nor present code proves the suite passes.
+4. **O — remote capability is not uniform.** Queue forwarding exists (C15); workflow instantiate rejects remote step pins (C21). **U:** determine all reachable remote workflow paths and reconcile error wording with routing implementation before claiming remote workflow support.
+5. **Generated context, installed skills and actual agent delivery differ.** C24 now traces generation, discovery/composition, pieces→resolver→send delivery input; C17 traces harness projection. **U:** trace each selected profile/skill through prompt/hook ingestion and external harness observation. Availability or transport of text is not proof an agent read it.
+| 6. **Optional UI routes and exports are not uniformly complete.** C12 classifies operational component groups vs redirect/placeholder/lab, C13 maps registry→reducer→socket/driver action boundary; export ledger traces observed consumers and the searched no-importer `gateway-protocol` exception. **U:** individual component control-tree parity and UI/TUI usability; no blanket feature parity claimed.
+7. **U — owner value for optional features.** No source observation can settle which consumer, provider, coordination process or external integration the owner wants. Required evidence is owner usage/requirements and reviewer-accepted workflow relevance. This document records neither answers nor recommendations.
+8. **U — live behavior for all rows.** Source traces require separate isolated normal/failure exercises for installation, agents, queue, shutdown, state preservation and recovery. This inventory adds no runtime evidence and makes no test-pass claim.
+
+### Acceptance crosswalk (source-only)
+
+The task acceptance contract has six criteria. This crosswalk separates documentation evidence from execution/owner evidence; it does not change any Gate A–D status.
+
+| Criterion | Current evidence and disposition |
+| 1. Every major and optional surface has an explicit row/disposition. | **Source disposition complete at the family/member-class level:** C01–C28, declaration ledgers, and the residual coverage matrix classify observed chains, read-only/disabled/refused paths, test/lab-only artifacts, and searched-no-production-consumer limits. Known member-level parity limits remain explicitly named; no file glob is treated as proof of a working feature. |
+| 2. Entrypoint-to-consumer/effect/dependency chains are evidenced. | **Integrated with explicitly bounded member-level gaps; independent acceptance audit pending:** C12 links operational route groups through component/hook/API/effect and gives Feed/LibraryReview subchain evidence; C13 maps all 33 literals and 5 generated resource verbs through registry/parser/reducer/action-effect families, including the two daemon `act` methods; C21 covers route/runtime operations and durable/refusal boundaries; C25 policy ref variants/provenance/adapter effects; C03/C24 spec/plugin/skill selection, projection, refusal and context delivery; C26/C27 runner/script callers and bounded no-consumer outcomes; C28 demo/twin/spike/archive consumers. Residual rows below distinguish remaining per-control or runtime/owner-value uncertainty from untraced source claims. Reviewer 2c469 must confirm the semantic crosswalk on the exact candidate before merge. |
+| 3. Citations resolve at the pinned source. | **Structural PASS, semantic re-audit pending:** validator resolves ranges against `ea7c268f576ada8434d3dae3e6ac972264910d4`. Current integrated candidate was locally checked at 564 references / 158 source files; published SHA requires independent review and a fresh validation after commit. |
+| 4. No unapproved recommendation, owner answer, test-pass claim, or gate-status change. | **Evidenced by document scope:** the evidence contract disclaims these decisions and claims; optional-feature owner value remains unresolved. No product execution is represented as passed. |
+| 5. Only the owned inventory file changes. | **PASS for PR #20 scope so far:** current branch contains only `breakdown/research-capability-inventory.md`; recheck after publishing this correction. |
+| 6. Citation/file-coverage validation and `git diff --check` pass. | **Structural PASS on working candidate:** citation bounds, declaration ledgers, export ledger, file disposition matching, and `git diff --check` pass; counts 564 / 158. Re-run against publication commit. File patterns remain disposition backstop, not semantic proof. |
+
+Accordingly, the inventory is not yet an acceptance-pass or a basis for marking the CAP-4 work Done. Runtime-only gaps (for example live Slack credentials, native harness behavior, or owner value) remain legitimate unresolved evidence; the source-chain omissions explicitly named above do not.
+
+### Residual semantic source coverage matrix
+
+These entries turn the remaining family-level flags into bounded work, not an assertion of completion. A generic tracked-file glob is not a source-chain citation. For each residual family the declaration and searched consumers below identify the last link seen and the missing link; use additional exact source citations before marking it investigated. No owner-value or runtime uncertainty excuses these code-inspection gaps.
+
+| Family / bounded coverage class | Declaration or entrypoint and searched consumer evidence | Presently established; exact source work still required |
+|---|---|---|
+| C12 browser operational routes vs redirects/placeholders/labs | Route declarations `packages/ui/src/routes.tsx:98-535`; component bindings at `:96-480`; redirects/placeholders at `:266-276,449-464,488-530`; labs at `:312-351`; imports `:23-77`. Hook families under `packages/ui/src/hooks/*`. | **O:** operational route groups resolve to dashboard, topology, feed/project, fleet/workflow, library, files/settings, package/bootstrap/spec-review/bundle components. Dashboard calls rigs/ps/settings/version (`packages/ui/src/components/dashboard/Dashboard.tsx:83-87`); fleet surfaces loading/error and uses aggregate hook (`packages/ui/src/components/review/FleetPage.tsx:150-163`; `packages/ui/src/hooks/useFleet.ts:96-111`); settings reads/writes/reset/init call config APIs (`packages/ui/src/hooks/useSettings.ts:61-142`); topology consumes rig/host/node/spec hooks and gates actions on remote/unreachable state (`packages/ui/src/components/topology/ScopePages.tsx:127-150,162-228`); terminal launcher mounts on permitted rig scope (`ScopePages.tsx:25,270`); package detail reads install history and invokes rollback (`packages/ui/src/components/PackageDetail.tsx:161-182`). File surfaces read `/api/files/*`, write with mtime/hash preconditions, and report 409 conflict without clearing draft (`packages/ui/src/hooks/useFiles.ts:31-51,139-151,183-223`). Import/agent validation POST YAML and represent invalid/request-failure states (`packages/ui/src/components/ImportFlow.tsx:94-139`; `packages/ui/src/components/AgentSpecValidateFlow.tsx:31-50`); discovery draft POST has loading/error and text response (`packages/ui/src/components/DiscoveryOverlay.tsx:164-183`). Redirects/placeholders/labs remain distinct. Family-level component/hook/API/effect chains are traced; nested Feed and LibraryReview sub-actions are explicitly the remaining member-level UI scope; per-control parity/accessibility is not claimed. |
+| C13 TUI local view actions vs external effects | Registry `packages/tui/src/commands/registry.ts:70-109,129-276` builds actions; `VERB_TABLE` plus aliases and context availability are serialized from this registry (`packages/tui/src/commands/registry.ts:280-317`); main parses input through `parseCommand` then `perform` (`packages/tui/src/main.ts:474-501,558-612`); reducer implements action outcomes/refusals (`packages/tui/src/state.ts:115-317`). | **O:** navigation/read/view groups map to reducer actions: `jump/drill/cross` update view selection (`packages/tui/src/state.ts:164-181,297-313`); local file `read` builds `file-open`, then `localRead` callback performs allowlisted read (`packages/tui/src/commands/registry.ts:90-95`; `packages/tui/src/main.ts:208-208`); source/project/file actions resolve snapshot or refuse missing/pending data (`packages/tui/src/state.ts:137-147,183-195`); terminal preview is passive state (`packages/tui/src/state.ts:120-123`); `open-terminal` and `run` are the only `act` union actions and perform daemon calls only with confirmed connection, reporting partial/error outcomes (`packages/tui/src/types.ts:475-479`; `packages/tui/src/main.ts:385-410`); unknown verbs/context-invalid actions and malformed args yield errors (`packages/tui/src/commands/registry.ts:288-305`; `packages/tui/src/state.ts:156-157,315-317`). All literal/resource-generated verbs fall into these named action families; per-keyboard rendering/usability is runtime/UX evidence, not an untraced source consumer. |
+| C25 permission-policy inputs and launch enforcement | CLI policy choice `packages/cli/src/commands/policy.ts:298-314`; parser/resolver `packages/daemon/src/domain/permission-policy/policy-ref.ts:42-87,150-231`; preflight warning consumer `packages/daemon/src/domain/rigspec-preflight.ts:201-229,405-419`; materialization failures/resolution `packages/daemon/src/domain/rigspec-instantiator.ts:650-666,717-748,1814-1833,1877-2003`; adapter maps `packages/daemon/src/adapters/yolo-mode.ts:36-72`; Claude `packages/daemon/src/adapters/claude-code-adapter.ts:226-230`, Codex `packages/daemon/src/adapters/codex-runtime-adapter.ts:323-390`, Pi `packages/daemon/src/adapters/pi-runtime-adapter.ts:237-281`, terminal binding `packages/daemon/src/domain/rigspec-instantiator.ts:2181-2243`. | **O:** invalid refs fail validation; `none` is deliberate floor; `builtin:yolo` maps full-bypass; invalid/unreadable custom content keeps provenance but resolves advisory floor; member overrides rig, else persisted/floor. Strict node provenance failure fails surrounding materialization/add-member; launch refresh is best-effort. Resolved posture reaches Claude/Codex launch flags; Pi maps to resource trust, terminal has no harness flag. **U:** config-surface custom policy is parsed but not proven applied by this chain; external harness adherence and post-launch tool authorization are outside source proof. |
+| C21 workflow route/runtime operation inventory | Routes expose recovery, revision inspect/apply, instantiate/project/list/specs, route/resume/abort, trace/continue, statuses and histories (`packages/daemon/src/routes/workflow.ts:178-280,325-418`); runtime delegates to projector/reconciler/exception/deadline services. | **O — operation recovery:** reads persisted lifecycle/revision receipt; absent effect yields `operation_not_found`/404 (`packages/daemon/src/routes/workflow.ts:178-183`; `packages/daemon/src/domain/workflow-runtime.ts:195-197`; `packages/daemon/src/domain/workflow-reconciliation.ts:170-183`). **O — revision:** inspect classifies unavailable/incompatible/current; apply validates op key/actor/reason/version/digest, exact replay returns stored receipt, mismatched key/stale graph refused; success revises lifecycle binding/history and persists `workflow.revised` (`packages/daemon/src/domain/workflow-reconciliation.ts:61-111,185-222`; route `packages/daemon/src/routes/workflow.ts:185-194`). **O — route/re-target:** validates live instance/frontier packet/target harness, closes source and creates successor, records routing event/wake intent transactionally then wakes post-commit (`packages/daemon/src/domain/workflow-runtime.ts:1441-1537,1687-1722`). **O — resume:** failed-only, requires recorded failure or recoverable failed instance, spec/step/current owner; owner re-resolves from live role/runtime inventory (`packages/daemon/src/domain/workflow-runtime.ts:1069-1155`). **O — abort:** requires reason/actor; refuses terminal or unresolved-frontier state; cancels frontier queue, records failed trail, clears bindings/frontier, disarms keepalive and persists event (`packages/daemon/src/domain/workflow-runtime.ts:974-1029`). **O — continue/trace:** read-only projection of instance/deadline/trail/guidance/failures/obligations (`packages/daemon/src/domain/workflow-runtime.ts:1725-1754`). **O — deadlines:** list/show recompute verdict, never store it (`packages/daemon/src/domain/workflow-runtime.ts:1756-1800`; `packages/daemon/src/domain/workflow-deadline.ts:117-212`). **O — project:** projector validates frontier, replay absorption, and structured refusal (`packages/daemon/src/domain/workflow-projector.ts:236-390`). **O — keepalive/exception/boot:** keepalive arms idempotently at 15 minutes and disarms terminal instances (`packages/daemon/src/domain/workflow-keepalive-arming.ts:38-129`); policy yields quiet skips when healthy/empty/already-presented (`packages/daemon/src/domain/policies/workflow-keepalive.ts:83-200,214-274`); exception ensures a deduped tagged urgent qitem with human fallback on unknown rig (`packages/daemon/src/domain/workflow-exception-escalation.ts:70-160`); startup invokes boot sweep nonfatally (`packages/daemon/src/startup.ts:2154-2177`), which reconciles/arms/reissues/evaluates deadlines and attempts exceptions (`packages/daemon/src/domain/workflow-boot-sweep.ts:60-171`). | Dependencies are workflow spec/cache, lifecycle binding, queue, event bus, watchdog, role/runtime inventory and DB. Effects/refusals are source-evidenced; external recipient acceptance and live timer execution remain runtime-only uncertainty. |
+| C03/C24 specs, plugins and skills | Spec roots/scan `packages/daemon/src/startup.ts:1208-1222`; plugin root/cache discovery `:1224-1244`; plugin CLI `packages/cli/src/commands/plugin.ts:147-205`; vendor startup at `packages/daemon/src/startup.ts:712-758` and `packages/daemon/src/domain/plugin-vendor-service.ts:260-299`; skill CLI loadout (`packages/cli/src/commands/skill.ts:48-102`), work-install selection (`packages/cli/src/lib/work-install.ts:1-15`). | **O:** builtin/user spec roots scan into library; plugin discovery reads OpenRig/Claude/Codex roots; vendor setup is vendored-first, 404/network failure falls back, success logs but does not extract a tree (`packages/daemon/src/domain/plugin-vendor-service.ts:260-299`). Skill loadout supports only Claude/Codex, read-only default, `--apply` projects files/receipts/removals and reports fresh-launch requirement (`packages/cli/src/commands/skill.ts:48-102`). Bundle workflow projection routes top-level YAML only into scanner-visible directory, rejects unsafe paths/collisions and reports per-entry status (`packages/daemon/src/domain/bundle-workflow-specs-router.ts:149-185`). Per-spec dynamic execution/external harness ingestion is not proven; not every shipped spec is claimed selected or consumed. |
+| C26/C27 script caller residuals (bounded member groups) | Package scripts `packages/daemon/package.json:71-77`, root scripts `package.json:13-28`, CI `.github/workflows/portability-report.yml:1-33`, packager `scripts/build-package.sh:1-175`, named invocations in testbed runbooks and upgrade skill. Static caller searches exclude each script itself, tests, docs/research unless specified. | **Observed callers:** `copy-workflow-specs` → daemon build (`packages/daemon/package.json:71-77`); `gen-control-plane-json` → direct daemon `gen:control-plane-json` package command (`packages/daemon/package.json:71-77`). Separately, `generate-context-packs.mjs` imports `mirror-skills.mjs` (`scripts/generate-context-packs.mjs:32`); root scripts declare mirror and generator commands (`package.json:13-28`). `regen-edge-digests.mjs` is a distinct standalone digest writer; references between these tools are not an asserted invocation chain unless an actual call is cited. `run-evals` → package eval command; `run-scenarios` → explicit testbed/docs, not a production package script; `smoke-fresh-install` → no package/CI caller found, standalone release harness; `probe-health-calibration`, `probe-health-diagnosis`, `probe-passive-ceremony`, `capture-send-header` → no production caller in searched package/CI/source roots, standalone diagnostics/tests; `sync-scope-lineage` → no package caller found, standalone write/`--check` utility. Exact effects/refusals are in C26/C27 and source citations there; helpers are not represented as production capabilities merely because tracked. |
+| C28 tracked twin, demos, spike and archive roots (separate dispositions) | Demo scripts: `demo/run.sh`, `demo/run-proof.sh`; twin package scripts: `packages/ui/package.json:7-15`; static search roots for spike/archive: package scripts, CI, source imports, tests, demos, README. | **Demo:** run scripts call daemon/rig and named health/seed/resume helpers; process effects at `demo/run.sh:1-61` and helpers cited in C28. **Twin:** manually invoked `twin:capture` package script builds, uses Chrome, writes artifacts, optional proof URL; no packager/CI invocation found. **`spike/tui-drivability`:** standalone Node harness/tests, README says stub fixture/no daemon call; no consumer outside its root found in named static search. **`archive/configuration/context7.json`:** no runtime/package/CI importer; research note states not discovered as active config. **`archive/documents/README-upstream-original.md`:** two explicit README documentation links; no runtime/build importer found. These are separate static reachability results, not assumptions from directory names or retention/removal decisions; manual/external invocation and owner value unresolved. |
+
+### C12 nested consumer details (bounded residual member closure)
+
+The operational route families above include Feed and LibraryReview. These submembers are now mapped to the source-visible hooks/actions; “complete UI parity” is not claimed.
+
+| Submember | Entrypoint/component → consumer/effect | Failure, disabled, or remaining boundary |
+|---|---|---|
+| For-You Feed | `/for-you` mounts `Feed` (`packages/ui/src/routes.tsx:42-44,130-134`). Feed combines activity events, feed subscriptions, attention items, needs-input seats, queue-item detail, mission-control action audit, slices and proof previews (`packages/ui/src/components/for-you/Feed.tsx:221-373`). It renders per-card dismiss/undo, approve and chat actions, plus terminal drill (`Feed.tsx:301-328,495-515`; `packages/ui/src/components/for-you/FeedCard.tsx:547-590,603-616`). | Dismiss is local UI state; approve is an existing queue verb through `VerbActions`; chat/live terminal requires a resolved session; missing session disables terminal/chat actions (`packages/ui/src/components/for-you/FeedCard.tsx:571-589`; `packages/ui/src/components/for-you/FeedCardTerminalDrill.tsx:22-34`). Subscription/host filters are disabled while unavailable/mutating; action outcomes are optimistic and audit-backed. This establishes route→read/action families, not external human/agent completion. |
+| LibraryReview — spec entry | `/specs/library/$entryId` mounts LibraryReview (`packages/ui/src/routes.tsx:35,440-447`). Spec review query reads library review and branches by `kind` into rig/agent/workflow content; non-OK/missing result renders “Spec Not Found” (`packages/ui/src/components/LibraryReview.tsx:213-260`; `packages/ui/src/hooks/useSpecLibrary.ts:99-124`). Workflow detail reads/sets/clears active lens through `/api/specs/library/active-lens`; success invalidates lens/slice queries and failure displays error (`packages/ui/src/components/LibraryReview.tsx:266-301`; `packages/ui/src/hooks/useSpecLibrary.ts:138-166`). | Rig/agent branches render review/provenance and navigate to import/validate; “Copy Setup Prompt” is clipboard-only (`packages/ui/src/components/LibraryReview.tsx:63-95,97-155`). No claim of automatic import/launch from review. |
+| LibraryReview — context pack | Prefix `context-pack:` dispatches to context-pack review; list and preview hooks consume local context-pack library/preview endpoints (`packages/ui/src/components/LibraryReview.tsx:213-220,398-427`; `packages/ui/src/hooks/useContextPackLibrary.ts:41-90`). | Read/preview only in this page; “Back to Library” is navigation. Delivery is a separate C24 send/walk path. Missing/unavailable library states render page error/loading rather than delivery. |
+| LibraryReview — agent image | Prefix `agent-image:` dispatches to image review, reads image list and preview, and handles not-found/error state (`packages/ui/src/components/LibraryReview.tsx:221-225,538-565`). Pin/unpin invokes `useAgentImagePin().mutateAsync`, catches and renders pin error (`packages/ui/src/components/LibraryReview.tsx:577-597,609-619`; `packages/ui/src/hooks/useAgentImageLibrary.ts:96-108`). | **O:** mutation posts `/api/agent-images/library/:id/pin|unpin`, throws on non-OK and invalidates agent-image queries on success (`packages/ui/src/hooks/useAgentImageLibrary.ts:96-108`). Whether a pinned image is subsequently forked is a distinct C25 workflow; pin is not itself a fork. |
+
+### Integration ownership and research result state
+
+The read-only lanes were `6d8af` C01–C10, `bb9e8` C11–C16, `b0542` C17–C22/C25, and `f87d9` C23–C24/C26–C28. Reviewer `2c469` audited PR #20 commit `228a3d94e13346a1cf544e9e803e8706f9c28705`, confirmed source-backed corrections, and returned a bounded coverage matrix requirement. This candidate adds that matrix and more exact consumer lines; independent re-audit of the published SHA remains required. Kanban follow-up `8f996` owns remaining source closure. No duplicate research lanes were created. Completion remains blocked on source gaps, not owner/runtime answers.
+
+## Declaration and file coverage ledger
+
+Additional inspected seams, kept separate from broad parity claims:
+
+- **O — shared code is consumed in-process, not only through HTTP.** CLI skill import (`packages/cli/src/commands/skill.ts:2-12`) resolves the export (`packages/daemon/src/skill-loadout-surface.ts:1-6`) to catalog reconciliation. Apply stages bytes, updates Git exclusions, swaps directories and writes ownership manifest (`packages/daemon/src/domain/skill-catalog.ts:877-934`). **U:** all conflict/rollback and shared-working-directory cases remain unverified. This closes C24's explicit apply effect, not every exported domain surface.
+- **O — Slack configuration and human registry have local CLI consumers.** Slack setup imports the shared surface and saves configuration through an operation receipt (`packages/cli/src/commands/slack.ts:69-108`; file write at `packages/daemon/src/domain/gateway/slack/config.ts:80-85`). Human add imports registry and refuses a second distinct human (`packages/cli/src/commands/gateway.ts:139-163`). **U:** all registry operations and multi-human hand-authored behavior need deeper traces; no multi-human management capability is inferred from fragment support.
+- **O — alternative gateway process declaration is retired and has no reachable production caller in the searched pin.** Its module forbids production callers (`packages/daemon/src/domain/gateway/spawn-gateway.ts:1-8`); the function would spawn the compiled process (`:28-43`), while the only located caller is test-only (`packages/daemon/test/gateway-spawn-e2e.test.ts:3,84`). Normal daemon startup constructs the in-process subsystem (C16). This establishes no current source-reachable production path in the searched consumers, not a retention/removal decision or a claim about external manual invocation.
+- **O — ask is evidence retrieval, not an established model-answering service.** AskService returns structured or transcript/chat excerpts and insufficient-evidence guidance (`packages/daemon/src/domain/ask-service.ts:151-229`) to C07's route. No extra model inference is claimed.
+- **O — chat has its own durable chain.** C09's mounted send/history routes call repository and emit (`packages/daemon/src/routes/chat.ts:18-64`); repository inserts messages/topics (`packages/daemon/src/domain/chat-repository.ts:41-64`). SSE consumer path subscribes and sends history (`packages/daemon/src/routes/chat.ts:67-121`). **U:** reconnect, ordering and owner workflow value remain unresolved.
+- **O — queue creation reaches SQL, not just a repository interface.** C08's create transaction calls the writer; SQL row, transition and event writes are visible at `packages/daemon/src/domain/queue-repository.ts:1450-1499`. This supports the durable-effect claim but not a live handoff result.
+- **O — Compose readiness produces receipts.** C20's orchestrator calls adapter, polls/evaluates and stores receipt (`packages/daemon/src/domain/service-orchestrator.ts:39-108`). **U:** external health observations and failure cleanup remain runtime gaps.
+- **O — access checks are scoped mechanisms.** Bearer comparison uses timing-safe equality (`packages/daemon/src/middleware/auth-bearer-token.ts:36-50`), and terminal WS has its own guard (C14). **S:** single-user/no-OAuth posture is stated at `packages/daemon/src/middleware/auth-bearer-token.ts:11-22`. **U:** full route-by-route authorization, origin/identity and read confidentiality audit is deferred; neither middleware existence nor bearer injection establishes universal API protection.
+
+The following ledger is a completeness backstop, not an assertion that every listed file was read line by line. **O** declarations are pinned. Each declaration has a C-row owner. Shared effects use that row's chain; where a member's distinct effects were not traced, its disposition is **deferred: member-level consumer/effect evidence needed**. That is an explicit evidence gap, not a dropped surface. File groups cover tracked files at the pin; new files at a later commit require a new reconciliation.
+
+### CLI registrations
+
+Every registered command factory is listed. The factory name is a source identifier, not necessarily its public spelling. The C-row supplies the examined chain and its limits.
+
+| Registration | Family | Declaration evidence |
+|---|---|---|
+| `startCommand` | C02 | `packages/cli/src/index.ts:173-173` |
+| `daemonCommand` | C02 | `packages/cli/src/index.ts:174-174` |
+| `statusCommand` | C06 | `packages/cli/src/index.ts:175-175` |
+| `snapshotCommand` | C05 | `packages/cli/src/index.ts:176-176` |
+| `restoreCommand` | C05 | `packages/cli/src/index.ts:177-177` |
+| `crashCartCommand` | C05 | `packages/cli/src/index.ts:178-178` |
+| `gatewayCommand` | C16 | `packages/cli/src/index.ts:179-179` |
+| `parkedCommand` | C05 | `packages/cli/src/index.ts:180-180` |
+| `exportCommand` | C03 | `packages/cli/src/index.ts:181-181` |
+| `importCommand` | C03 | `packages/cli/src/index.ts:182-182` |
+| `uiCommand` | C12 | `packages/cli/src/index.ts:183-183` |
+| `tuiCommand` | C13 | `packages/cli/src/index.ts:184-184` |
+| `packageCommand` | C03 | `packages/cli/src/index.ts:185-185` |
+| `bootstrapCommand` | C03 | `packages/cli/src/index.ts:186-186` |
+| `requirementsCommand` | C03 | `packages/cli/src/index.ts:187-187` |
+| `discoverCommand` | C03 | `packages/cli/src/index.ts:188-188` |
+| `attachCommand` | C04 | `packages/cli/src/index.ts:189-189` |
+| `bindCommand` | C04 | `packages/cli/src/index.ts:190-190` |
+| `adoptCommand` | C04 | `packages/cli/src/index.ts:191-191` |
+| `bundleCommand` | C03 | `packages/cli/src/index.ts:192-192` |
+| `upCommand` | C03 | `packages/cli/src/index.ts:193-193` |
+| `downCommand` | C05 | `packages/cli/src/index.ts:194-194` |
+| `archiveCommand` | C04 | `packages/cli/src/index.ts:196-196` |
+| `unarchiveCommand` | C04 | `packages/cli/src/index.ts:197-197` |
+| `hostCommand` | C15 | `packages/cli/src/index.ts:198-198` |
+| `psCommand` | C06 | `packages/cli/src/index.ts:199-199` |
+| `mcpCommand` | C11 | `packages/cli/src/index.ts:200-200` |
+| `agentCommand` | C03 | `packages/cli/src/index.ts:201-201` |
+| `rigCommand` | C03 | `packages/cli/src/index.ts:202-202` |
+| `transcriptCommand` | C06 | `packages/cli/src/index.ts:203-203` |
+| `sendCommand` | C07 | `packages/cli/src/index.ts:204-204` |
+| `streamCommand` | C09 | `packages/cli/src/index.ts:205-205` |
+| `queueCommand` | C08 | `packages/cli/src/index.ts:206-206` |
+| `slackCommand` | C16 | `packages/cli/src/index.ts:207-207` |
+| `projectCommand` | C09 | `packages/cli/src/index.ts:208-208` |
+| `viewCommand` | C14 | `packages/cli/src/index.ts:209-209` |
+| `terminalCommand` | C14 | `packages/cli/src/index.ts:210-210` |
+| `watchdogCommand` | C22 | `packages/cli/src/index.ts:211-211` |
+| `workflowCommand` | C21 | `packages/cli/src/index.ts:212-212` |
+| `captureCommand` | C07 | `packages/cli/src/index.ts:213-213` |
+| `broadcastCommand` | C07 | `packages/cli/src/index.ts:214-214` |
+| `walkCommand` | C07 | `packages/cli/src/index.ts:215-215` |
+| `askCommand` | C07 | `packages/cli/src/index.ts:216-216` |
+| `chatroomCommand` | C09 | `packages/cli/src/index.ts:217-217` |
+| `specsCommand` | C03 | `packages/cli/src/index.ts:218-218` |
+| `contextCommand` | C24 | `packages/cli/src/index.ts:219-219` |
+| `pluginCommand` | C24 | `packages/cli/src/index.ts:220-220` |
+| `skillCommand` | C24 | `packages/cli/src/index.ts:221-221` |
+| `agentImageCommand` | C25 | `packages/cli/src/index.ts:222-222` |
+| `forkCommand` | C25 | `packages/cli/src/index.ts:223-223` |
+| `workspaceCommand` | C23 | `packages/cli/src/index.ts:224-224` |
+| `rigModeCommand` | C25 | `packages/cli/src/index.ts:225-225` |
+| `policyCommand` | C25 | `packages/cli/src/index.ts:227-227` |
+| `whoamiCommand` | C06 | `packages/cli/src/index.ts:228-228` |
+| `configCommand` | C25 | `packages/cli/src/index.ts:229-229` |
+| `fileCommand` | C23 | `packages/cli/src/index.ts:230-230` |
+| `preflightCommand` | C01 | `packages/cli/src/index.ts:231-231` |
+| `authCommand` | C25 | `packages/cli/src/index.ts:232-232` |
+| `providerCommand` | C25 | `packages/cli/src/index.ts:233-233` |
+| `usageCommand` | C25 | `packages/cli/src/index.ts:234-234` |
+| `healthCommand` | C22 | `packages/cli/src/index.ts:235-235` |
+| `doctorCommand` | C01 | `packages/cli/src/index.ts:236-236` |
+| `expandCommand` | C04 | `packages/cli/src/index.ts:237-237` |
+| `addMemberCommand` | C04 | `packages/cli/src/index.ts:238-238` |
+| `createCommand` | C04 | `packages/cli/src/index.ts:239-239` |
+| `growCommand` | C04 | `packages/cli/src/index.ts:240-240` |
+| `reconcileSessionCommand` | C04 | `packages/cli/src/index.ts:241-241` |
+| `envCommand` | C04 | `packages/cli/src/index.ts:242-242` |
+| `unclaimCommand` | C04 | `packages/cli/src/index.ts:243-243` |
+| `releaseCommand` | C04 | `packages/cli/src/index.ts:244-244` |
+| `launchCommand` | C04 | `packages/cli/src/index.ts:245-245` |
+| `removeCommand` | C04 | `packages/cli/src/index.ts:246-246` |
+| `shrinkCommand` | C04 | `packages/cli/src/index.ts:247-247` |
+| `destroyCommand` | C04 | `packages/cli/src/index.ts:248-248` |
+| `setupCommand` | C01 | `packages/cli/src/index.ts:249-249` |
+| `restoreCheckCommand` | C05 | `packages/cli/src/index.ts:250-250` |
+| `restorePacketCommand` | C05 | `packages/cli/src/index.ts:251-251` |
+| `compactPlanCommand` | C25 | `packages/cli/src/index.ts:252-252` |
+| `compactCommand` | C25 | `packages/cli/src/index.ts:253-253` |
+| `heartbeatCommand` | C22 | `packages/cli/src/index.ts:254-254` |
+| `seatCommand` | C25 | `packages/cli/src/index.ts:255-255` |
+| `handoverCommand` | C25 | `packages/cli/src/index.ts:256-256` |
+| `startupProofCommand` | C25 | `packages/cli/src/index.ts:257-257` |
+| `scopeCommand` | C23 | `packages/cli/src/index.ts:259-259` |
+| `proofCommand` | C23 | `packages/cli/src/index.ts:261-261` |
+
+### Daemon API mounts
+
+These are route-family declarations, including families without a public CLI command. Family-specific endpoints are not all claimed investigated. Direct handlers and the terminal WebSocket seam follow the mount table.
+
+| API mount | Family | Declaration evidence |
+|---|---|---|
+| `/api/rigs` | C04 | `packages/daemon/src/server.ts:684-684` |
+| `/api/rigs/:rigId/sessions` | C04 | `packages/daemon/src/server.ts:685-685` |
+| `/api/rigs/:rigId/cmux` | C14 | `packages/daemon/src/server.ts:687-687` |
+| `/api/rigs/:rigId/nodes` | C04 | `packages/daemon/src/server.ts:688-688` |
+| `/api/sessions` | C04 | `packages/daemon/src/server.ts:689-689` |
+| `/api/adapters` | C17 | `packages/daemon/src/server.ts:690-690` |
+| `/api/events` | C10 | `packages/daemon/src/server.ts:691-691` |
+| `/api/rigs/:rigId/snapshots` | C05 | `packages/daemon/src/server.ts:692-692` |
+| `/api/rigs/:rigId/restore` | C05 | `packages/daemon/src/server.ts:693-693` |
+| `/api/crash-cart` | C05 | `packages/daemon/src/server.ts:694-694` |
+| `/api/rigs/import` | C03 | `packages/daemon/src/server.ts:695-695` |
+| `/api/packages` | C03 | `packages/daemon/src/server.ts:698-698` |
+| `/api/agents` | C03 | `packages/daemon/src/server.ts:699-699` |
+| `/api/bootstrap` | C03 | `packages/daemon/src/server.ts:700-700` |
+| `/api/discovery` | C03 | `packages/daemon/src/server.ts:701-701` |
+| `/api/bundles` | C03 | `packages/daemon/src/server.ts:702-702` |
+| `/api/ps` | C06 | `packages/daemon/src/server.ts:703-703` |
+| `/api/up` | C03 | `packages/daemon/src/server.ts:704-704` |
+| `/api/info` | C02 | `packages/daemon/src/server.ts:705-705` |
+| `/api/down` | C05 | `packages/daemon/src/server.ts:706-706` |
+| `/api/kernel` | C02 | `packages/daemon/src/server.ts:707-707` |
+| `/api/startup` | C02 | `packages/daemon/src/server.ts:708-708` |
+| `/api/transcripts` | C06 | `packages/daemon/src/server.ts:709-709` |
+| `/api/transport` | C07 | `packages/daemon/src/server.ts:710-710` |
+| `/api/compaction` | C25 | `packages/daemon/src/server.ts:713-713` |
+| `/api/activity` | C17 | `packages/daemon/src/server.ts:722-722` |
+| `/api/ask` | C07 | `packages/daemon/src/server.ts:723-723` |
+| `/api/wake-resolve` | C22 | `packages/daemon/src/server.ts:724-724` |
+| `/api/specs/review` | C03 | `packages/daemon/src/server.ts:725-725` |
+| `/api/specs/library` | C03 | `packages/daemon/src/server.ts:726-726` |
+| `/api/plugins` | C24 | `packages/daemon/src/server.ts:727-727` |
+| `/api/skills` | C24 | `packages/daemon/src/server.ts:729-729` |
+| `/api/config` | C25 | `packages/daemon/src/server.ts:730-730` |
+| `/api/context-packs` | C24 | `packages/daemon/src/server.ts:731-731` |
+| `/api/agent-images` | C25 | `packages/daemon/src/server.ts:732-732` |
+| `/api/whoami` | C06 | `packages/daemon/src/server.ts:735-735` |
+| `/api/provider` | C25 | `packages/daemon/src/server.ts:738-738` |
+| `/api/seat` | C25 | `packages/daemon/src/server.ts:739-739` |
+| `/api/rigs/:rigId/chat` | C09 | `packages/daemon/src/server.ts:740-740` |
+| `/api/stream` | C09 | `packages/daemon/src/server.ts:741-741` |
+| `/api/queue` | C08 | `packages/daemon/src/server.ts:742-742` |
+| `/api/workspace` | C23 | `packages/daemon/src/server.ts:743-743` |
+| `/api/projects` | C09 | `packages/daemon/src/server.ts:744-744` |
+| `/api/views` | C14 | `packages/daemon/src/server.ts:745-745` |
+| `/api/watchdog` | C22 | `packages/daemon/src/server.ts:746-746` |
+| `/api/workflow` | C21 | `packages/daemon/src/server.ts:747-747` |
+| `/api/mission-control` | C23 | `packages/daemon/src/server.ts:748-748` |
+| `/api/hosts` | C15 | `packages/daemon/src/server.ts:756-756` |
+| `/api/slices` | C23 | `packages/daemon/src/server.ts:761-761` |
+| `/api/review` | C23 | `packages/daemon/src/server.ts:763-763` |
+| `/api/terminal` | C14 | `packages/daemon/src/server.ts:767-767` |
+| `/api/rigs/:rigId/terminal` | C14 | `packages/daemon/src/server.ts:768-768` |
+| `/api/missions` | C23 | `packages/daemon/src/server.ts:772-772` |
+| `/api/files` | C23 | `packages/daemon/src/server.ts:774-774` |
+| `/api/progress` | C23 | `packages/daemon/src/server.ts:775-775` |
+| `/api/scope/audit` | C23 | `packages/daemon/src/server.ts:776-776` |
+| `/api/scopes` | C23 | `packages/daemon/src/server.ts:778-778` |
+| `/api/telemetry` | C25 | `packages/daemon/src/server.ts:780-780` |
+| `/api/scope/approve` | C23 | `packages/daemon/src/server.ts:782-782` |
+| `/api/proof` | C23 | `packages/daemon/src/server.ts:783-783` |
+| `/api/steering` | C22 | `packages/daemon/src/server.ts:785-785` |
+| `/api/health-summary` | C22 | `packages/daemon/src/server.ts:786-786` |
+| `/api/health` | C22 | `packages/daemon/src/server.ts:787-787` |
+| `/api/attention` | C22 | `packages/daemon/src/server.ts:788-788` |
+| `/api/health-diagnosis` | C22 | `packages/daemon/src/server.ts:789-789` |
+| `/api/gateway` | C16 | `packages/daemon/src/server.ts:791-791` |
+| `/api/rigs/:rigId/env` | C04 | `packages/daemon/src/server.ts:792-792` |
+| `/api/restore-check` | C05 | `packages/daemon/src/server.ts:793-793` |
+| `/api/rig-mode` | C25 | `packages/daemon/src/server.ts:796-796` |
+
+Direct handlers: **O**, `/healthz` (C02/C06), spec YAML/JSON export (C03), API-not-found and static SPA fallback (C12) are at `packages/daemon/src/server.ts:625-697` and `packages/daemon/src/server.ts:800-835`. Terminal WebSocket registration (C14) is at `packages/daemon/src/server.ts:713-720`. Middleware identity/auth/read-through are dependencies, not standalone proof of safe access; deeper security review is deferred.
+
+### MCP tool ledger
+
+**O:** each tool is an SDK callback that calls the daemon client; C11 owns transport/error conversion. Downstream effect evidence is in the referenced family, with unresolved parity as stated there.
+
+| Tool | Effect family | Handler evidence |
+|---|---|---|
+| `rig_up` | C03 | `packages/cli/src/mcp-server.ts:59-82` |
+| `rig_down` | C05 | `packages/cli/src/mcp-server.ts:83-107` |
+| `rig_ps` | C06 | `packages/cli/src/mcp-server.ts:108-122` |
+| `rig_status` | C02 | `packages/cli/src/mcp-server.ts:123-137` |
+| `rig_snapshot_create` | C05 | `packages/cli/src/mcp-server.ts:138-154` |
+| `rig_snapshot_list` | C05 | `packages/cli/src/mcp-server.ts:155-171` |
+| `rig_restore` | C05 | `packages/cli/src/mcp-server.ts:172-189` |
+| `rig_discover` | C03 | `packages/cli/src/mcp-server.ts:190-204` |
+| `rig_bind` | C04 | `packages/cli/src/mcp-server.ts:205-229` |
+| `rig_bundle_inspect` | C03 | `packages/cli/src/mcp-server.ts:230-252` |
+| `rig_agent_validate` | C03 | `packages/cli/src/mcp-server.ts:253-269` |
+| `rig_rig_validate` | C03 | `packages/cli/src/mcp-server.ts:270-286` |
+| `rig_rig_nodes` | C06 | `packages/cli/src/mcp-server.ts:287-303` |
+| `rig_send` | C07 | `packages/cli/src/mcp-server.ts:304-337` |
+| `rig_capture` | C07 | `packages/cli/src/mcp-server.ts:338-362` |
+| `rig_chatroom_send` | C09 | `packages/cli/src/mcp-server.ts:363-398` |
+| `rig_chatroom_watch` | C09 | `packages/cli/src/mcp-server.ts:399-429` |
+| `rig_add` | C04 | `packages/cli/src/mcp-server.ts:430-460` |
+
+MCP chat watch returns bounded history rather than a stream (`packages/cli/src/mcp-server.ts:399-425`); add checks partial launch status as a structural error (`packages/cli/src/mcp-server.ts:449-455`). These differences prohibit a blanket CLI/MCP parity claim.
+
+### Browser destinations
+
+All C12. **O:** declared path→route component. **Deferred:** each destination’s complete actions/effects and redirects need member-level examination; imported feature names are not a completeness claim. C03/C04/C06/C21/C23/C24/C25 give representative backend chains. Labs additionally belong to C28.
+
+| Declared path | Evidence |
+|---|---|
+| `/` | `packages/ui/src/routes.tsx:98-98` |
+| `/topology` | `packages/ui/src/routes.tsx:108-108` |
+| `/topology/rig/$rigId` | `packages/ui/src/routes.tsx:114-114` |
+| `/topology/pod/$rigId/$podName` | `packages/ui/src/routes.tsx:120-120` |
+| `/topology/seat/$rigId/$logicalId` | `packages/ui/src/routes.tsx:126-126` |
+| `/for-you` | `packages/ui/src/routes.tsx:132-132` |
+| `/project` | `packages/ui/src/routes.tsx:138-138` |
+| `/project/mission/$missionId` | `packages/ui/src/routes.tsx:144-144` |
+| `/project/slice/$sliceId` | `packages/ui/src/routes.tsx:150-150` |
+| `/agents` | `packages/ui/src/routes.tsx:161-161` |
+| `/fleet` | `packages/ui/src/routes.tsx:173-173` |
+| `/workflows` | `packages/ui/src/routes.tsx:183-183` |
+| `/workflow/instance/$instanceId` | `packages/ui/src/routes.tsx:189-189` |
+| `/specs` | `packages/ui/src/routes.tsx:204-204` |
+| `/specs/applications` | `packages/ui/src/routes.tsx:210-210` |
+| `/specs/skills` | `packages/ui/src/routes.tsx:218-218` |
+| `/specs/skills/$skillToken` | `packages/ui/src/routes.tsx:224-224` |
+| `/specs/skills/$skillToken/file/$fileToken` | `packages/ui/src/routes.tsx:233-233` |
+| `/specs/plugins` | `packages/ui/src/routes.tsx:244-244` |
+| `/files` | `packages/ui/src/routes.tsx:250-250` |
+| `/plugins/$pluginId` | `packages/ui/src/routes.tsx:259-259` |
+| `/specs/$specKind/$specName` | `packages/ui/src/routes.tsx:271-271` |
+| `/settings` | `packages/ui/src/routes.tsx:280-280` |
+| `/settings/policies` | `packages/ui/src/routes.tsx:290-290` |
+| `/settings/log` | `packages/ui/src/routes.tsx:295-295` |
+| `/settings/status` | `packages/ui/src/routes.tsx:300-300` |
+| `/search` | `packages/ui/src/routes.tsx:306-306` |
+| `/lab/project-graphics-preview` | `packages/ui/src/routes.tsx:312-312` |
+| `/lab/card-previews` | `packages/ui/src/routes.tsx:320-320` |
+| `/lab/vellum-lab` | `packages/ui/src/routes.tsx:330-330` |
+| `/lab/vellum-bg/a-large` | `packages/ui/src/routes.tsx:341-341` |
+| `/lab/vellum-bg/b-small` | `packages/ui/src/routes.tsx:346-346` |
+| `/lab/vellum-bg/c-allover` | `packages/ui/src/routes.tsx:351-351` |
+| `/rigs/$rigId` | `packages/ui/src/routes.tsx:376-376` |
+| `/rigs/$rigId/nodes/$logicalId` | `packages/ui/src/routes.tsx:382-382` |
+| `/import` | `packages/ui/src/routes.tsx:391-391` |
+| `/packages` | `packages/ui/src/routes.tsx:397-397` |
+| `/packages/install` | `packages/ui/src/routes.tsx:403-403` |
+| `/packages/$packageId` | `packages/ui/src/routes.tsx:409-409` |
+| `/bootstrap` | `packages/ui/src/routes.tsx:415-415` |
+| `/agents/validate` | `packages/ui/src/routes.tsx:421-421` |
+| `/specs/rig` | `packages/ui/src/routes.tsx:430-430` |
+| `/specs/agent` | `packages/ui/src/routes.tsx:436-436` |
+| `/specs/library/$entryId` | `packages/ui/src/routes.tsx:442-442` |
+| `/discovery` | `packages/ui/src/routes.tsx:453-453` |
+| `/discovery/inventory` | `packages/ui/src/routes.tsx:468-468` |
+| `/bundles/inspect` | `packages/ui/src/routes.tsx:474-474` |
+| `/bundles/install` | `packages/ui/src/routes.tsx:480-480` |
+| `/context` | `packages/ui/src/routes.tsx:491-491` |
+| `/mission-control` | `packages/ui/src/routes.tsx:498-498` |
+| `/slices` | `packages/ui/src/routes.tsx:505-505` |
+| `/slices/$name` | `packages/ui/src/routes.tsx:511-511` |
+| `/progress` | `packages/ui/src/routes.tsx:521-521` |
+| `/steering` | `packages/ui/src/routes.tsx:528-528` |
+
+### TUI registry and exported domain surfaces
+
+**O:** TUI resource commands and literal verbs build view actions; grammar/socket consume the registry (C13). The registry already distinguishes resource drills (`packages/tui/src/commands/registry.ts:67-83`), terminal/file/settings/project/workflow operations (`:86-109`), tab/graph/style/scroll/copy view actions (`:129-208`), and filter/cross-navigation/palette/narrative actions (`:210-276`). These action classes have different effects; the socket exposes view-state/navigation actions while daemon-mutating acts are separately executed by `main.ts` (C13). **U:** mapping every verb to its reducer/render/error effect and checking interactive behavior remains open; do not infer browser/MCP parity. Registry comments about CI are stated intent, not test results.
+
+| TUI literal verb | Evidence |
+|---|---|
+| `terminals` | `packages/tui/src/commands/registry.ts:87-87` |
+| `terminal-preview` | `packages/tui/src/commands/registry.ts:88-88` |
+| `attention` | `packages/tui/src/commands/registry.ts:89-89` |
+| `read` | `packages/tui/src/commands/registry.ts:90-90` |
+| `system` | `packages/tui/src/commands/registry.ts:96-96` |
+| `config` | `packages/tui/src/commands/registry.ts:97-97` |
+| `setting` | `packages/tui/src/commands/registry.ts:98-98` |
+| `refresh` | `packages/tui/src/commands/registry.ts:99-99` |
+| `timezone` | `packages/tui/src/commands/registry.ts:100-100` |
+| `recent` | `packages/tui/src/commands/registry.ts:101-101` |
+| `connections` | `packages/tui/src/commands/registry.ts:102-102` |
+| `back` | `packages/tui/src/commands/registry.ts:103-103` |
+| `projects` | `packages/tui/src/commands/registry.ts:104-104` |
+| `project` | `packages/tui/src/commands/registry.ts:105-105` |
+| `source` | `packages/tui/src/commands/registry.ts:106-106` |
+| `mission` | `packages/tui/src/commands/registry.ts:107-107` |
+| `workflow` | `packages/tui/src/commands/registry.ts:108-108` |
+| `packet` | `packages/tui/src/commands/registry.ts:109-109` |
+| `:` | `packages/tui/src/commands/registry.ts:111-111` |
+| `/` | `packages/tui/src/commands/registry.ts:120-120` |
+| `tab` | `packages/tui/src/commands/registry.ts:129-129` |
+| `graph` | `packages/tui/src/commands/registry.ts:145-145` |
+| `style` | `packages/tui/src/commands/registry.ts:155-155` |
+| `scroll` | `packages/tui/src/commands/registry.ts:166-166` |
+| `select-text` | `packages/tui/src/commands/registry.ts:179-179` |
+| `top` | `packages/tui/src/commands/registry.ts:192-192` |
+| `bottom` | `packages/tui/src/commands/registry.ts:201-201` |
+| `find` | `packages/tui/src/commands/registry.ts:211-211` |
+| `spec-of` | `packages/tui/src/commands/registry.ts:221-221` |
+| `running` | `packages/tui/src/commands/registry.ts:234-234` |
+| `help` | `packages/tui/src/commands/registry.ts:249-249` |
+| `reqs` | `packages/tui/src/commands/registry.ts:259-259` |
+| `narrative` | `packages/tui/src/commands/registry.ts:269-269` |
+
+Resource-generated verbs and aliases also belong to C13 (`packages/tui/src/commands/registry.ts:67-86`); socket `state` belongs to C13 (`packages/tui/src/socket-server.ts:24-60`).
+
+| Daemon export | Disposition | Evidence |
+|---|---|---|
+| `./attention` | **O:** TUI consumes shared `AttentionRead`/`AttentionItem` types in view state and rendering; `packages/tui/src/attention/attention-model.ts:1-15`, `packages/tui/src/pulse/pulse-model.ts:1-10`. | `packages/daemon/package.json:8-8` |
+| `./project-catalog` | **O:** work-install planning reads project catalog; CLI importer at `packages/cli/src/lib/work-install.ts:1-5`; related workspace/project read chain C23. | `packages/daemon/package.json:9-9` |
+| `./daemon-shutdown` | **O:** CLI daemon lifecycle consumes shutdown receipt/constants; `packages/cli/src/daemon-lifecycle.ts:1-16`; process stop effect belongs C02. | `packages/daemon/package.json:10-12` |
+| `./crash-cart` | **O:** `rig crash-cart` lazily imports the export and composes daemon-state probes/discovery into structured read-only output (`packages/cli/src/commands/crash-cart.ts:59-105`); TUI invokes that CLI verb as its recovery/startup probe (`packages/tui/src/main.ts:184-205`). Effect is a visible crash-cart verdict/recovery view, not a restore mutation. Runtime recovery correctness remains unresolved. | `packages/daemon/package.json:14-16` |
+| `./gateway-human-registry` | **O:** CLI human add/list/show/remove dynamically imports shared registry; add refuses unverifiable/second-human state before write (`packages/cli/src/commands/gateway.ts:139-163,204-223,245-280`). | `packages/daemon/package.json:18-20` |
+| `./gateway-protocol` | **U — precise reachability limit:** searched pinned production packages for `@openrig/daemon/gateway-protocol`; no production importer was found. `packages/cli/tsconfig.json:16` is a compile-time path mapping, not a runtime consumer. Dynamic/external package consumption remains unresolved; export/build presence alone does not establish process reachability. | `packages/daemon/package.json:22-24` |
+| `./spec-conformance` | **O:** CLI doctor compares authored specs to live topology; importer at `packages/cli/src/commands/doctor.ts:1-17`. | `packages/daemon/package.json:26-28` |
+| `./seat-recap-store` | **O:** CLI `context recap-write` dynamically imports store, writes durable recap and prints predecessor count (`packages/cli/src/commands/context.ts:727-757`). | `packages/daemon/package.json:30-32` |
+| `./gateway-slack` | **O:** CLI Slack commands dynamically import service; setup writes config through operation receipt and prompts token/verify/enable (`packages/cli/src/commands/slack.ts:67-109`). | `packages/daemon/package.json:34-36` |
+| `./context-pack-taxonomy` | **O:** context install uses exported taxonomy constants (`packages/cli/src/lib/context-install.ts:1-4`); format validation/import effect in C24. | `packages/daemon/package.json:38-40` |
+| `./skill-loadout` | **O:** CLI context/skill/work-install import loadout for resolution/apply (`packages/cli/src/commands/context.ts:34-40`, `packages/cli/src/commands/skill.ts:3-12`, `packages/cli/src/lib/work-install.ts:1-15`); durable apply effect C24. | `packages/daemon/package.json:42-44` |
+| `./instance-initialization` | **O:** workspace init imports scaffolding at `packages/cli/src/commands/config-init-workspace.ts:1-14`; daemon lifecycle calls default workspace/instance initialization (`packages/cli/src/daemon-lifecycle.ts:9-16`). | `packages/daemon/package.json:46-48` |
+| `./system-world` | **O:** work-install plan resolves selected system context via `packages/cli/src/lib/work-install.ts:7-15`; effects represented in C23/C24. | `packages/daemon/package.json:50-52` |
+| `./project-lifecycle` | **O:** work-install imports mission composition validators (`packages/cli/src/lib/work-install.ts:12-15`); file planning/effect remains C23. | `packages/daemon/package.json:54-56` |
+| `./health-projection` | **O:** `rig health` consumes projection types/constants and calls health APIs (`packages/cli/src/commands/health.ts:1-25`); C22 projection result. | `packages/daemon/package.json:58-60` |
+| `./health-detectors` | **O:** CLI health uses detector projection type (`packages/cli/src/commands/health.ts:8-9`); runtime result consumer is C22. | `packages/daemon/package.json:62-64` |
+| `./local-reading` | **O:** read-only subprocess imports allowlisted resolver (`packages/cli/src/local-reading.ts:1-20`); effects are constrained local file reads, not daemon writes. | `packages/daemon/package.json:66-68` |
+
+### Tracked-file coverage groups
+
+Patterns below use Python `fnmatchcase` over repository-relative paths from `git ls-tree -r --name-only` at the pin. In this check, `*` includes `/`. First matching row owns the file. This is **file disposition coverage**, not line-by-line investigation or a package/Node count. Cited files have the examined claims above; other members are explicitly deferred for the stated reason. Metadata is not silently counted as a user feature. No file-group disposition decides retention.
+
+| Pattern | Family and disposition |
+|---|---|
+| `packages/cli/src/*` | C01–C25: declaration coverage only for the whole tree. Only chains cited in C-rows/addenda are semantically investigated; remaining command/helper consumers and effects are source gaps, not runtime deferrals. |
+| `packages/daemon/src/*` | C02–C25: mount coverage only for the whole tree. Only cited route/domain chains are semantically investigated; remaining domain/middleware/migration/adapter/helper effects and alternative gateway caller closure are source gaps. |
+| `packages/tui/src/*` | C13: entry/registry/socket/live seams and literal verbs are inventoried; each verb's dispatch/reducer/render/effect chain remains a source gap except where separately cited. |
+| `packages/ui/src/*` | C12: route declarations and representative read are inventoried; each interactive action's hook/API/effect chain remains a source gap except where separately cited. |
+| `packages/daemon/assets/*` | C17/C19/C24: shipped hook/continuity/plugin/guidance assets; cited wiring investigated; embedded helpers without cited caller/effect remain source gaps. |
+| `packages/daemon/specs/*` | C03/C24: user/builtin spec roots scanned at startup; workflow specs copied to scanner-visible top-level YAML target with unsafe/missing/conflict refusals; plugin discovery and skill/workflow selection consumers cited in residual matrix. Per-spec semantic execution/external harness ingestion remains unresolved, not asserted absent. |
+| `packages/daemon/context-packs-src/*` | C24: generation input; generator consumer investigated, per-pack/profile delivery deferred. |
+| `packages/daemon/policies/*` | C25: policy inputs; apply/launch seams investigated; per-policy resolution-to-enforcement chains remain source gaps, not generic runtime deferrals. |
+| `packages/test-system/*` | C26: scenarios, eval cases, topology fixtures and instructions; runner consumers investigated, per-case compatibility and seeded evidence deferred. |
+| `packages/ui/twin/*` | C28: separate build/capture artifacts; orchestration investigated, fixture completeness and real captures deferred. |
+| `packages/tui/spike/*` | C28: spike material; current consumer/relevance unresolved, deeper trace deferred rather than assumed production or dead. |
+| `packages/*/test/*` | C26/C27: tests are test-only consumers where cited; source assertions identify refusal/cleanup seams but no test execution/pass claim is made. |
+| `packages/*/scripts/*` | C26/C27: package/CI/build/developer/demo callers and searched no-production-caller groups are itemized in the residual source matrix; standalone probe scripts remain manual/test harnesses, not shipped product routes. |
+| `packages/ui/public/*` | C12/C28: static assets; SPA asset consumer investigated, individual asset use deferred. |
+| `packages/*` | C01/C12/C13/C27: remaining package manifests, configuration, entry HTML and README metadata; declarations inspected, detailed tooling behavior deferred. |
+| `scripts/*` | C24/C27: packaging, gates, guards, generated membership/digests, testbed/bootstrap and sync tools; named chains investigated, remaining invocation/effect paths deferred. |
+| `skills/*` | C24/C28: distribution metadata and mirrored skill content; mirror chain investigated, per-skill operational consumer deferred. |
+| `docs/*` | C28: instructions/reference/release/design material; cited journey intent inspected; other statements need source confirmation, not runtime authority. |
+| `demo/*` | C28: executable example/probes; launch script chain investigated, probe internals and dirty-state impact deferred. |
+| `docker/*` | C26/C27: container/testbed inputs; accepted baseline reused; actual build/runtime provisioning deferred. |
+| `spike/*` | C28: executable experiment; present-day product caller and owner relevance unresolved, deferred. |
+| `archive/*` | C28: historical material by placement; active consumers unresolved, no assumption that executable references are inert. |
+| `assets/*` | C28: presentation assets; user-facing placement/usage deferred. |
+| `config/*` | C27: shared toolchain config; manifest tooling chain investigated, individual option effects deferred. |
+| `.github/*` | C27/C28: CI and contributor/security templates; portability workflow investigated, other process intent not treated as executed behavior. |
+| `.evidence/*` | C27/C28: existing evidence artifacts; no trust or execution verdict imported; provenance/content review deferred. |
+| `breakdown/*` | Research context, not product capability; accepted counts/workflow limits reused. Other outputs and shared registers unchanged. |
+| `package.json` | C27: root script declarations investigated. |
+| `package-lock.json` | C27: resolved dependency metadata; accepted Node inventory reused; transitive execution graph deferred. |
+| `vitest.config.ts` | C27: test configuration; execution deferred. |
+| `README.md` | C28: project intent, not an executed workflow. |
+| `CHANGELOG.md` | C28: release statements; not imported as current source/runtime proof. |
+| `LICENSE` | Distribution/legal metadata, not a runtime capability; legal interpretation outside this inventory. |
+| `.gitignore` | Repository/build-output metadata; not a user capability. |
+
+## Validation procedure and review boundary
+
+Documentation validation is separate from application tests. The embedded command below checks every citation against the pinned Git blobs, reconciles the declaration ledgers, and checks file-group disposition coverage. It writes no files. It deliberately cannot decide whether a claim is true: the C-row/source review supplies that check. It also cannot turn a deferred member into an investigated chain. No Markdown links are used; source citations resolve through Git rather than the owner's machine or a mutable web branch.
+
+Run from the isolated worktree root:
+
+```sh
+python3 - <<'PY'
+import fnmatch, json, pathlib, re, subprocess
+pin = 'ea7c268f576ada8434d3dae3e6ac972264910d4c'
+root = pathlib.Path(subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True).strip())
+owned = 'breakdown/research-capability-inventory.md'
+doc = (root / owned).read_text()
+body = doc.split('## Validation procedure and review boundary')[0]
+cache = {}
+def source(path):
+    if path not in cache:
+        cache[path] = subprocess.check_output(['git', 'show', f'{pin}:{path}'], text=True)
+    return cache[path]
+refs = re.findall(r'`([^`\n]+):(\d+)-(\d+)`', body)
+assert refs, 'no citations'
+for path, first, last in refs:
+    assert 1 <= int(first) <= int(last) <= len(source(path).splitlines()), (path, first, last)
+print(f'PASS citation ranges: {len(refs)} references; {len(cache)} source files')
+checks = [
+    ('CLI factories', 'CLI registrations', 'packages/cli/src/index.ts', r'program.addCommand\((\w+)\('),
+    ('API mounts', 'Daemon API mounts', 'packages/daemon/src/server.ts', r'app.route\(\s*"([^"]+)"'),
+    ('MCP tools', 'MCP tool ledger', 'packages/cli/src/mcp-server.ts', r'server.tool\(\s*"([^"]+)"'),
+    ('UI paths', 'Browser destinations', 'packages/ui/src/routes.tsx', r'path:\s*"([^"]+)"'),
+    ('TUI literal verbs', 'TUI registry and exported domain surfaces', 'packages/tui/src/commands/registry.ts', r'name:\s*"([^"]+)"'),
+]
+ledger = body.split('### CLI registrations')[1]
+for label, heading, path, pattern in checks:
+    section = body.split('### ' + heading + '\n')[1].split('\n### ')[0]
+    entries = re.findall(pattern, source(path))
+    missing = [entry for entry in entries if f'| `{entry}` |' not in section]
+    assert not missing, (label, missing)
+    print(f'PASS {label}: {len(entries)} declarations; no omissions')
+exports = json.loads(source('packages/daemon/package.json'))['exports']
+assert all(f'| `{entry}` |' in ledger for entry in exports)
+print(f'PASS daemon exports: {len(exports)} declarations; no omissions')
+assert 'registry.ts:67-86' in body and 'socket-server.ts:24-60' in body
+assert 'server.ts:713-720' in body and 'server.ts:800-835' in body
+patterns = re.findall(r'^\| `([^`]+)` \|', body.split('### Tracked-file coverage groups')[1], re.M)
+files = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', pin], text=True).splitlines()
+unmatched = [path for path in files if not any(fnmatch.fnmatchcase(path, pat) for pat in patterns)]
+assert not unmatched, unmatched
+unused = [pat for pat in patterns if not any(fnmatch.fnmatchcase(path, pat) for path in files)]
+assert not unused, unused
+print('PASS file dispositions: every pinned tracked file matched; no unused patterns')
+families = re.findall(r'^\| (C\d\d) —', body, re.M)
+assert len(families) == len(set(families)) and set(families) == {f'C{i:02}' for i in range(1, 29)}
+assert all(c in families for c in re.findall(r'\bC\d\d\b', body))
+print('PASS capability references: unique C01–C28; no dangling family IDs')
+assert not re.search(r'\]\([^)]*\)', body), 'new Markdown link needs explicit validation'
+print('PASS links: Git source citations only; no unchecked Markdown links')
+PY
+git diff --check
+git diff --cached --check
+git status --short
+```
+
+For single-file scope, compare the union of unstaged, staged and untracked paths with the owned path before commit. After commit, check `git diff-tree --no-commit-id --name-only -r HEAD` and a clean `git status --short`. No validation script or shared index is added. The final review report records actual results and documentation commit; it does not claim these checks verify the deferred product behavior.
+
+### Validation record — 2026-09-27
+
+The embedded read-only validator passed: 465 citation ranges across 115 source files; no omitted declarations in the CLI, API-mount, MCP, browser-path, TUI-literal or daemon-export ledgers; every pinned tracked file matched a disposition group; no unused patterns or dangling capability IDs. Citation syntax checks found no malformed range tokens. No Markdown link targets require separate resolution. Manual source review corrected a queue-creation citation to the actual create transaction and added its SQL writer evidence.
+
+`git diff --check` and `git diff --cached --check` passed. The unstaged/staged/untracked-path union contained only the owned inventory file. These results concern documentation structure, source resolution and edit scope, not runtime correctness. All deferred evidence above remains open; no product test result or research-gate status is recorded.
+
+Follow-up validation after decomposition initially passed with 478 citation ranges across 121 source files; later exact candidate reviews found 497/129, 538/149, 551/151, and 554/151 as source chains were expanded. The current candidate validates at 564 citation ranges across 158 source files. Watchdog delivery, provider-switch refusal, recap-write, UI/TUI actions, workflow/policy transitions, context delivery inputs, test-system reachability, script callers, Feed and LibraryReview branches, and export importers are incorporated. Structural coverage passes; final independent audit of this exact version remains required. Explicit runtime/owner-value limits remain, with no product execution or task-completion claim.
