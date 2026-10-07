@@ -45,7 +45,7 @@ A task is done only when you show evidence: command output, a log line or a scre
 
 - Never push to `main` directly. Make a branch, push it, and open a pull request.
 - Keep `CHANGELOG.md` up to date if the repository has one.
-- This repository is public. Do not add a private repository name, a local absolute path, a personal email address or any machine-specific value. Run the portability report before you commit.
+- This repository is public. Do not add a local absolute path, a personal email address or any machine-specific value. Private repository names and their GitHub links are allowed. Run the portability report before you commit.
 
 ## Documentation
 
